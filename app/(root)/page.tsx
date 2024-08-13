@@ -104,7 +104,10 @@ export default function Home() {
           {[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25].map(
             (articleIndex) => (
               <>
-                <div className="border mb-5 lg:mb-0">
+                <div
+                  key={`other_stories_${articleIndex}`}
+                  className="border mb-5 lg:mb-0"
+                >
                   <Link href={`articles/${articles[articleIndex].slug}`}>
                     <ImageComponent
                       src={getArticleImageUrl(

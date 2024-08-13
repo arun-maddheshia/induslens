@@ -1,24 +1,14 @@
 import { InstagramIcon, LinkedinIcon, TwitterIcon } from '@/components/Icons';
 import ImageComponent from '@/components/ImageComponent';
+import { anchors } from '@/data/anchor';
+import { contentBlockData } from '@/data/content-block';
 
 import { getArticleImageUrl } from '@/lib/utils';
-import { fetchEminence } from './action';
 
-export interface SearchParamsProps {
-  searchParams: { [key: string]: string | undefined };
-}
-
-export default async function page({ searchParams }: SearchParamsProps) {
-  const limit = 10;
-  const currentPage = 1;
-
-  const response = await fetchEminence(
-    currentPage,
-    limit,
-    'Indus_Eminence',
-    searchParams['authorName']
+export default async function page() {
+  const authors = contentBlockData.filter(
+    (article) => article.category === 'Indus_Eminence'
   );
-  const authors = response.data;
 
   return (
     <section className="article-container py-10 mx-auto">

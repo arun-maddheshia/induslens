@@ -1,20 +1,21 @@
 import ImageComponent from '@/components/ImageComponent';
 import Carousel from '@/components/UI/Carousel';
+import { contentBlockData } from '@/data/content-block';
 import { getArticleImageUrl } from '@/lib/utils';
 import Link from 'next/link';
 
-type EminenceWrapperProps = {
-  eminenceData: Eminence[];
-};
+export const EminenceWrapper = () => {
+  const indusEminence = contentBlockData.filter(
+    (article) => article.category === 'Indus_Eminence'
+  );
 
-export const EminenceWrapper = ({ eminenceData }: EminenceWrapperProps) => {
   return (
     <Carousel
       slidesPerView={4}
       spaceBetween={20}
       gridRows={1}
       loop={true}
-      items={eminenceData.map((author) => (
+      items={indusEminence.map((author) => (
         <div
           key={author._id}
           className="py-10 h-full text-center px-10 border relative"

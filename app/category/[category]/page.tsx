@@ -1,6 +1,8 @@
 import ImageComponent from '@/components/ImageComponent';
+import { articles } from '@/data/articles';
+import { categories } from '@/data/categories';
 import { getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
-import { fetchCategoryArticles } from './action';
+
 import Link from 'next/link';
 
 type Props = {
@@ -8,18 +10,13 @@ type Props = {
 };
 
 export default async function page({ params }: Props) {
-  const { category } = params;
-  const limit = 30;
-  const currentPage = 1;
+  const articleCategory = categories.filter(
+    (category) => category.slug === params.category
+  )[0];
 
-  const response = await fetchCategoryArticles(currentPage, limit, category);
-
-  const articleCategory = response.category;
-
-  if (!response) {
-    return <div>NO ff DATA</div>;
-  }
-
+  const articleList = articles.filter(
+    (article) => article.category === articleCategory.id
+  );
   return (
     <section className="py-10 my-5 container mx-auto  px-5 lg:px-0">
       <h1 className="font-bold text-center text-4xl mb-4">
@@ -29,7 +26,7 @@ export default async function page({ params }: Props) {
         {articleCategory ? articleCategory.description : ''}
       </p>
       <div className="lg:grid lg:grid-cols-2 gap-10">
-        {response.data.map((article: Article) => (
+        {articleList.map((article: Article) => (
           <div key={article._id} className="border mb-5 lg:mb-0">
             <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
               <ImageComponent

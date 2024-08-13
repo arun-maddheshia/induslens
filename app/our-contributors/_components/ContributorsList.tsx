@@ -26,7 +26,6 @@ export default function ContributorsList({
           );
         })}
       </div>
-      {/* {showLoadMore && <button onClick={loadMoreUsers}>Load more</button>} */}
     </>
   );
 }

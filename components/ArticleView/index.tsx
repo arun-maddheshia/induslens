@@ -5,23 +5,26 @@ import ArticleDeepDive from './ArticleDeepDive';
 import ArticleHead from './ArticleHead';
 import AuthorBio from './AuthorBio';
 import SocialShare from './SocialShare';
+import { anchors } from '@/data/anchor';
+import { articles } from '@/data/articles';
 
 type Props = {
   params: { slug: string };
 };
 
-export async function fetchArticle(slug: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/article/${slug}`
-  );
-  const responseJson = await res.json();
-  return responseJson['data'];
-}
-
 export default async function ArticleView({ params }: Props) {
-  const { slug } = params;
+  const article = articles.find((article) => article.slug === params.slug);
+  let author: any;
+  if (article) {
+    const authors = article.author.map((allAuthors) => allAuthors);
 
-  const { article, author } = await fetchArticle(slug);
+    if (authors && authors.length) {
+      author = anchors.find(
+        // @ts-ignore
+        (anchor) => anchor._id === authors[0].id
+      );
+    }
+  }
 
   if (!article) {
     return <div>Article not found</div>;
@@ -48,7 +51,9 @@ export default async function ArticleView({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: article.pageContent || '' }}
         />
         {author && <AuthorBio author={author} />}
-        <ArticleDeepDive htmlContent={article.diveContent} />
+        <ArticleDeepDive
+          htmlContent={article.diveContent ? article.diveContent : ''}
+        />
       </section>
       <section className="container mx-auto mb-10 lg:mb-0  px-7 lg:px-0">
         <TrendingVideo />

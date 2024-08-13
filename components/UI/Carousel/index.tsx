@@ -16,6 +16,7 @@ type CarouselProps = {
   items: React.ReactNode[];
   spaceBetween: number;
   slidesPerView: number;
+  smSlidesPerView?: number;
   gridRows: number;
   loop: boolean;
   navigationVariant?: 'center' | 'top';
@@ -27,7 +28,7 @@ export default function Carousel({
   slidesPerView,
   gridRows,
   loop,
-
+  smSlidesPerView,
   navigationVariant = 'center',
 }: CarouselProps) {
   const prevRef = useRef<HTMLDivElement>(null);
@@ -71,7 +72,7 @@ export default function Carousel({
         grid={{ rows: gridRows, fill: 'row' }}
         breakpoints={{
           0: {
-            slidesPerView: 1,
+            slidesPerView: smSlidesPerView ? smSlidesPerView : 1,
           },
           1024: { slidesPerView: slidesPerView },
         }}

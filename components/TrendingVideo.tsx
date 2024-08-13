@@ -30,6 +30,7 @@ export default function TrendingVideo() {
       <Carousel
         items={allPost}
         slidesPerView={6}
+        smSlidesPerView={2}
         spaceBetween={20}
         loop={true}
         gridRows={1}

@@ -46,7 +46,7 @@ export default function Home() {
 
       <section className="py-0 pb-20">
         <PageTitle title="IndusTV" />
-        <div className="grid grid-cols-4 gap-4">
+        <div className="lg:grid lg:grid-cols-4 gap-4">
           {videoNews
             .filter((video) => video.category === 'industv')
             .map((video) => (

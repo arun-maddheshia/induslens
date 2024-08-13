@@ -27,7 +27,7 @@ export default function ArticleView({ article }: Props) {
 
   return (
     <>
-      <section className="mx-auto article-container py-20 px-5 lg:px-0">
+      <section className="mx-auto article-container py-10 lg:py-20 px-5 lg:px-0">
         <ArticleHead
           title={article.name}
           excerpt={article.excerpt}

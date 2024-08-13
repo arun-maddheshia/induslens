@@ -71,7 +71,7 @@ export default function Carousel({
         grid={{ rows: gridRows, fill: 'row' }}
         breakpoints={{
           0: {
-            slidesPerView: 2,
+            slidesPerView: 1,
           },
           1024: { slidesPerView: slidesPerView },
         }}

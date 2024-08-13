@@ -1,9 +1,26 @@
-import { getContributors } from '@/actions/getContributors';
 import { ContributorWrapper } from './ContributorWrapper';
 
-export default async function FeaturedContributor() {
-  const apiResponse: PaginatedResponse<Author> = await getContributors(0, 32);
-  const contributors = apiResponse.data;
+async function fetchFeaturedContributor(): Promise<Author[]> {
+  try {
+    const offset: number = 0;
+    const limit: number = 32;
 
-  return <ContributorWrapper contributorList={contributors} />;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/contributors?offset=${offset}&limit=${limit}`
+    );
+    if (!res.ok) {
+      throw new Error(`Failed to fetch: ${res.statusText}`);
+    }
+    const { data }: { data: Author[] } = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching eminence :', error);
+    return [];
+  }
+}
+
+export default async function FeaturedContributor() {
+  const data = await fetchFeaturedContributor();
+
+  return <ContributorWrapper contributorList={data} />;
 }

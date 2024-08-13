@@ -3,7 +3,6 @@ export const fetchCategoryArticles = async (
   limit: number = 10,
   category: string = ''
 ) => {
-  console.log(category);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/category?page=${page}&limit=${limit}&category=${category}`
   );

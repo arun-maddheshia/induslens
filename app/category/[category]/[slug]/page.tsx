@@ -7,6 +7,5 @@ type Props = {
 };
 
 export default async function page({ params }: Props) {
-  console.log(params);
   return <ArticleView params={params} />;
 }

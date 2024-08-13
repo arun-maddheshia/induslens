@@ -1,8 +1,9 @@
+import ContactForm from '@/components/ContactForm';
 import { EmailIcon } from '@/components/Icons/EmailIcon';
 import { Metadata } from 'next';
 
-const pageTitle = 'About us';
-const pageDescription = '';
+const pageTitle = 'Contact us';
+const pageDescription = "Curious to see and hear more? Let's connect.";
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -25,9 +26,9 @@ export const metadata: Metadata = {
 export default function page() {
   return (
     <section className="main-container mx-auto py-20">
-      <div className="grid grid-cols-2 gap-20">
-        <div className="px-10">
-          <h1 className="font-extrabold text-black text-4xl mb-5">
+      <div className="md:grid md:grid-cols-[50%_minmax(40%,_1fr)_5%] lg:grid-cols-[60%_minmax(30%,_1fr)_5%]">
+        <div className="px-5 pb-10 md:pb-0 md:px-10">
+          <h1 className="font-extrabold text-black text-4xl mb-5 lg:pt-5">
             Curious to see and hear more?{' '}
             <span className="text-pink-700">Let&apos;s connect</span>.
           </h1>
@@ -42,7 +43,9 @@ export default function page() {
             <a href="mailto:editor@Induslens.com">editor@Induslens.com</a>
           </div>
         </div>
-        <div></div>
+        <div className="px-5 md:px-0">
+          <ContactForm />
+        </div>
       </div>
     </section>
   );

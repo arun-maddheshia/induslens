@@ -8,6 +8,7 @@ import Link from 'next/link';
 
 type Props = {
   params: { category: string };
+  searchParams: { name: string };
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function page({ params }: Props) {
+export default async function page({ params, searchParams }: Props) {
+  const { name } = searchParams;
   const articleCategory = categories.filter(
     (category) => category.slug === params.category
   )[0];
@@ -42,6 +44,18 @@ export default async function page({ params }: Props) {
   const articleList = articles.filter(
     (article) => article.category === articleCategory.id
   );
+
+  if (name && articleList.length) {
+    articleList.sort((a, b) => {
+      const aIsArticle = a.slug === name;
+      const bIsArticle = b.slug === name;
+
+      if (aIsArticle && !bIsArticle) return -1;
+      if (!aIsArticle && bIsArticle) return 1;
+      return 0;
+    });
+  }
+
   return (
     <section className="py-10 my-5 container mx-auto  px-5 lg:px-0">
       <h1 className="font-bold text-center text-4xl mb-4">
@@ -66,7 +80,7 @@ export default async function page({ params }: Props) {
               />
             </Link>
             <div className="p-5">
-              <h6 className="text-black text-3xl leading-6 font-bold mb-4">
+              <h6 className="text-black text-3xl leading-8 font-bold mb-4">
                 {article.name}
               </h6>
               <p className=" mb-4">{article.excerpt}</p>

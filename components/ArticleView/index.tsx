@@ -9,16 +9,17 @@ import { anchors } from '@/data/anchor';
 
 type Props = {
   article: Article;
+  pageUrl: string;
 };
 
-export default function ArticleView({ article }: Props) {
+export default function ArticleView({ article, pageUrl }: Props) {
   let author: any;
 
   if (article) {
     const authors = article.author.map((allAuthors) => allAuthors);
 
     if (authors && authors.length) {
-      const author = anchors.find(
+      author = anchors.find(
         // @ts-ignore
         (anchor) => anchor._id === authors[0].id
       );
@@ -33,7 +34,16 @@ export default function ArticleView({ article }: Props) {
           excerpt={article.excerpt}
           authorName={author?.name}
         />
-        <SocialShare />
+
+        <SocialShare
+          shareUrl={pageUrl}
+          title={article.name}
+          description={article.metaDescription}
+          shareImage={getArticleImageUrl(
+            article.images,
+            'detailsPageBackground'
+          )}
+        />
 
         <ImageComponent
           src={getArticleImageUrl(article.images, 'posterImage')}

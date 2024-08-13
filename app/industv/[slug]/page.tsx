@@ -39,14 +39,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const page = ({ params }: Props) => {
-  const activeVideo = getActiveVideo(params.slug);
+  const { slug } = params;
+  const activeVideo = getActiveVideo(slug);
 
   return (
-    <section className="py-10 my-5 tv-container mx-auto">
+    <section className="py-0 lg:py-10 pb-10 md:pb-0 my-2 px-2 tv-container mx-auto">
       <VideoPlayer videoId={activeVideo.contentId} className="" />
-      <h1 className="font-bold text-3xl py-10">{activeVideo.name}</h1>
-      <SocialShare />
-      <p className="text-xl pt-5">{activeVideo.synopsis}</p>
+
+      <div className="px-2 md:px-0">
+        <h1 className="font-bold text-3xl py-10">{activeVideo.name}</h1>
+        <SocialShare
+          title={activeVideo.metaTitle}
+          description={activeVideo.metaDescription}
+          shareImage={getArticleImageUrl(
+            activeVideo.images,
+            'detailsPageBackground'
+          )}
+          shareUrl={`${process.env.NEXT_PUBLIC_API_URL}/industv/${slug}`}
+        />
+        <p className="text-xl pt-5">{activeVideo.synopsis}</p>
+      </div>
     </section>
   );
 };

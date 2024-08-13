@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
-    <section className="container py-10 mx-auto">
+    <section className="container py-10 mx-auto px-4 md:px-0">
       <h1 className="font-bold text-4xl text-center mb-10">Our Contributors</h1>
       <ContributorsList initialContributors={anchors} />
     </section>

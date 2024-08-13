@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import FeaturedArticleCard from './FeaturedArticleCard';
 import React from 'react';
 
@@ -14,7 +15,7 @@ const FeaturedArticlesWrapper = ({
 }: FeaturedArticlesWrapperProps) => {
   return (
     <div className="flex md:flex-row flex-col">
-      <div className="sm:w-full md:w-1/4">
+      <div className="sm:w-full md:w-1/4 order-0">
         {leftPosts.map((article, index) => (
           <div key={`featured-article-${article._id}`}>
             <FeaturedArticleCard
@@ -23,11 +24,16 @@ const FeaturedArticlesWrapper = ({
               height={400}
               type="sm"
             />
-            {index !== leftPosts.length - 1 && <hr className="pt-5 mt-5" />}
+            <hr
+              className={cn(
+                'pt-5 mt-5',
+                index !== leftPosts.length - 1 ? '' : 'lg:hidden'
+              )}
+            />
           </div>
         ))}
       </div>
-      <div className="px-0 lg:px-5 my-4 lg:my-0 sm:w-full md:w-1/2">
+      <div className="px-0 lg:px-5 mb-4 lg:mb-0 sm:w-full md:w-1/2 order-first md:order-1">
         <FeaturedArticleCard
           article={mainPost}
           width={640}
@@ -35,7 +41,7 @@ const FeaturedArticlesWrapper = ({
           type="lg"
         />
       </div>
-      <div className="sm:w-full md:w-1/4">
+      <div className="sm:w-full md:w-1/4 order-2">
         {rightPosts.map((article, index) => (
           <div key={`featured-article-${article._id}`}>
             <FeaturedArticleCard

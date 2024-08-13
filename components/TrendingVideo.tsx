@@ -16,7 +16,7 @@ export default function TrendingVideo() {
           className="mb-2"
         />
       </Link>
-      <h6 className="text-black mb-2 text-xl leading-6 font-bold">
+      <h6 className="text-black mb-2 text-md lg:text-xl leading-6 font-bold">
         <Link className="hover:underline" href={`/videos/${video.slug}`}>
           {video.name}
         </Link>

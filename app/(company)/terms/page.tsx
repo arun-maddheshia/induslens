@@ -53,8 +53,9 @@ const content = [
   },
 ];
 
-const pageTitle = 'Contact Us';
-const pageDescription = "Curious to see and hear more? Let's connect.";
+const pageTitle = 'Terms of Use';
+const pageDescription =
+  'All content published on this Website, including stories, articles, images, logos, and other materials, is owned by induslens.com and is protected by international copyright laws.';
 
 export const metadata: Metadata = {
   title: pageTitle,

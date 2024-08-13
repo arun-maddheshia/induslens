@@ -34,7 +34,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 border border-black w-2/4 relative"
+        className="bg-white p-6 border border-black w-[94%] md:w-2/4 h-[90%] md:h-auto overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button className="absolute top-4 right-4" onClick={onClose}>

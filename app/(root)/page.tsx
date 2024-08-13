@@ -39,18 +39,18 @@ export default function Home() {
   const articleCategories: ArticleCategory[] = categories;
 
   return (
-    <div className="lg:container w-full lg:px-0 px-5 mx-auto py-10">
+    <div className="lg:container mx-auto w-full px-4 lg:px-0  py-4 lg:py-10">
       <FeaturedArticles />
 
       <TrendingVideo />
 
       <section className="py-0 pb-20">
         <PageTitle title="IndusTV" />
-        <div className="lg:grid lg:grid-cols-4 gap-4">
+        <div className="lg:grid lg:grid-cols-4 lg:gap-4 ">
           {videoNews
             .filter((video) => video.category === 'industv')
             .map((video) => (
-              <div key={`video_page_${video._id}`}>
+              <div key={`video_page_${video._id}`} className="mb-5 lg:mb-0">
                 <Link href={`/industv/${video.slug}`}>
                   <ImageComponent
                     src={getArticleImageUrl(
@@ -60,7 +60,7 @@ export default function Home() {
                     alt={video.name}
                     width={640}
                     height={427}
-                    className="mb-2 aspect-auto"
+                    className="mb-2"
                   />
                 </Link>
                 <h6 className="text-black mb-2 text-lg leading-6 font-bold hover:underline">
@@ -82,9 +82,12 @@ export default function Home() {
       </section>
 
       {articleCategories.map((category) => (
-        <section key={`article_category_${category.id}`} className="py-0 pb-20">
+        <section
+          key={`article_category_${category.id}`}
+          className="py-0 pb-7 lg:pb-20"
+        >
           <PageTitle title={category.name} href={`category/${category.slug}`} />
-          <p className="text-lg mb-5">{truncate(category.description, 300)}</p>
+          <p className="text-lg mb-5 line-clamp-2">{category.description}</p>
           <Carousel
             slidesPerView={4}
             gridRows={1}
@@ -96,8 +99,10 @@ export default function Home() {
                   article.category === category.id && article.images.length
               )
               .map((articleItem) => (
-                <div key={articleItem._id} className="py-10">
-                  <Link href={`category/${category.slug}?${articleItem.slug}`}>
+                <div key={articleItem._id} className="py-0 lg:py-4">
+                  <Link
+                    href={`category/${category.slug}?name=${articleItem.slug}`}
+                  >
                     <ImageComponent
                       src={getArticleImageUrl(
                         articleItem.images,
@@ -124,37 +129,35 @@ export default function Home() {
       <section className="py-0 pb-20">
         <PageTitle title="Other Stories" />
         <div className="lg:grid lg:grid-cols-2 gap-5">
-          {[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25].map(
+          {[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26].map(
             (articleIndex) => (
-              <>
-                <div
-                  key={`other_stories_${articleIndex}`}
-                  className="border mb-5 lg:mb-0"
-                >
-                  <Link href={`articles/${articles[articleIndex].slug}`}>
-                    <ImageComponent
-                      src={getArticleImageUrl(
-                        articles[articleIndex].images,
-                        'detailsPageBackground'
-                      )}
-                      width={640}
-                      height={427}
-                      alt={articles[articleIndex].name}
-                    />
-                  </Link>
-                  <div className="p-5">
-                    <h5 className="text-3xl font-bold mb-2">
-                      {articles[articleIndex].name}
-                    </h5>
-                    <p className="text-lg mb-3 line-clamp-2">
-                      {articles[articleIndex].excerpt}
-                    </p>
-                    <p className="text-gray-500">
-                      {getFirstAuthorName(articles[articleIndex].author)}
-                    </p>
-                  </div>
+              <div
+                key={`other_stories_${articleIndex}`}
+                className="border mb-5 lg:mb-0"
+              >
+                <Link href={`articles/${articles[articleIndex].slug}`}>
+                  <ImageComponent
+                    src={getArticleImageUrl(
+                      articles[articleIndex].images,
+                      'detailsPageBackground'
+                    )}
+                    width={640}
+                    height={427}
+                    alt={articles[articleIndex].name}
+                  />
+                </Link>
+                <div className="p-5">
+                  <h5 className="text-xl lg:text-3xl font-bold mb-2">
+                    {articles[articleIndex].name}
+                  </h5>
+                  <p className="text-md lg:text-lg mb-3 line-clamp-2">
+                    {articles[articleIndex].excerpt}
+                  </p>
+                  <p className="text-gray-500">
+                    {getFirstAuthorName(articles[articleIndex].author)}
+                  </p>
                 </div>
-              </>
+              </div>
             )
           )}
         </div>

@@ -35,10 +35,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function page({ params }: Props) {
-  const article = getArticle(params.slug);
+  const { slug } = params;
+  const article = getArticle(slug);
 
   if (!article) {
     return;
   }
-  return <ArticleView article={article} />;
+  return (
+    <ArticleView
+      article={article}
+      pageUrl={`${process.env.NEXT_PUBLIC_API_URL}/category/${slug}`}
+    />
+  );
 }

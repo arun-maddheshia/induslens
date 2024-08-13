@@ -41,6 +41,7 @@ export default function Carousel({
       {navigationVisibility && (
         <div
           className={cn(
+            'hidden lg:block',
             styles.customCarouselNavigation,
             navigationVariant === 'top'
               ? styles.customCarouselNavigationTop

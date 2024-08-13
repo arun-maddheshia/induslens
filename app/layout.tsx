@@ -1,10 +1,13 @@
 import './globals.css';
+
+import Head from 'next/head';
+import { Toaster } from 'react-hot-toast';
+
+import { cn } from '@/lib/utils';
+
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Inter } from 'next/font/google';
-
-import { cn } from '@/lib/utils';
-import Head from 'next/head';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -51,6 +54,34 @@ export default function RootLayout({
         <Navbar />
         <main className="relative bg-inherit">{children}</main>
         <Footer />
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          gutter={8}
+          containerClassName=""
+          containerStyle={{}}
+          toastOptions={{
+            // Define default options
+            className: '',
+            duration: 2000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+
+            // Default options for specific types
+            success: {
+              style: {
+                background: 'green',
+              },
+            },
+            error: {
+              style: {
+                background: 'red',
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

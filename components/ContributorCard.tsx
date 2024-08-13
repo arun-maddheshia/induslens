@@ -7,6 +7,7 @@ type ContributorCardProps = {
   imageSrc: string;
   countryName?: string;
   className?: string;
+  singleView?: boolean;
 };
 
 export default function ContributorCard({
@@ -14,6 +15,7 @@ export default function ContributorCard({
   countryName,
   imageSrc,
   className,
+  singleView,
 }: ContributorCardProps) {
   return (
     <>
@@ -26,8 +28,15 @@ export default function ContributorCard({
           className="aspect-square"
         />
 
-        <div className="p-5 h-[140px]">
-          <h6 className="text-black mb-2 text-lg leading-6 font-bold">
+        <div className={cn('p-3 lg:p-5 ', !singleView ? 'h-[140px]' : '')}>
+          <h6
+            className={cn(
+              'text-black mb-2 font-bold',
+              !singleView
+                ? 'text-md lg:text-lg leading-5 lg:leading-6'
+                : 'text-lg leading-6'
+            )}
+          >
             {name}
           </h6>
           {countryName && (

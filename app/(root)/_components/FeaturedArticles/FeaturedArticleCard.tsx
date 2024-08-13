@@ -36,9 +36,9 @@ export const postCardTypeConfig: Record<
   lg: {
     imageClassName: 'aspect-[3/2] mb-2',
     titleClassName:
-      'text-black mb-2 leading-6 font-semibold text-2xl font-bold p-3',
+      'text-black mb-2 leading-6 font-semibold text-xl lg:text-2xl font-bold p-3',
     authorClassName:
-      'text-gray-500 font-semibold uppercase lg:absolute bottom-4 lg:left-4 text-sm lg:pl-0 pl-3 mb-3 lg:mb-0',
+      'text-gray-500 font-semibold uppercase lg:absolute bottom-4 lg:left-4 text-xs lg:text-sm lg:pl-0 pl-3 mb-3 lg:mb-0',
     containerClassName: 'border hover:underline pb-4 lg:pb-0',
   },
 };
@@ -88,7 +88,9 @@ const FeaturedArticleCard = ({
             {authorName || normalizeText(article.category)}
           </p>
           {type === 'lg' && article.excerpt && (
-            <p className="text-black text-xl px-3">{article.excerpt}</p>
+            <p className="text-black text-md lg:text-xl px-3">
+              {article.excerpt}
+            </p>
           )}
         </Link>
       </div>

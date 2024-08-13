@@ -1,4 +1,27 @@
+import { Metadata } from 'next';
 import React from 'react';
+
+const pageTitle = 'About us';
+const pageDescription =
+  "At IndusLens, we are dedicated to spotlighting and deciphering this pivotal transition by harnessing voices from around the world. We are not just passive narrators; we are passionate advocates, viewing India's metamorphosis through a global lens. Our goal is to present the international community with a well-rounded and in-depth portrayal of India's rise.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@Indus_Lens',
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+  },
+};
 
 export default function page() {
   return (

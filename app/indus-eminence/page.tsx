@@ -1,9 +1,30 @@
 import { InstagramIcon, LinkedinIcon, TwitterIcon } from '@/components/Icons';
 import ImageComponent from '@/components/ImageComponent';
-import { anchors } from '@/data/anchor';
 import { contentBlockData } from '@/data/content-block';
 
 import { getArticleImageUrl } from '@/lib/utils';
+import { Metadata } from 'next';
+
+const pageTitle = 'Indus Eminence';
+const pageDescription = 'Celebrating Global Achievers of Indian Origin';
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@Indus_Lens',
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+  },
+};
 
 export default async function page() {
   const authors = contentBlockData.filter(

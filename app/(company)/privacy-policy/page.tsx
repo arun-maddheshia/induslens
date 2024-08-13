@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import React from 'react';
 const content = [
   {
@@ -57,6 +58,29 @@ const content = [
       'For any privacy-related concerns, please reach out to us at <a href="mailto:editor@induslens.com">editor@induslens.com</a>.',
   },
 ];
+
+const pageTitle = 'Privacy Policy';
+const pageDescription =
+  'Welcome to induslens.com. We are committed to respecting your online privacy.';
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@Indus_Lens',
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+  },
+};
+
 export default function page() {
   return (
     <section className="tv-container mx-auto py-20">
@@ -64,7 +88,7 @@ export default function page() {
       <p>Last Updated: 18/10/2023</p>
       {content.map((text, index) => {
         return (
-          <div className="mb-5" key={`content_${index}`}>
+          <div className="mb-5" key={`content_pp_${index}`}>
             <h5 className="font-bold text-lg">
               {index + 1}. {text.heading}
             </h5>

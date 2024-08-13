@@ -10,6 +10,30 @@ import FeaturedContributor from './_components/Contributors';
 import FeaturedEminence from './_components/Eminence';
 import FeaturedArticles from './_components/FeaturedArticles';
 import { PageTitle } from './_components/FeaturedArticles/PageTitle';
+import { Metadata } from 'next';
+
+const pageTitle =
+  "IndusLens | Chronicling cutting-edge global perspectives on India's success stories";
+const pageDescription =
+  "Explore India's vibrant journey to 2050 as a global economic powerhouse, guided by insightful global perspectives on its innovative entrepreneurship, tech revolution, pivotal policies and its dazzling soft power.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@Indus_Lens',
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+  },
+};
 
 export default function Home() {
   const articleCategories: ArticleCategory[] = categories;
@@ -26,7 +50,7 @@ export default function Home() {
           {videoNews
             .filter((video) => video.category === 'industv')
             .map((video) => (
-              <div key={video._id}>
+              <div key={`video_page_${video._id}`}>
                 <Link href={`/industv/${video.slug}`}>
                   <ImageComponent
                     src={getArticleImageUrl(
@@ -58,7 +82,7 @@ export default function Home() {
       </section>
 
       {articleCategories.map((category) => (
-        <section key={category.id} className="py-0 pb-20">
+        <section key={`article_category_${category.id}`} className="py-0 pb-20">
           <PageTitle title={category.name} href={`category/${category.slug}`} />
           <p className="text-lg mb-5">{truncate(category.description, 300)}</p>
           <Carousel
@@ -89,8 +113,7 @@ export default function Home() {
                     {articleItem.name}
                   </h6>
                   <p className="text-sm mb-2 text-gray-500">
-                    {/* @ts-ignore */}
-                    {articleItem.author.map((author) => author.name)}
+                    {getFirstAuthorName(articleItem.author)}
                   </p>
                 </div>
               ))}

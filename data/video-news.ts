@@ -513,7 +513,7 @@ export const videoNews: VideoArticle[] = [
     languageCode: 'languageCode',
     metaDescription:
       "Delve into India's cultural kaleidoscope! Join Vic Gaffney, an Australian legal expert, as he unravels the tapestry of India's diverse communities, languages, and cultures, seamlessly united as one. Discover the invaluable lessons on diversity and inclusion that India offers to the world. Join the conversation now!",
-    metaTitle: 'wKZZiMIYosk',
+    metaTitle: "India's Triumph of Diversity",
     name: "India's Triumph of Diversity",
     notes: '',
     originalLanguage: [],

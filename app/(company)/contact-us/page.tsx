@@ -1,4 +1,26 @@
 import { EmailIcon } from '@/components/Icons/EmailIcon';
+import { Metadata } from 'next';
+
+const pageTitle = 'About us';
+const pageDescription = '';
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@Indus_Lens',
+    title: pageTitle,
+    description: pageDescription,
+    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+  },
+};
 
 export default function page() {
   return (

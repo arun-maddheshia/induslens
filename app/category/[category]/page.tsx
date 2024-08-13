@@ -2,12 +2,37 @@ import ImageComponent from '@/components/ImageComponent';
 import { articles } from '@/data/articles';
 import { categories } from '@/data/categories';
 import { getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
+import { Metadata } from 'next';
 
 import Link from 'next/link';
 
 type Props = {
   params: { category: string };
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const articleCategory = categories.filter(
+    (category) => category.slug === params.category
+  )[0];
+
+  return {
+    title: articleCategory?.name,
+    description: articleCategory?.description,
+    openGraph: {
+      title: articleCategory?.name,
+      description: articleCategory?.description,
+      images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@Indus_Lens',
+      title: articleCategory?.name,
+      description: articleCategory?.description,
+      images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+    },
+  };
+}
 
 export default async function page({ params }: Props) {
   const articleCategory = categories.filter(

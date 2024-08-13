@@ -6,28 +6,23 @@ import ArticleHead from './ArticleHead';
 import AuthorBio from './AuthorBio';
 import SocialShare from './SocialShare';
 import { anchors } from '@/data/anchor';
-import { articles } from '@/data/articles';
 
 type Props = {
-  params: { slug: string };
+  article: Article;
 };
 
-export default async function ArticleView({ params }: Props) {
-  const article = articles.find((article) => article.slug === params.slug);
+export default function ArticleView({ article }: Props) {
   let author: any;
+
   if (article) {
     const authors = article.author.map((allAuthors) => allAuthors);
 
     if (authors && authors.length) {
-      author = anchors.find(
+      const author = anchors.find(
         // @ts-ignore
         (anchor) => anchor._id === authors[0].id
       );
     }
-  }
-
-  if (!article) {
-    return <div>Article not found</div>;
   }
 
   return (

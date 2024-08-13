@@ -1,0 +1,65 @@
+.customCarousel {
+  position: relative;
+
+  &Item {
+    height: auto;
+  }
+
+  &Navigation {
+    --navigation-bg: #000000da;
+    --navigation-hover-bg: #000;
+    --navigation-radius: 100%;
+    --navigation-width: 40px;
+    --navigation-distance: -20px;
+
+    color: #fff;
+
+    position: absolute;
+    z-index: 2;
+    top: 38%;
+    width: 100%;
+
+    &Left,
+    &Right {
+      cursor: pointer;
+
+      position: absolute;
+      width: var(--navigation-width);
+      height: var(--navigation-width);
+
+      background-color: var(--navigation-bg);
+      border-radius: var(--navigation-radius);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      transition: background-color 200ms ease-in-out;
+
+      &:hover {
+        background-color: var(--navigation-hover-bg);
+      }
+    }
+
+    &Left {
+      left: var(--navigation-distance);
+    }
+
+    &Right {
+      right: var(--navigation-distance);
+    }
+
+    &Top {
+      --navigation-bg: #fff;
+      --navigation-hover-bg: #fff;
+      --navigation-radius: 0;
+      --navigation-width: 20px;
+      --navigation-distance: 0;
+
+      position: absolute;
+      top: -40px;
+      right: 0;
+      width: 50px;
+    }
+  }
+}

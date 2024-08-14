@@ -28,7 +28,10 @@ export const Footer = () => {
                   </h5>
                   {footerLink.urls.map((url) => (
                     <li key={url.name}>
-                      <Link className="text-neutral-400 text-sm" href={url.url}>
+                      <Link
+                        className="text-neutral-400 text-sm"
+                        href={`/${url.url}`}
+                      >
                         {url.name}
                       </Link>
                     </li>

@@ -77,7 +77,7 @@ export const metadata: Metadata = {
 
 export default function page() {
   return (
-    <section className="tv-container mx-auto py-20">
+    <section className="tv-container mx-auto py-20  px-4 lg:px-0">
       <h1 className="text-center font-bold text-3xl mb-5">Terms of Use</h1>
       <p>Last Updated: 18/10/2023</p>
       {content.map((text, index) => {

@@ -58,7 +58,7 @@ export default async function page({ params, searchParams }: Props) {
 
   return (
     <section className="py-10 my-5 container mx-auto px-5 lg:px-0">
-      <div className="mx-auto lg:max-w-[60%]">
+      <div className="mx-auto lg:max-w-[80%]">
         <h1 className="font-bold text-center text-4xl mb-4">
           {articleCategory ? articleCategory.name : ''}
         </h1>
@@ -78,7 +78,7 @@ export default async function page({ params, searchParams }: Props) {
                 alt={article.name}
                 width={810}
                 height={540}
-                className="mb-2 aspect-auto"
+                className="mb-2 aspect-[11/7] object-cover"
               />
             </Link>
             <div className="p-5">

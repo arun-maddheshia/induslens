@@ -1,5 +1,6 @@
 import { InstagramIcon, LinkedinIcon, TwitterIcon } from '@/components/Icons';
 import ImageComponent from '@/components/ImageComponent';
+import ReadMore from '@/components/UI/ReadMore';
 import { contentBlockData } from '@/data/content-block';
 
 import { getArticleImageUrl } from '@/lib/utils';
@@ -99,7 +100,11 @@ export default async function page({ searchParams }: Props) {
               </div>
             </div>
             <div>
-              <p className="text-md line-clamp-3">{author.excerpt}</p>
+              <ReadMore
+                className="text-md"
+                text={author.excerpt}
+                maxLength={300}
+              />
             </div>
           </div>
         );

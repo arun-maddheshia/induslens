@@ -11,6 +11,7 @@ import FeaturedEminence from './_components/Eminence';
 import FeaturedArticles from './_components/FeaturedArticles';
 import { PageTitle } from './_components/FeaturedArticles/PageTitle';
 import { Metadata } from 'next';
+import ReadMore from '@/components/UI/ReadMore';
 
 const pageTitle =
   "IndusLens | Chronicling cutting-edge global perspectives on India's success stories";
@@ -90,7 +91,13 @@ export default function Home() {
           className="py-0 pb-7 lg:pb-20"
         >
           <PageTitle title={category.name} href={`category/${category.slug}`} />
-          <p className="text-lg mb-5 line-clamp-2">{category.description}</p>
+
+          <ReadMore
+            className="text-lg mb-5"
+            text={category.description}
+            maxLength={300}
+            href={`category/${category.slug}`}
+          />
           <Carousel
             slidesPerView={4}
             gridRows={1}
@@ -114,11 +121,16 @@ export default function Home() {
                       alt={articleItem.name}
                       width={810}
                       height={540}
-                      className="mb-2 aspect-auto"
+                      className="mb-2 object-cover aspect-[2/1.5]"
                     />
                   </Link>
                   <h6 className="text-black mb-2 text-lg leading-6 font-bold">
-                    {articleItem.name}
+                    <Link
+                      href={`category/${category.slug}?name=${articleItem.slug}`}
+                      className="hover:underline"
+                    >
+                      {articleItem.name}
+                    </Link>
                   </h6>
                   <p className="text-sm mb-2 text-gray-500">
                     {getFirstAuthorName(articleItem.author)}

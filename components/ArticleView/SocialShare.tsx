@@ -7,16 +7,16 @@ import {
   CopyLinkIcon,
 } from '@/components/Icons';
 import Tooltip from '@/components/UI/Tooltip';
+import { getFormattedDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
 type SocialShare = {
   shareUrl: string;
   title: string;
-  description: string;
-  shareImage: string;
+  publishedDate: string;
 };
 
-const SocialShare = ({ shareUrl, title }: SocialShare) => {
+const SocialShare = ({ shareUrl, title, publishedDate }: SocialShare) => {
   const encodedTitle = encodeURIComponent(title);
   const encodedUrl = encodeURIComponent(shareUrl);
 
@@ -33,7 +33,7 @@ const SocialShare = ({ shareUrl, title }: SocialShare) => {
 
   return (
     <div className="flex justify-between border-slate-300 border-t border-b py-4 mb-4">
-      <div>22 June 2024</div>
+      <div>{getFormattedDate(publishedDate)}</div>
       <div className="flex space-x-5">
         <Tooltip text="Share on Facebook">
           <a href={facebookShareUrl} target="_blank">

@@ -2,7 +2,7 @@ import ImageComponent from '@/components/ImageComponent';
 import ReadMore from '@/components/UI/ReadMore';
 import { articles } from '@/data/articles';
 import { categories } from '@/data/categories';
-import { getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
+import { cn, getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
 import { Metadata } from 'next';
 
 import Link from 'next/link';
@@ -42,11 +42,13 @@ export default async function page({ params, searchParams }: Props) {
     (category) => category.slug === params.category
   )[0];
 
-  const gridColumnClass =
+  const isSingleGridView =
     articleCategory.id === 'IndusLens_OSINT' ||
-    articleCategory.id === 'Worldview_India'
-      ? 'lg:max-w-[60%] mx-auto'
-      : 'lg:grid lg:grid-cols-2 gap-5 lg:max-w-[90%] mx-auto';
+    articleCategory.id === 'Worldview_India';
+
+  const gridColumnClass = isSingleGridView
+    ? 'lg:max-w-[60%] mx-auto'
+    : 'lg:grid lg:grid-cols-2 gap-5 lg:max-w-[90%] mx-auto';
 
   const articleList = articles.filter(
     (article) => article.category === articleCategory.id
@@ -65,7 +67,11 @@ export default async function page({ params, searchParams }: Props) {
 
   return (
     <section className="py-10 my-5 container mx-auto px-5 lg:px-0">
-      <div className="mx-auto lg:max-w-[80%]">
+      <div
+        className={cn(
+          isSingleGridView ? 'mx-auto lg:max-w-[50%]' : 'mx-auto lg:max-w-[80%]'
+        )}
+      >
         <h1 className="font-bold text-center text-4xl mb-4">
           {articleCategory ? articleCategory.name : ''}
         </h1>

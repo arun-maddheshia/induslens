@@ -35,7 +35,7 @@ export default function ArticleView({ article, pageUrl }: Props) {
 
   return (
     <>
-      <section className="mx-auto article-container py-10 lg:py-20 px-5 lg:px-0">
+      <section className="mx-auto article-container py-10 lg:py-20 lg:pb-10 px-5 lg:px-0">
         <ArticleHead
           title={article.name}
           excerpt={
@@ -51,11 +51,7 @@ export default function ArticleView({ article, pageUrl }: Props) {
         <SocialShare
           shareUrl={pageUrl}
           title={article.name}
-          description={article.metaDescription}
-          shareImage={getArticleImageUrl(
-            article.images,
-            'detailsPageBackground'
-          )}
+          publishedDate={article.updatedAt}
         />
 
         <ImageComponent

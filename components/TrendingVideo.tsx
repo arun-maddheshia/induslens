@@ -16,7 +16,7 @@ export default function TrendingVideo() {
           className="mb-2"
         />
       </Link>
-      <h6 className="text-black mb-2 text-md lg:text-xl leading-6 font-bold">
+      <h6 className="text-black mb-2 text-md leading-6 font-bold">
         <Link className="hover:underline" href={`/videos/${video.slug}`}>
           {video.name}
         </Link>
@@ -25,7 +25,7 @@ export default function TrendingVideo() {
   ));
 
   return (
-    <section className="py-20 pb-0">
+    <section className="py-20 pb-10">
       <h2 className="font-bold text-3xl text-black mb-5">Trending Videos</h2>
       <Carousel
         items={allPost}

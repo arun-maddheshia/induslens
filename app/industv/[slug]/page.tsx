@@ -3,6 +3,7 @@ import VideoPlayer from '@/components/VideoPlayer';
 import { videoNews } from '@/data/video-news';
 import { getArticleImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 type Props = {
   params: { slug: string };
@@ -42,6 +43,10 @@ const page = ({ params }: Props) => {
   const { slug } = params;
   const activeVideo = getActiveVideo(slug);
 
+  if (!activeVideo) {
+    notFound();
+  }
+
   return (
     <section className="py-0 lg:py-10 pb-10 md:pb-0 my-2 px-2 tv-container mx-auto">
       <VideoPlayer videoId={activeVideo.contentId} className="" />
@@ -50,12 +55,8 @@ const page = ({ params }: Props) => {
         <h1 className="font-bold text-3xl py-10">{activeVideo.name}</h1>
         <SocialShare
           title={activeVideo.metaTitle}
-          description={activeVideo.metaDescription}
-          shareImage={getArticleImageUrl(
-            activeVideo.images,
-            'detailsPageBackground'
-          )}
           shareUrl={`${process.env.NEXT_PUBLIC_API_URL}/industv/${slug}`}
+          publishedDate={activeVideo.updatedAt}
         />
         <p className="text-xl pt-5">{activeVideo.synopsis}</p>
       </div>

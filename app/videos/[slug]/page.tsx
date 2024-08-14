@@ -2,6 +2,7 @@ import VideoPlayer from '@/components/VideoPlayer';
 import { videoNews } from '@/data/video-news';
 import { getArticleImageUrl, getFormattedDate } from '@/lib/utils';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 type Props = {
   params: { slug: string };
@@ -39,6 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const page = ({ params }: Props) => {
   const activeVideo = getActiveVideo(params.slug);
+
+  if (!activeVideo) {
+    notFound();
+  }
 
   return (
     <section className="py-10 my-5 video-container mx-auto">

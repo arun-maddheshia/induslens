@@ -2,6 +2,7 @@ import ArticleView from '@/components/ArticleView';
 import { articles } from '@/data/articles';
 import { getArticleImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 type Props = {
   params: { slug: string };
@@ -46,7 +47,7 @@ export default function page({ params }: Props) {
   const article = getArticle(slug);
 
   if (!article) {
-    return;
+    notFound();
   }
 
   return (

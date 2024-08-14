@@ -6,6 +6,7 @@ import { cn, getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
 import { Metadata } from 'next';
 
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 type Props = {
   params: { category: string };
@@ -41,6 +42,10 @@ export default async function page({ params, searchParams }: Props) {
   const articleCategory = categories.filter(
     (category) => category.slug === params.category
   )[0];
+
+  if (!articleCategory) {
+    notFound();
+  }
 
   const isSingleGridView =
     articleCategory.id === 'IndusLens_OSINT' ||

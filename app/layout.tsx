@@ -2,12 +2,13 @@ import './globals.css';
 
 import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
-
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { cn } from '@/lib/utils';
 
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Inter } from 'next/font/google';
+import StickyFollowTwitter from '@/components/StickyFollowTwitter';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -45,6 +46,7 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="theme-color" content="#ffffff"></meta>
       </Head>
+      <GoogleAnalytics gaId="G-F0MR28LK7H" />
       <body
         className={cn(
           'bg-white text-black min-h-screen font-sans antialiased',
@@ -53,6 +55,7 @@ export default function RootLayout({
       >
         <Navbar />
         <main className="relative bg-inherit">{children}</main>
+        <StickyFollowTwitter />
         <Footer />
         <Toaster
           position="top-center"

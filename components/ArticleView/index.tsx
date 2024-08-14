@@ -1,3 +1,4 @@
+'use client';
 import TrendingVideo from '@/components/TrendingVideo';
 import { getArticleImageUrl } from '@/lib/utils';
 import ImageComponent from '../ImageComponent';
@@ -6,6 +7,7 @@ import ArticleHead from './ArticleHead';
 import AuthorBio from './AuthorBio';
 import SocialShare from './SocialShare';
 import { anchors } from '@/data/anchor';
+import { useRef } from 'react';
 
 type Props = {
   article: Article;
@@ -13,6 +15,7 @@ type Props = {
 };
 
 export default function ArticleView({ article, pageUrl }: Props) {
+  const authorBioRef = useRef<HTMLDivElement>(null);
   let author: any;
 
   if (article) {
@@ -26,6 +29,10 @@ export default function ArticleView({ article, pageUrl }: Props) {
     }
   }
 
+  const scrollToAuthorBio = () => {
+    authorBioRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
       <section className="mx-auto article-container py-10 lg:py-20 px-5 lg:px-0">
@@ -33,6 +40,7 @@ export default function ArticleView({ article, pageUrl }: Props) {
           title={article.name}
           excerpt={article.excerpt}
           authorName={author?.name}
+          onAuthorClick={scrollToAuthorBio}
         />
 
         <SocialShare
@@ -55,7 +63,9 @@ export default function ArticleView({ article, pageUrl }: Props) {
           className="text-lg font-medium"
           dangerouslySetInnerHTML={{ __html: article.pageContent || '' }}
         />
-        {author && <AuthorBio author={author} />}
+        <div ref={authorBioRef} className="py-5">
+          {author && <AuthorBio author={author} />}
+        </div>
         <ArticleDeepDive
           htmlContent={article.diveContent ? article.diveContent : ''}
         />

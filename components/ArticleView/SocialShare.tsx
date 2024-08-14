@@ -26,7 +26,7 @@ const SocialShare = ({ shareUrl, title }: SocialShare) => {
 
   const handleCopyToClipboard = async () => {
     if ('clipboard' in navigator) {
-      await navigator.clipboard.writeText(encodedUrl);
+      await navigator.clipboard.writeText(shareUrl);
       toast.success('Share URL copied successfully!');
     }
   };

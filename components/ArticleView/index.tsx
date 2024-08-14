@@ -38,7 +38,12 @@ export default function ArticleView({ article, pageUrl }: Props) {
       <section className="mx-auto article-container py-10 lg:py-20 px-5 lg:px-0">
         <ArticleHead
           title={article.name}
-          excerpt={article.excerpt}
+          excerpt={
+            article.category === 'IndusLens_OSINT' ||
+            article.category === 'Worldview_India'
+              ? ''
+              : article.excerpt
+          }
           authorName={author?.name}
           onAuthorClick={scrollToAuthorBio}
         />

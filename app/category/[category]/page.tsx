@@ -1,4 +1,5 @@
 import ImageComponent from '@/components/ImageComponent';
+import ReadMore from '@/components/UI/ReadMore';
 import { articles } from '@/data/articles';
 import { categories } from '@/data/categories';
 import { getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
@@ -41,6 +42,12 @@ export default async function page({ params, searchParams }: Props) {
     (category) => category.slug === params.category
   )[0];
 
+  const gridColumnClass =
+    articleCategory.id === 'IndusLens_OSINT' ||
+    articleCategory.id === 'Worldview_India'
+      ? 'lg:max-w-[60%] mx-auto'
+      : 'lg:grid lg:grid-cols-2 gap-5 lg:max-w-[90%] mx-auto';
+
   const articleList = articles.filter(
     (article) => article.category === articleCategory.id
   );
@@ -66,9 +73,9 @@ export default async function page({ params, searchParams }: Props) {
           {articleCategory ? articleCategory.description : ''}
         </p>
       </div>
-      <div className="lg:grid lg:grid-cols-2 gap-5 lg:max-w-[90%] mx-auto">
+      <div className={gridColumnClass}>
         {articleList.map((article: Article) => (
-          <div key={article._id} className="border mb-5 lg:mb-0">
+          <div key={article._id} className="border mb-5">
             <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
               <ImageComponent
                 src={getArticleImageUrl(
@@ -90,8 +97,13 @@ export default async function page({ params, searchParams }: Props) {
                   {article.name}
                 </Link>
               </h6>
-              <p className=" mb-4">{article.excerpt}</p>
-              <p className="text-sm mb-2 text-gray-500">
+              <ReadMore
+                text={article.excerpt}
+                maxLength={300}
+                className="mb-4"
+                href={`/category/${articleCategory.slug}/${article.slug}`}
+              ></ReadMore>
+              <p className="text-md mt-2 text-gray-500">
                 {getFirstAuthorName(article.author)}
               </p>
             </div>

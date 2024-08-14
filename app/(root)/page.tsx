@@ -63,7 +63,6 @@ export default function Home() {
                     className="mb-2"
                   />
                   <span className="absolute right-1 bottom-1 rounded bg-black text-white text-xs px-2 leading-6 inline-block font-bold">
-                    {' '}
                     {video.duration}
                   </span>
                 </Link>
@@ -152,10 +151,20 @@ export default function Home() {
                 </Link>
                 <div className="p-5">
                   <h5 className="text-xl lg:text-3xl font-bold mb-2">
-                    {articles[articleIndex].name}
+                    <Link
+                      href={`articles/${articles[articleIndex].slug}`}
+                      className="hover:underline"
+                    >
+                      {articles[articleIndex].name}
+                    </Link>
                   </h5>
                   <p className="text-md lg:text-lg mb-3 line-clamp-2">
-                    {articles[articleIndex].excerpt}
+                    <Link
+                      href={`articles/${articles[articleIndex].slug}`}
+                      className="hover:underline"
+                    >
+                      {articles[articleIndex].excerpt}
+                    </Link>
                   </p>
                   <p className="text-gray-500">
                     {getFirstAuthorName(articles[articleIndex].author)}

@@ -14,7 +14,7 @@ const ArticleHead: React.FC<ArticleHeadProps> = ({
   <div>
     <h1 className="font-bold text-4xl mb-2">{title}</h1>
     <p className="text-xl pb-7">{excerpt}</p>
-    {authorName && <p className="font-bold text-xl pb-7">{authorName}</p>}
+    {authorName && <p className="font-bold text-md pb-7">{authorName}</p>}
   </div>
 );
 

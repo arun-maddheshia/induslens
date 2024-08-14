@@ -6,4 +6,5 @@ export * from './YoutubeIcon';
 export * from './InstagramIcon';
 export * from './TwitterIcon';
 export * from './LinkedinIcon';
+export * from './WebIcon';
 export * from './CloseIcon';

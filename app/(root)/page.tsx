@@ -12,6 +12,7 @@ import FeaturedArticles from './_components/FeaturedArticles';
 import { PageTitle } from './_components/FeaturedArticles/PageTitle';
 import { Metadata } from 'next';
 import ReadMore from '@/components/UI/ReadMore';
+import { OtherArticlesSection } from './_components/OtherArticles';
 
 const pageTitle =
   "IndusLens | Chronicling cutting-edge global perspectives on India's success stories";
@@ -141,52 +142,7 @@ export default function Home() {
         </section>
       ))}
 
-      <section className="py-0 pb-20">
-        <PageTitle title="Other Stories" />
-        <div className="lg:grid lg:grid-cols-2 gap-5">
-          {[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26].map(
-            (articleIndex) => (
-              <div
-                key={`other_stories_${articleIndex}`}
-                className="border mb-5 lg:mb-0"
-              >
-                <Link href={`articles/${articles[articleIndex].slug}`}>
-                  <ImageComponent
-                    src={getArticleImageUrl(
-                      articles[articleIndex].images,
-                      'detailsPageBackground'
-                    )}
-                    width={640}
-                    height={427}
-                    alt={articles[articleIndex].name}
-                  />
-                </Link>
-                <div className="p-5">
-                  <h5 className="text-xl lg:text-3xl font-bold mb-2">
-                    <Link
-                      href={`articles/${articles[articleIndex].slug}`}
-                      className="hover:underline"
-                    >
-                      {articles[articleIndex].name}
-                    </Link>
-                  </h5>
-                  <p className="text-md lg:text-lg mb-3 line-clamp-2">
-                    <Link
-                      href={`articles/${articles[articleIndex].slug}`}
-                      className="hover:underline"
-                    >
-                      {articles[articleIndex].excerpt}
-                    </Link>
-                  </p>
-                  <p className="text-gray-500">
-                    {getFirstAuthorName(articles[articleIndex].author)}
-                  </p>
-                </div>
-              </div>
-            )
-          )}
-        </div>
-      </section>
+      <OtherArticlesSection articles={articles} />
     </div>
   );
 }

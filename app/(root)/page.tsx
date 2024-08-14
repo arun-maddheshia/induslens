@@ -51,7 +51,7 @@ export default function Home() {
             .filter((video) => video.category === 'industv')
             .map((video) => (
               <div key={`video_page_${video._id}`} className="mb-5 lg:mb-0">
-                <Link href={`/industv/${video.slug}`}>
+                <Link href={`/industv/${video.slug}`} className="relative">
                   <ImageComponent
                     src={getArticleImageUrl(
                       video.images,
@@ -62,6 +62,10 @@ export default function Home() {
                     height={427}
                     className="mb-2"
                   />
+                  <span className="absolute right-1 bottom-1 rounded bg-black text-white text-xs px-2 leading-6 inline-block font-bold">
+                    {' '}
+                    {video.duration}
+                  </span>
                 </Link>
                 <h6 className="text-black mb-2 text-lg leading-6 font-bold hover:underline">
                   <Link href={`/industv/${video.slug}`}>{video.name}</Link>

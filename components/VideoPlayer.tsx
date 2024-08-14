@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 interface VideoPlayerProps {
   videoId: string;
   className: string;
+  autoplay?: boolean;
 }
 
 const initialOptions = {
@@ -23,7 +24,11 @@ const initialOptions = {
   },
 };
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId, className }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  videoId,
+  className,
+  autoplay,
+}) => {
   const videoNode = useRef<HTMLVideoElement>(null);
   const player = useRef<Player>(null);
   const initialized = useRef<boolean>(false);
@@ -54,7 +59,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId, className }) => {
     };
   }, []);
 
-  return <video ref={videoNode} className={cn('video-js', className)} />;
+  return (
+    <video
+      ref={videoNode}
+      autoPlay={autoplay}
+      className={cn('video-js', className)}
+    />
+  );
 };
 
 export default VideoPlayer;

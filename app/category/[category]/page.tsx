@@ -57,14 +57,16 @@ export default async function page({ params, searchParams }: Props) {
   }
 
   return (
-    <section className="py-10 my-5 container mx-auto  px-5 lg:px-0">
-      <h1 className="font-bold text-center text-4xl mb-4">
-        {articleCategory ? articleCategory.name : ''}
-      </h1>
-      <p className="text-md text-center mb-10">
-        {articleCategory ? articleCategory.description : ''}
-      </p>
-      <div className="lg:grid lg:grid-cols-2 gap-10">
+    <section className="py-10 my-5 container mx-auto px-5 lg:px-0">
+      <div className="mx-auto lg:max-w-[60%]">
+        <h1 className="font-bold text-center text-4xl mb-4">
+          {articleCategory ? articleCategory.name : ''}
+        </h1>
+        <p className="text-md text-center mb-10">
+          {articleCategory ? articleCategory.description : ''}
+        </p>
+      </div>
+      <div className="lg:grid lg:grid-cols-2 gap-5 lg:max-w-[90%] mx-auto">
         {articleList.map((article: Article) => (
           <div key={article._id} className="border mb-5 lg:mb-0">
             <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
@@ -80,8 +82,13 @@ export default async function page({ params, searchParams }: Props) {
               />
             </Link>
             <div className="p-5">
-              <h6 className="text-black text-3xl leading-8 font-bold mb-4">
-                {article.name}
+              <h6 className="text-black text-2xl md:text-3xl leading-8 font-bold mb-4">
+                <Link
+                  href={`/category/${articleCategory.slug}/${article.slug}`}
+                  className="hover:underline"
+                >
+                  {article.name}
+                </Link>
               </h6>
               <p className=" mb-4">{article.excerpt}</p>
               <p className="text-sm mb-2 text-gray-500">

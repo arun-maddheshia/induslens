@@ -3,6 +3,7 @@ import React from 'react';
 import ArticleView from '@/components/ArticleView';
 import { articles } from '@/data/articles';
 import { Metadata } from 'next';
+import { getArticleImageUrl } from '@/lib/utils';
 
 type Props = {
   params: { slug: string };
@@ -15,13 +16,21 @@ function getArticle(slug: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle(params.slug);
 
+  const socialImage =
+    article && article.images
+      ? `${process.env.NEXT_PUBLIC_API_URL}/${getArticleImageUrl(
+          article?.images,
+          'detailsPageBackground'
+        )}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/social.png`;
+
   return {
     title: article?.metaTitle,
     description: article?.metaDescription,
     openGraph: {
       title: article?.metaTitle,
       description: article?.metaDescription,
-      images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+      images: socialImage,
       type: 'website',
     },
     twitter: {
@@ -29,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       site: '@Indus_Lens',
       title: article?.metaTitle,
       description: article?.metaDescription,
-      images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+      images: socialImage,
     },
   };
 }
@@ -44,7 +53,7 @@ export default async function page({ params }: Props) {
   return (
     <ArticleView
       article={article}
-      pageUrl={`${process.env.NEXT_PUBLIC_API_URL}/category/${slug}`}
+      pageUrl={`${process.env.NEXT_PUBLIC_API_URL}/category/${article.category}/${slug}`}
     />
   );
 }

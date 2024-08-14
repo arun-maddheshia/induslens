@@ -47,6 +47,7 @@ const page = ({ params }: Props) => {
           <VideoPlayer
             videoId={activeVideo.contentId}
             className="videoPlayer"
+            autoplay={true}
           />
         </div>
         <div>

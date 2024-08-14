@@ -16,15 +16,17 @@ type SocialShare = {
   shareImage: string;
 };
 
-const SocialShare = ({
-  shareUrl,
-  title,
-  description,
-  shareImage,
-}: SocialShare) => {
+const SocialShare = ({ shareUrl, title }: SocialShare) => {
+  const encodedTitle = encodeURIComponent(title);
+  const encodedUrl = encodeURIComponent(shareUrl);
+
+  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+  const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+
   const handleCopyToClipboard = async () => {
     if ('clipboard' in navigator) {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(encodedUrl);
       toast.success('Share URL copied successfully!');
     }
   };
@@ -34,23 +36,17 @@ const SocialShare = ({
       <div>22 June 2024</div>
       <div className="flex space-x-5">
         <Tooltip text="Share on Facebook">
-          <a href="#" target="_blank">
+          <a href={facebookShareUrl} target="_blank">
             <FacebookIcon width={20} height={20} fill="#000" />
           </a>
         </Tooltip>
         <Tooltip text="Share on Twitter">
-          <a
-            href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${description}`}
-            target="_blank"
-          >
+          <a href={twitterShareUrl} target="_blank">
             <TwitterIcon width={20} height={20} fill="#000" />
           </a>
         </Tooltip>
         <Tooltip text="Share on Linkedin">
-          <a
-            href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${title}&summary=${description}&source=${shareImage}`}
-            target="_blank"
-          >
+          <a href={linkedinShareUrl} target="_blank">
             <LinkedinIcon width={20} height={20} fill="#000" />
           </a>
         </Tooltip>

@@ -14,15 +14,21 @@ function getArticle(slug: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle(params.slug);
 
+  const socialImage =
+    article && article.images
+      ? `${process.env.NEXT_PUBLIC_API_URL}/${getArticleImageUrl(
+          article?.images,
+          'detailsPageBackground'
+        )}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/social.png`;
+
   return {
     title: article?.metaTitle,
     description: article?.metaDescription,
     openGraph: {
       title: article?.metaTitle,
       description: article?.metaDescription,
-      images: article?.images
-        ? getArticleImageUrl(article?.images, 'detailsPageBackground')
-        : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+      images: socialImage,
       type: 'website',
     },
     twitter: {
@@ -30,9 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       site: '@Indus_Lens',
       title: article?.metaTitle,
       description: article?.metaDescription,
-      images: article?.images
-        ? getArticleImageUrl(article?.images, 'detailsPageBackground')
-        : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
+      images: socialImage,
     },
   };
 }

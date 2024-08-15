@@ -1,5 +1,4 @@
 import { type ClassValue, clsx } from 'clsx';
-import image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 /*
@@ -18,7 +17,7 @@ export function truncate(text: string, truncateLength: number) {
 export function getArticleImageUrl(
   images: PostImage[],
   type: string,
-  defaultImageUrl: string = '/path/to/default/image.jpg'
+  defaultImageUrl: string = ''
 ): string {
   if (images && images.length > 0) {
     const matchedImage = images.find(

@@ -3,7 +3,7 @@ import ImageComponent from '@/components/ImageComponent';
 import ReadMore from '@/components/UI/ReadMore';
 import { contentBlockData } from '@/data/content-block';
 
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
 
 const pageTitle = 'Indus Eminence';
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 export default async function page({ searchParams }: Props) {
   const { authorName } = searchParams;
   const authors = contentBlockData.filter(
-    (article) => article.category === 'Indus_Eminence'
+    (article) => article.category === 'Indus_Eminence',
   );
 
   if (authorName && authors.length) {
@@ -51,31 +51,31 @@ export default async function page({ searchParams }: Props) {
   }
 
   return (
-    <section className="article-container px-4 md:px-0 py-10 mx-auto">
-      <h1 className="font-bold text-4xl text-center mb-4">Indus Eminence</h1>
-      <p className="text-xl text-center mb-10">
+    <section className="article-container mx-auto px-4 py-10 md:px-0">
+      <h1 className="mb-4 text-center text-4xl font-bold">Indus Eminence</h1>
+      <p className="mb-10 text-center text-xl">
         Celebrating Global Achievers of Indian Origin
       </p>
       {authors.map((author: Eminence) => {
         return (
-          <div key={author._id} className="border p-4 md:p-10 mb-7">
-            <div className="md:flex md:items-center mb-5">
+          <div key={author._id} className="mb-7 border p-4 md:p-10">
+            <div className="mb-5 md:flex md:items-center">
               <div className="md:basis-[20%]">
                 <ImageComponent
-                  src={getArticleImageUrl(
+                  src={getImageUrl(
                     author.images,
-                    'mobileDetailsPageBackground'
+                    'mobileDetailsPageBackground',
                   )}
                   width={120}
                   height={120}
                   alt={author.name}
-                  className="rounded-full mb-5 md:mb-0"
+                  className="mb-5 rounded-full md:mb-0"
                 />
               </div>
-              <div className="px-0 md:px-5 md:basis-[55%]">
-                <h5 className="font-bold text-2xl">{author.name}</h5>
-                <p className="text-neutral-500 text-sm mb-4">{author.slug}</p>
-                <div className="flex gap-3 mb-4 md:mb-0">
+              <div className="px-0 md:basis-[55%] md:px-5">
+                <h5 className="text-2xl font-bold">{author.name}</h5>
+                <p className="mb-4 text-sm text-neutral-500">{author.slug}</p>
+                <div className="mb-4 flex gap-3 md:mb-0">
                   {author.linkedinUrl && (
                     <a href={author.linkedinUrl}>
                       <LinkedinIcon width={20} height={20} />
@@ -93,8 +93,8 @@ export default async function page({ searchParams }: Props) {
                   )}
                 </div>
               </div>
-              <div className="md:basis-[25%] text-left md:text-right">
-                <span className="bg-gray-100 border inline-block text-sm text-gray-500 px-3 py-2">
+              <div className="text-left md:basis-[25%] md:text-right">
+                <span className="inline-block border bg-gray-100 px-3 py-2 text-sm text-gray-500">
                   {author.countryName}
                 </span>
               </div>

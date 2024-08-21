@@ -1,6 +1,6 @@
 import Carousel from '@/components//UI/Carousel';
 import { videoNews } from '@/data/video-news';
-import { cn, getArticleImageUrl } from '@/lib/utils';
+import { cn, getImageUrl } from '@/lib/utils';
 import ImageComponent from '../../ImageComponent';
 import Link from 'next/link';
 import styles from './TrendingVideo.module.scss';
@@ -10,14 +10,14 @@ export default function TrendingVideo() {
     <div key={`video_${video._id}`}>
       <Link href={`/videos/${video.slug}`}>
         <ImageComponent
-          src={getArticleImageUrl(video.images, 'featuredImage')}
+          src={getImageUrl(video.images, 'featuredImage')}
           alt={video.name}
           width={247}
           height={394}
           className="mb-2"
         />
       </Link>
-      <h6 className="text-black mb-2 text-md leading-6 font-bold">
+      <h6 className="text-md mb-2 font-bold leading-6 text-black">
         <Link className="hover:underline" href={`/videos/${video.slug}`}>
           {video.name}
         </Link>
@@ -27,7 +27,7 @@ export default function TrendingVideo() {
 
   return (
     <section className={cn('py-20 pb-10', styles.trendingVideo)}>
-      <h2 className="font-bold text-3xl text-black mb-5">Trending Videos</h2>
+      <h2 className="mb-5 text-3xl font-bold text-black">Trending Videos</h2>
       <Carousel
         items={allPost}
         slidesPerView={6}

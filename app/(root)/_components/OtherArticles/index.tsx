@@ -1,5 +1,5 @@
 'use client';
-import { getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
+import { getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import Link from 'next/link';
 import { useState } from 'react';
 import { PageTitle } from '../FeaturedArticles/PageTitle';
@@ -35,18 +35,15 @@ export const OtherArticlesSection = ({
   return (
     <section className="py-0 pb-20">
       <PageTitle title="Other Stories" />
-      <div className="lg:grid lg:grid-cols-2 gap-5">
+      <div className="gap-5 lg:grid lg:grid-cols-2">
         {visibleArticles.map((article) => (
           <div
             key={`other_stories_${article._id}`}
-            className="border mb-5 lg:mb-0"
+            className="mb-5 border lg:mb-0"
           >
             <Link href={`articles/${article.slug}`}>
               <ImageComponent
-                src={getArticleImageUrl(
-                  article.images,
-                  'detailsPageBackground'
-                )}
+                src={getImageUrl(article.images, 'detailsPageBackground')}
                 width={640}
                 height={427}
                 alt={article.name}
@@ -54,7 +51,7 @@ export const OtherArticlesSection = ({
               />
             </Link>
             <div className="p-5">
-              <h5 className="text-xl lg:text-3xl font-bold mb-2">
+              <h5 className="mb-2 text-xl font-bold lg:text-3xl">
                 <Link
                   href={`articles/${article.slug}`}
                   className="hover:underline"
@@ -62,7 +59,7 @@ export const OtherArticlesSection = ({
                   {article.name}
                 </Link>
               </h5>
-              <p className="text-md lg:text-lg mb-3 line-clamp-2">
+              <p className="text-md mb-3 line-clamp-2 lg:text-lg">
                 <Link
                   href={`articles/${article.slug}`}
                   className="hover:underline"
@@ -78,10 +75,10 @@ export const OtherArticlesSection = ({
         ))}
       </div>
       {hasMore && (
-        <div className="text-center pt-5">
+        <div className="pt-5 text-center">
           <button
             onClick={loadMoreArticles}
-            className="mt-5 px-4 py-2 bg-black text-white rounded hover:bg-blend-darken"
+            className="mt-5 rounded bg-black px-4 py-2 text-white hover:bg-blend-darken"
           >
             Load More
           </button>

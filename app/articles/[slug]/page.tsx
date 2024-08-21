@@ -1,6 +1,6 @@
 import ArticleView from '@/components/ArticleView';
 import { articles } from '@/data/articles';
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -17,9 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const socialImage =
     article && article.images
-      ? `${process.env.NEXT_PUBLIC_API_URL}/${getArticleImageUrl(
+      ? `${process.env.NEXT_PUBLIC_API_URL}/${getImageUrl(
           article?.images,
-          'detailsPageBackground'
+          'detailsPageBackground',
         )}`
       : `${process.env.NEXT_PUBLIC_API_URL}/social.png`;
 

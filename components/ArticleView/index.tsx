@@ -1,13 +1,12 @@
 'use client';
 import TrendingVideo from '@/components/UI/TrendingVideo';
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 import ImageComponent from '../ImageComponent';
 import ArticleDeepDive from './ArticleDeepDive';
-import ArticleHead from './ArticleHead';
 import AuthorBio from './AuthorBio';
 import SocialShare from './SocialShare';
 import { anchors } from '@/data/anchor';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 type Props = {
   article: Article;
@@ -15,38 +14,48 @@ type Props = {
 };
 
 export default function ArticleView({ article, pageUrl }: Props) {
-  const authorBioRef = useRef<HTMLDivElement>(null);
-  let author: any;
+  const authorBioRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  if (article) {
-    const authors = article.author.map((allAuthors) => allAuthors);
+  const currentArticleAuthors = useMemo(() => {
+    return article?.author
+      .map((articleAuthor) =>
+        anchors.find((author) => articleAuthor.id === author._id),
+      )
+      .filter(Boolean) as Author[];
+  }, [article?.author]);
 
-    if (authors && authors.length) {
-      author = anchors.find(
-        // @ts-ignore
-        (anchor) => anchor._id === authors[0].id
-      );
+  const scrollToAuthorBio = (authorId: string) => {
+    const authorRef = authorBioRefs.current[authorId];
+    if (authorRef) {
+      authorRef.scrollIntoView({ behavior: 'smooth' });
     }
-  }
-
-  const scrollToAuthorBio = () => {
-    authorBioRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <>
-      <section className="mx-auto article-container py-10 lg:py-20 lg:pb-10 px-5 lg:px-0">
-        <ArticleHead
-          title={article.name}
-          excerpt={
-            article.category === 'IndusLens_OSINT' ||
-            article.category === 'Worldview_India'
-              ? ''
-              : article.excerpt
-          }
-          authorName={author?.name}
-          onAuthorClick={scrollToAuthorBio}
-        />
+      <section className="article-container mx-auto px-5 py-10 lg:px-0 lg:py-20 lg:pb-10">
+        <h1 className="mb-2 text-4xl font-bold">{article.name}</h1>
+        <p className="pb-7 text-xl">
+          {article.category === 'IndusLens_OSINT' ||
+          article.category === 'Worldview_India'
+            ? ''
+            : article.excerpt}
+        </p>
+
+        {currentArticleAuthors.length > 0 && (
+          <div className="pb-7">
+            {currentArticleAuthors.map((currentAuthor, index) => (
+              <button
+                key={currentAuthor._id}
+                onClick={() => scrollToAuthorBio(currentAuthor._id)}
+                className="text-md font-bold hover:underline"
+              >
+                {index > 0 && <>&nbsp;&amp;&nbsp;</>}
+                {currentAuthor.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         <SocialShare
           shareUrl={pageUrl}
@@ -55,23 +64,32 @@ export default function ArticleView({ article, pageUrl }: Props) {
         />
 
         <ImageComponent
-          src={getArticleImageUrl(article.images, 'posterImage')}
+          src={getImageUrl(article.images, 'posterImage')}
           alt={article.headline}
           width={813}
           height={546}
         />
         <div
-          className="text-lg font-medium"
+          className="mb-5 text-lg font-medium"
           dangerouslySetInnerHTML={{ __html: article.pageContent || '' }}
         />
-        <div ref={authorBioRef} className="py-5">
-          {author && <AuthorBio author={author} />}
-        </div>
+
+        {currentArticleAuthors.map((currentAuthor) => (
+          <div
+            key={currentAuthor._id}
+            ref={(el) => {
+              authorBioRefs.current[currentAuthor._id] = el;
+            }}
+          >
+            <AuthorBio key={currentAuthor._id} author={currentAuthor} />
+          </div>
+        ))}
+
         <ArticleDeepDive
           htmlContent={article.diveContent ? article.diveContent : ''}
         />
       </section>
-      <section className="container mx-auto mb-10 lg:mb-0  px-7 lg:px-0">
+      <section className="container mx-auto mb-10 px-7 lg:mb-0 lg:px-0">
         <TrendingVideo />
       </section>
     </>

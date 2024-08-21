@@ -4,7 +4,7 @@ import Carousel from '@/components/UI/Carousel';
 import { articles } from '@/data/articles';
 import { categories } from '@/data/categories';
 import { videoNews } from '@/data/video-news';
-import { cn, getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
+import { cn, getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import Link from 'next/link';
 import FeaturedContributor from './_components/Contributors';
 import FeaturedEminence from './_components/Eminence';
@@ -56,10 +56,7 @@ export default function Home() {
               <div key={`video_page_${video._id}`} className="mb-5 lg:mb-0">
                 <Link href={`/industv/${video.slug}`} className="relative">
                   <ImageComponent
-                    src={getArticleImageUrl(
-                      video.images,
-                      'detailsPageBackground',
-                    )}
+                    src={getImageUrl(video.images, 'detailsPageBackground')}
                     alt={video.name}
                     width={640}
                     height={427}
@@ -116,7 +113,7 @@ export default function Home() {
                     href={`category/${category.slug}?name=${articleItem.slug}`}
                   >
                     <ImageComponent
-                      src={getArticleImageUrl(
+                      src={getImageUrl(
                         articleItem.images,
                         'detailsPageBackground',
                       )}

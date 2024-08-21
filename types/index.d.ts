@@ -25,7 +25,7 @@ declare interface Article {
   ampValidationMessage: string;
   archivedAt: string;
   articleBody: string;
-  author: ArticleAuthor;
+  author: AuthorObject[];
   categories: string[];
   category: string;
   contentType: ContentType;

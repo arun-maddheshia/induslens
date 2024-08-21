@@ -1,7 +1,7 @@
 import SocialShare from '@/components/ArticleView/SocialShare';
 import VideoPlayer from '@/components/VideoPlayer';
 import { videoNews } from '@/data/video-news';
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getArticleImageUrl(video?.images, 'detailsPageBackground')
+        ? getImageUrl(video?.images, 'detailsPageBackground')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
       type: 'website',
     },
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getArticleImageUrl(video?.images, 'detailsPageBackground')
+        ? getImageUrl(video?.images, 'detailsPageBackground')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
     },
   };
@@ -48,17 +48,17 @@ const page = ({ params }: Props) => {
   }
 
   return (
-    <section className="py-0 lg:py-10 pb-10 md:pb-0 my-2 px-2 tv-container mx-auto">
+    <section className="tv-container mx-auto my-2 px-2 py-0 pb-10 md:pb-0 lg:py-10">
       <VideoPlayer videoId={activeVideo.contentId} className="" />
 
       <div className="px-2 md:px-0">
-        <h1 className="font-bold text-3xl py-10">{activeVideo.name}</h1>
+        <h1 className="py-10 text-3xl font-bold">{activeVideo.name}</h1>
         <SocialShare
           title={activeVideo.metaTitle}
           shareUrl={`${process.env.NEXT_PUBLIC_API_URL}/industv/${slug}`}
           publishedDate={activeVideo.updatedAt}
         />
-        <p className="text-xl pt-5">{activeVideo.synopsis}</p>
+        <p className="pt-5 text-xl">{activeVideo.synopsis}</p>
       </div>
     </section>
   );

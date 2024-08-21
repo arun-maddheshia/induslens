@@ -1,6 +1,6 @@
 import React from 'react';
 import ImageComponent from '@/components/ImageComponent';
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 import {
   TwitterIcon,
   LinkedinIcon,
@@ -18,24 +18,21 @@ export default function ContributorCardModal({
   contributor,
 }: ContributorCardModalProps) {
   return (
-    <div className="py-5 px-0 md:px-3">
-      <div className="md:flex md:content-center mb-0 lg:mb-5">
+    <div className="px-0 py-5 md:px-3">
+      <div className="mb-0 md:flex md:content-center lg:mb-5">
         <div>
           <ImageComponent
-            src={getArticleImageUrl(
-              contributor.images,
-              'mobileDetailsPageBackground'
-            )}
+            src={getImageUrl(contributor.images, 'mobileDetailsPageBackground')}
             width={150}
             height={150}
             alt={contributor.name}
-            className="rounded-full mb-5 md:mb-0"
+            className="mb-5 rounded-full md:mb-0"
           />
         </div>
 
         <div className="pl-0 md:pl-10">
-          <h6 className="font-bold text-xl">{contributor.name}</h6>
-          <ul className="flex px-0 md:px-3 py-5">
+          <h6 className="text-xl font-bold">{contributor.name}</h6>
+          <ul className="flex px-0 py-5 md:px-3">
             {contributor.facebookUrl && (
               <li className="pr-5">
                 <a href={contributor.facebookUrl}>
@@ -74,13 +71,13 @@ export default function ContributorCardModal({
           </ul>
           <div className="mb-5 lg:mb-0">
             {contributor.countryName && (
-              <span className="bg-gray-100 border inline-block text-sm text-gray-500 px-3 py-2 mr-3">
+              <span className="mr-3 inline-block border bg-gray-100 px-3 py-2 text-sm text-gray-500">
                 {contributor.countryName}
               </span>
             )}
             {contributor.authorUrl && (
               <Link
-                className="border inline-block text-sm text-gray-500 px-3 py-2 hover:bg-black hover:text-white transition-all ease-in-out "
+                className="inline-block border px-3 py-2 text-sm text-gray-500 transition-all ease-in-out hover:bg-black hover:text-white"
                 href={`${contributor.authorUrl}`}
               >
                 View Article

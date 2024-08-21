@@ -1,6 +1,6 @@
 import {
   cn,
-  getArticleImageUrl,
+  getImageUrl,
   getFirstAuthorName,
   normalizeText,
   slugify,
@@ -73,7 +73,7 @@ const FeaturedArticleCard = ({
       <div className={type === 'md' ? 'basis-[30%]' : ''}>
         <Link href={redirectUrl()}>
           <ImageComponent
-            src={getArticleImageUrl(article.images, 'posterImage')}
+            src={getImageUrl(article.images, 'posterImage')}
             alt={article.name}
             width={width}
             height={height}
@@ -81,14 +81,14 @@ const FeaturedArticleCard = ({
           />
         </Link>
       </div>
-      <div className={type === 'md' ? 'pr-5 basis-[70%]' : ''}>
+      <div className={type === 'md' ? 'basis-[70%] pr-5' : ''}>
         <Link href={redirectUrl()}>
           <h6 className={config.titleClassName}>{article.name}</h6>
           <p className={config.authorClassName}>
             {authorName || normalizeText(article.category)}
           </p>
           {type === 'lg' && article.excerpt && (
-            <p className="text-black text-md lg:text-xl px-3">
+            <p className="text-md px-3 text-black lg:text-xl">
               {article.excerpt}
             </p>
           )}

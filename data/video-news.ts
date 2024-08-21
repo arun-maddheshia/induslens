@@ -219,7 +219,7 @@ export const videoNews: VideoArticle[] = [
     cast: [],
     category: '',
     channelId: 'Indus_Lens',
-    contentId: '/-3AVXgFDJMs',
+    contentId: '-3AVXgFDJMs',
     contentKey: '',
     contentType: 'news',
     createdAt: '2024-06-09T13:56:45.838Z',

@@ -7,7 +7,7 @@ import ContributorCard from '@/components/ContributorCard';
 import ContributorCardModal from '@/components/UI/ContributorCardModal';
 import Modal from '@/components/UI/Modal';
 
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 
 type ContributorWrapperProps = {
   contributorList: Author[];
@@ -42,9 +42,9 @@ export const ContributorWrapper = ({
           >
             <ContributorCard
               name={contributor.name}
-              imageSrc={getArticleImageUrl(
+              imageSrc={getImageUrl(
                 contributor.images,
-                'mobileDetailsPageBackground'
+                'mobileDetailsPageBackground',
               )}
               countryName={contributor.countryName}
             />

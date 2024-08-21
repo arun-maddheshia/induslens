@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 import ContributorCard from '@/components/ContributorCard';
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 import ContributorCardModal from '@/components/UI/ContributorCardModal';
 import Modal from '@/components/UI/Modal';
 
@@ -23,19 +23,19 @@ export default function ContributorsList({
   const closeModal = () => setIsModalOpen(false);
   return (
     <>
-      <div className="grid grid-cols-1  md:grid-cols-3  lg:grid-cols-4 gap-3 md:gap-5">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
         {initialContributors.map((contributor) => {
           return (
             <div
               key={contributor._id}
-              className="h-full mb-5 cursor-pointer"
+              className="mb-5 h-full cursor-pointer"
               onClick={() => openModal(contributor)}
             >
               <ContributorCard
                 name={contributor.name}
-                imageSrc={getArticleImageUrl(
+                imageSrc={getImageUrl(
                   contributor.images,
-                  'mobileDetailsPageBackground'
+                  'mobileDetailsPageBackground',
                 )}
                 countryName={contributor.countryName}
                 singleView

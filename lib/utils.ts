@@ -1,5 +1,4 @@
 import { type ClassValue, clsx } from 'clsx';
-import toast from 'react-hot-toast';
 import { twMerge } from 'tailwind-merge';
 
 /*
@@ -15,14 +14,14 @@ export function truncate(text: string, truncateLength: number) {
     : text;
 }
 
-export function getArticleImageUrl(
+export function getImageUrl(
   images: PostImage[],
   type: string,
-  defaultImageUrl: string = ''
+  defaultImageUrl: string = '',
 ): string {
   if (images && images.length > 0) {
     const matchedImage = images.find(
-      (image) => image.imageCategoryValue === type
+      (image) => image.imageCategoryValue === type,
     );
     return matchedImage ? matchedImage.imageUrl[0] : defaultImageUrl;
   }

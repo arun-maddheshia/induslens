@@ -1,7 +1,7 @@
 import ImageComponent from '@/components/ImageComponent';
 import Carousel from '@/components/UI/Carousel';
 import { contentBlockData } from '@/data/content-block';
-import { getArticleImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/utils';
 import Link from 'next/link';
 
 export const EminenceWrapper = () => {
@@ -21,10 +21,7 @@ export const EminenceWrapper = () => {
           className="relative h-full border px-10 py-10 text-center"
         >
           <ImageComponent
-            src={getArticleImageUrl(
-              author.images,
-              'mobileDetailsPageBackground',
-            )}
+            src={getImageUrl(author.images, 'mobileDetailsPageBackground')}
             width={100}
             height={100}
             alt={author.name}

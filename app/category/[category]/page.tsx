@@ -3,7 +3,7 @@ import ReadMore from '@/components/UI/ReadMore';
 import { Share } from '@/components/UI/Share';
 import { articles } from '@/data/articles';
 import { categories } from '@/data/categories';
-import { cn, getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
+import { cn, getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import { Metadata } from 'next';
 
 import Link from 'next/link';
@@ -92,10 +92,7 @@ export default async function page({ params, searchParams }: Props) {
           <div key={article._id} className="relative mb-5 border">
             <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
               <ImageComponent
-                src={getArticleImageUrl(
-                  article.images,
-                  'detailsPageBackground',
-                )}
+                src={getImageUrl(article.images, 'detailsPageBackground')}
                 alt={article.name}
                 width={810}
                 height={540}

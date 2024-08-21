@@ -6,17 +6,12 @@
   }
 
   &Navigation {
-    --navigation-bg: #000000da;
-    --navigation-hover-bg: #000;
-    --navigation-radius: 100%;
-    --navigation-width: 40px;
-    --navigation-distance: -20px;
-
     color: #fff;
 
     position: absolute;
     z-index: 2;
-    top: 38%;
+    top: var(--navigation-top-distance);
+    margin-top: -20px;
     width: 100%;
 
     &Left,

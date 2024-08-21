@@ -1,8 +1,9 @@
 import Carousel from '@/components//UI/Carousel';
 import { videoNews } from '@/data/video-news';
-import { getArticleImageUrl } from '@/lib/utils';
-import ImageComponent from './ImageComponent';
+import { cn, getArticleImageUrl } from '@/lib/utils';
+import ImageComponent from '../../ImageComponent';
 import Link from 'next/link';
+import styles from './TrendingVideo.module.scss';
 
 export default function TrendingVideo() {
   const allPost = videoNews.map((video) => (
@@ -25,7 +26,7 @@ export default function TrendingVideo() {
   ));
 
   return (
-    <section className="py-20 pb-10">
+    <section className={cn('py-20 pb-10', styles.trendingVideo)}>
       <h2 className="font-bold text-3xl text-black mb-5">Trending Videos</h2>
       <Carousel
         items={allPost}

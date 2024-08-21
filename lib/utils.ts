@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
+import toast from 'react-hot-toast';
 import { twMerge } from 'tailwind-merge';
 
 /*
@@ -73,4 +74,20 @@ export function getFormattedDate(date: string) {
   const formatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' });
   const formattedDate = formatter.format(newDate);
   return formattedDate;
+}
+
+export function getFacebookShareUrl(url: string) {
+  const encodedUrl = encodeURIComponent(url);
+  return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+}
+
+export function getTwitterShareUrl(url: string, title: string) {
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  return `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+}
+
+export function getLinkedinShareUrl(url: string) {
+  const encodedUrl = encodeURIComponent(url);
+  return `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
 }

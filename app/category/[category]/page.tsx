@@ -1,5 +1,6 @@
 import ImageComponent from '@/components/ImageComponent';
 import ReadMore from '@/components/UI/ReadMore';
+import { Share } from '@/components/UI/Share';
 import { articles } from '@/data/articles';
 import { categories } from '@/data/categories';
 import { cn, getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
@@ -15,7 +16,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const articleCategory = categories.filter(
-    (category) => category.slug === params.category
+    (category) => category.slug === params.category,
   )[0];
 
   return {
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function page({ params, searchParams }: Props) {
   const { name } = searchParams;
   const articleCategory = categories.filter(
-    (category) => category.slug === params.category
+    (category) => category.slug === params.category,
   )[0];
 
   if (!articleCategory) {
@@ -56,7 +57,7 @@ export default async function page({ params, searchParams }: Props) {
     : 'lg:grid lg:grid-cols-2 gap-5 lg:max-w-[90%] mx-auto';
 
   const articleList = articles.filter(
-    (article) => article.category === articleCategory.id
+    (article) => article.category === articleCategory.id,
   );
 
   if (name && articleList.length) {
@@ -71,27 +72,29 @@ export default async function page({ params, searchParams }: Props) {
   }
 
   return (
-    <section className="py-10 my-5 container mx-auto px-5 lg:px-0">
+    <section className="container mx-auto my-5 px-5 py-10 lg:px-0">
       <div
         className={cn(
-          isSingleGridView ? 'mx-auto lg:max-w-[50%]' : 'mx-auto lg:max-w-[80%]'
+          isSingleGridView
+            ? 'mx-auto lg:max-w-[50%]'
+            : 'mx-auto lg:max-w-[80%]',
         )}
       >
-        <h1 className="font-bold text-center text-4xl mb-4">
+        <h1 className="mb-4 text-center text-4xl font-bold">
           {articleCategory ? articleCategory.name : ''}
         </h1>
-        <p className="text-md text-center mb-10">
+        <p className="text-md mb-10 text-center">
           {articleCategory ? articleCategory.description : ''}
         </p>
       </div>
       <div className={gridColumnClass}>
         {articleList.map((article: Article) => (
-          <div key={article._id} className="border mb-5">
+          <div key={article._id} className="relative mb-5 border">
             <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
               <ImageComponent
                 src={getArticleImageUrl(
                   article.images,
-                  'detailsPageBackground'
+                  'detailsPageBackground',
                 )}
                 alt={article.name}
                 width={810}
@@ -99,24 +102,27 @@ export default async function page({ params, searchParams }: Props) {
                 className="mb-2 aspect-[11/7] object-cover"
               />
             </Link>
-            <div className="p-5">
-              <h6 className="text-black text-2xl md:text-3xl leading-8 font-bold mb-4">
-                <Link
-                  href={`/category/${articleCategory.slug}/${article.slug}`}
-                  className="hover:underline"
-                >
+            <div className="relative p-5">
+              <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
+                <h6 className="mb-4 text-2xl font-bold leading-8 text-black hover:underline md:text-3xl">
                   {article.name}
-                </Link>
-              </h6>
-              <ReadMore
-                text={article.excerpt}
-                maxLength={300}
-                className="mb-4"
-                href={`/category/${articleCategory.slug}/${article.slug}`}
-              ></ReadMore>
-              <p className="text-md mt-2 text-gray-500">
-                {getFirstAuthorName(article.author)}
-              </p>
+                </h6>
+                <ReadMore
+                  text={article.excerpt}
+                  maxLength={300}
+                  className="mb-4"
+                  href={`/category/${articleCategory.slug}/${article.slug}`}
+                ></ReadMore>
+                <p className="text-md mt-2 text-gray-500">
+                  {getFirstAuthorName(article.author)}
+                </p>
+              </Link>
+            </div>
+            <div className="absolute bottom-2 right-4">
+              <Share
+                shareUrl={`${process.env.NEXT_PUBLIC_API_URL}/category/${articleCategory.slug}/${article.slug}`}
+                title={article.name}
+              />
             </div>
           </div>
         ))}

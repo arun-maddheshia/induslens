@@ -9,3 +9,4 @@ export * from './LinkedinIcon';
 export * from './WebIcon';
 export * from './CloseIcon';
 export * from './TwitterFollowIcon';
+export * from './ShareIcon';

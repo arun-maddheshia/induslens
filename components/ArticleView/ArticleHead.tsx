@@ -18,7 +18,10 @@ const ArticleHead: React.FC<ArticleHeadProps> = ({
     <h1 className="font-bold text-4xl mb-2">{title}</h1>
     <p className="text-xl pb-7">{excerpt}</p>
     {authorName && (
-      <button onClick={onAuthorClick} className="font-bold text-md pb-7">
+      <button
+        onClick={onAuthorClick}
+        className="font-bold text-md pb-7 hover:underline"
+      >
         {authorName}
       </button>
     )}

@@ -45,7 +45,7 @@ export default function Carousel({
             styles.customCarouselNavigation,
             navigationVariant === 'top'
               ? styles.customCarouselNavigationTop
-              : ''
+              : '',
           )}
         >
           <div className={styles.customCarouselNavigationLeft} ref={prevRef}>

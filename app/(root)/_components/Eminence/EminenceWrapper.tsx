@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export const EminenceWrapper = () => {
   const indusEminence = contentBlockData.filter(
-    (article) => article.category === 'Indus_Eminence'
+    (article) => article.category === 'Indus_Eminence',
   );
 
   return (
@@ -18,23 +18,23 @@ export const EminenceWrapper = () => {
       items={indusEminence.map((author) => (
         <div
           key={author._id}
-          className="py-10 h-full text-center px-10 border relative"
+          className="relative h-full border px-10 py-10 text-center"
         >
           <ImageComponent
             src={getArticleImageUrl(
               author.images,
-              'mobileDetailsPageBackground'
+              'mobileDetailsPageBackground',
             )}
             width={100}
             height={100}
             alt={author.name}
-            className="mb-2 rounded-full m-auto aspect-auto"
+            className="m-auto mb-2 aspect-auto rounded-full"
           />
-          <h6 className="text-black mb-2 text-lg leading-6 font-bold">
+          <h6 className="mb-2 text-lg font-bold leading-6 text-black">
             {author.name}
           </h6>
-          <p className="text-sm mb-2 text-gray-500">{author.slug}</p>
-          <span className="bg-gray-100 border inline-block text-sm text-gray-500 px-3 py-2">
+          <p className="mb-2 text-sm text-gray-500">{author.slug}</p>
+          <span className="inline-block border bg-gray-100 px-3 py-2 text-sm text-gray-500">
             {author.countryName}
           </span>
           <Link
@@ -42,7 +42,8 @@ export const EminenceWrapper = () => {
               pathname: '/indus-eminence',
               query: { authorName: author.name.replace(' ', '_') },
             }}
-            className="absolute top-0 right-0 bottom-0 left-0"
+            className="absolute bottom-0 left-0 right-0 top-0"
+            aria-label={`Read more about ${author.name}`}
           ></Link>
         </div>
       ))}

@@ -1,10 +1,10 @@
 import ImageComponent from '@/components/ImageComponent';
-import TrendingVideo from '@/components/TrendingVideo';
+import TrendingVideo from '@/components/UI/TrendingVideo';
 import Carousel from '@/components/UI/Carousel';
 import { articles } from '@/data/articles';
 import { categories } from '@/data/categories';
 import { videoNews } from '@/data/video-news';
-import { getArticleImageUrl, getFirstAuthorName, truncate } from '@/lib/utils';
+import { cn, getArticleImageUrl, getFirstAuthorName } from '@/lib/utils';
 import Link from 'next/link';
 import FeaturedContributor from './_components/Contributors';
 import FeaturedEminence from './_components/Eminence';
@@ -13,6 +13,7 @@ import { PageTitle } from './_components/FeaturedArticles/PageTitle';
 import { Metadata } from 'next';
 import ReadMore from '@/components/UI/ReadMore';
 import { OtherArticlesSection } from './_components/OtherArticles';
+import styles from './Home.module.scss';
 
 const pageTitle =
   "IndusLens | Chronicling cutting-edge global perspectives on India's success stories";
@@ -41,14 +42,14 @@ export default function Home() {
   const articleCategories: ArticleCategory[] = categories;
 
   return (
-    <div className="lg:container mx-auto w-full px-4 lg:px-0  py-4 lg:py-10">
+    <div className="mx-auto w-full px-4 py-4 lg:container lg:px-0 lg:py-10">
       <FeaturedArticles />
 
       <TrendingVideo />
 
       <section className="py-0 pb-20">
         <PageTitle title="IndusTV" />
-        <div className="lg:grid lg:grid-cols-4 lg:gap-4 ">
+        <div className="lg:grid lg:grid-cols-4 lg:gap-4">
           {videoNews
             .filter((video) => video.category === 'industv')
             .map((video) => (
@@ -57,18 +58,18 @@ export default function Home() {
                   <ImageComponent
                     src={getArticleImageUrl(
                       video.images,
-                      'detailsPageBackground'
+                      'detailsPageBackground',
                     )}
                     alt={video.name}
                     width={640}
                     height={427}
                     className="mb-2"
                   />
-                  <span className="absolute right-1 bottom-1 rounded bg-black text-white text-xs px-2 leading-6 inline-block font-bold">
+                  <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-2 text-xs font-bold leading-6 text-white">
                     {video.duration}
                   </span>
                 </Link>
-                <h6 className="text-black mb-2 text-lg leading-6 font-bold hover:underline">
+                <h6 className="mb-2 text-lg font-bold leading-6 text-black hover:underline">
                   <Link href={`/industv/${video.slug}`}>{video.name}</Link>
                 </h6>
               </div>
@@ -89,12 +90,12 @@ export default function Home() {
       {articleCategories.map((category) => (
         <section
           key={`article_category_${category.id}`}
-          className="py-0 pb-7 lg:pb-20"
+          className={cn('py-0 pb-7 lg:pb-10', styles.categoryListing)}
         >
           <PageTitle title={category.name} href={`category/${category.slug}`} />
 
           <ReadMore
-            className="text-lg mb-5"
+            className="mb-5 text-lg"
             text={category.description}
             maxLength={300}
             href={`category/${category.slug}`}
@@ -107,7 +108,7 @@ export default function Home() {
             items={articles
               .filter(
                 (article) =>
-                  article.category === category.id && article.images.length
+                  article.category === category.id && article.images.length,
               )
               .map((articleItem) => (
                 <div key={articleItem._id} className="py-0 lg:py-4">
@@ -117,15 +118,15 @@ export default function Home() {
                     <ImageComponent
                       src={getArticleImageUrl(
                         articleItem.images,
-                        'detailsPageBackground'
+                        'detailsPageBackground',
                       )}
                       alt={articleItem.name}
                       width={810}
                       height={540}
-                      className="mb-2 object-cover aspect-[2/1.5]"
+                      className="mb-2 aspect-[2/1.5] object-cover"
                     />
                   </Link>
-                  <h6 className="text-black mb-2 text-lg leading-6 font-bold">
+                  <h6 className="mb-2 text-lg font-bold leading-6 text-black">
                     <Link
                       href={`category/${category.slug}?name=${articleItem.slug}`}
                       className="hover:underline"
@@ -133,7 +134,7 @@ export default function Home() {
                       {articleItem.name}
                     </Link>
                   </h6>
-                  <p className="text-sm mb-2 text-gray-500">
+                  <p className="mb-2 text-sm text-gray-500">
                     {getFirstAuthorName(articleItem.author)}
                   </p>
                 </div>

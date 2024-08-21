@@ -11,9 +11,12 @@ const ArticleDeepDive: React.FC<ArticleDeepDiveProps> = ({ htmlContent }) => {
   }
 
   return (
-    <div className="border bg-gray-100 p-10 deepDive">
-      <h6 className="font-bold text-xl mb-5">Deep Dive</h6>
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>
+    <div className="deepDive border bg-gray-100 p-10">
+      <h6 className="mb-5 text-xl font-bold">Deep Dive</h6>
+      <div
+        className="htmlContent"
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      ></div>
     </div>
   );
 };

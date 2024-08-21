@@ -2,6 +2,7 @@ import './globals.css';
 
 import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/react';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { cn } from '@/lib/utils';
 
@@ -79,7 +80,7 @@ export default function RootLayout({
             // Default options for specific types
             success: {
               style: {
-                background: 'green',
+                background: '#4caf50',
               },
             },
             error: {
@@ -89,6 +90,7 @@ export default function RootLayout({
             },
           }}
         />
+        <Analytics />
       </body>
     </html>
   );

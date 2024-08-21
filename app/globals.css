@@ -6,6 +6,13 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  --navigation-bg: #000000da;
+  --navigation-hover-bg: #000;
+  --navigation-radius: 100%;
+  --navigation-width: 40px;
+  --navigation-distance: -20px;
+  --navigation-top-distance: 50%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,7 +93,10 @@
   background-color: #fff0f7;
 }
 
-.followTwitter {
-  /* background: #1da1f2;
-  box-shadow: 0 2px 4px 0 #00000059; */
+.trending-video-carousel {
+  --navigation-top-distance: 40%;
+}
+
+.htmlContent a:hover {
+  text-decoration: underline;
 }

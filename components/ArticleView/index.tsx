@@ -1,5 +1,5 @@
 'use client';
-import TrendingVideo from '@/components/TrendingVideo';
+import TrendingVideo from '@/components/UI/TrendingVideo';
 import { getArticleImageUrl } from '@/lib/utils';
 import ImageComponent from '../ImageComponent';
 import ArticleDeepDive from './ArticleDeepDive';

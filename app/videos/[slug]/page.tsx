@@ -18,6 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: video?.metaTitle,
     description: video?.metaDescription,
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_API_URL}/videos`,
+    },
     openGraph: {
       title: video?.metaTitle,
       description: video?.metaDescription,

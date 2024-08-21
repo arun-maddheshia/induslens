@@ -66,6 +66,9 @@ const pageDescription =
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_API_URL}/privacy-policy`,
+  },
   openGraph: {
     title: pageTitle,
     description: pageDescription,
@@ -83,13 +86,13 @@ export const metadata: Metadata = {
 
 export default function page() {
   return (
-    <section className="tv-container mx-auto py-20 px-4 lg:px-0">
-      <h1 className="text-center font-bold text-3xl mb-5">Privacy Policy</h1>
+    <section className="tv-container mx-auto px-4 py-20 lg:px-0">
+      <h1 className="mb-5 text-center text-3xl font-bold">Privacy Policy</h1>
       <p>Last Updated: 18/10/2023</p>
       {content.map((text, index) => {
         return (
           <div className="mb-5" key={`content_pp_${index}`}>
-            <h5 className="font-bold text-lg">
+            <h5 className="text-lg font-bold">
               {index + 1}. {text.heading}
             </h5>
             <p dangerouslySetInnerHTML={{ __html: text.description }}></p>

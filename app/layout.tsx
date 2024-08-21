@@ -24,38 +24,40 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
-        <meta name="msapplication-TileColor" content="#ffffff" />
-        <meta name="theme-color" content="#ffffff"></meta>
-        <meta
-          name="google-site-verification"
-          content="OvkxrsgjLC5XnaLkznyClyTU9LNs6GuM6mCvqG0EZHA"
-        />
-      </Head>
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/apple-touch-icon.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/favicon-32x32.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/favicon-16x16.png"
+      />
+      <link rel="manifest" href="/site.webmanifest" />
+      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+      <meta name="msapplication-TileColor" content="#ffffff" />
+      <meta name="theme-color" content="#ffffff"></meta>
+      <meta
+        name="google-site-verification"
+        content="OvkxrsgjLC5XnaLkznyClyTU9LNs6GuM6mCvqG0EZHA"
+      />
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+      />
       <GoogleAnalytics gaId="G-F0MR28LK7H" />
       <body
         className={cn(
-          'bg-white text-black min-h-screen font-sans antialiased',
-          fontInter.variable
+          'min-h-screen bg-white font-sans text-black antialiased',
+          fontInter.variable,
         )}
       >
         <Navbar />

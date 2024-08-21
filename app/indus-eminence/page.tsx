@@ -16,6 +16,9 @@ type Props = {
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_API_URL}/indus-eminence`,
+  },
   openGraph: {
     title: pageTitle,
     description: pageDescription,

@@ -8,6 +8,9 @@ const pageDescription = '';
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_API_URL}/our-contributors`,
+  },
   openGraph: {
     title: pageTitle,
     description: pageDescription,
@@ -25,8 +28,8 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
-    <section className="container py-10 mx-auto px-4 md:px-0">
-      <h1 className="font-bold text-4xl text-center mb-10">Our Contributors</h1>
+    <section className="container mx-auto px-4 py-10 md:px-0">
+      <h1 className="mb-10 text-center text-4xl font-bold">Our Contributors</h1>
       <ContributorsList initialContributors={anchors} />
     </section>
   );

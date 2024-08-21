@@ -16,7 +16,7 @@ export const CopyToClipboard = (props: CopyToClipboardProps) => {
   const handleCopyToClipboard = async (url: string) => {
     if ('clipboard' in navigator) {
       await navigator.clipboard.writeText(url);
-      toast.success('Share URL copied successfully!');
+      toast.success('The URL is now copied to your clipboard.');
     }
   };
 

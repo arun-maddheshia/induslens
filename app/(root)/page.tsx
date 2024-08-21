@@ -113,14 +113,11 @@ export default function Home() {
                     href={`category/${category.slug}?name=${articleItem.slug}`}
                   >
                     <ImageComponent
-                      src={getImageUrl(
-                        articleItem.images,
-                        'detailsPageBackground',
-                      )}
+                      src={getImageUrl(articleItem.images, 'posterImage')}
                       alt={articleItem.name}
                       width={810}
                       height={540}
-                      className="mb-2 aspect-[2/1.5] object-cover"
+                      className="mb-2 aspect-[3/2]"
                     />
                   </Link>
                   <h6 className="mb-2 text-lg font-bold leading-6 text-black">

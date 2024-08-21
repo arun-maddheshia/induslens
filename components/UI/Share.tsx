@@ -60,9 +60,9 @@ export function Share({ shareUrl, title }: ShareProps) {
           <a
             href={getFacebookShareUrl(shareUrl)}
             target="_blank"
-            className="flex text-sm hover:text-[#1877f2]"
+            className="flex text-sm hover:text-gray-700"
           >
-            <FacebookIcon width={20} height={20} fill="#1877f2" />
+            <FacebookIcon width={20} height={20} fill="#000" />
             &nbsp;Facebook
           </a>
         </li>
@@ -70,9 +70,9 @@ export function Share({ shareUrl, title }: ShareProps) {
           <a
             href={getTwitterShareUrl(shareUrl, title)}
             target="_blank"
-            className="flex text-sm hover:text-[#1da1f2]"
+            className="flex text-sm hover:text-gray-700"
           >
-            <TwitterIcon width={20} height={20} fill="#1da1f2" />
+            <TwitterIcon width={20} height={20} fill="#000" />
             &nbsp;Twitter
           </a>
         </li>
@@ -80,13 +80,13 @@ export function Share({ shareUrl, title }: ShareProps) {
           <a
             href={getLinkedinShareUrl(shareUrl)}
             target="_blank"
-            className="flex text-sm hover:text-[#0a66c2]"
+            className="flex text-sm hover:text-gray-700"
           >
-            <LinkedinIcon width={20} height={20} fill="#0a66c2" />
+            <LinkedinIcon width={20} height={20} fill="#000" />
             &nbsp;Linkedin
           </a>
         </li>
-        <li className="text-sm hover:text-gray-500">
+        <li className="text-sm">
           <CopyToClipboard url={shareUrl} hasTitle />
         </li>
       </ul>

@@ -104,12 +104,14 @@ export default async function page({ params, searchParams }: Props) {
                 <h6 className="mb-4 text-2xl font-bold leading-8 text-black hover:underline md:text-3xl">
                   {article.name}
                 </h6>
-                <ReadMore
-                  text={article.excerpt}
-                  maxLength={300}
-                  className="mb-4"
-                  href={`/category/${articleCategory.slug}/${article.slug}`}
-                ></ReadMore>
+                <div className="pr-[40px]">
+                  <ReadMore
+                    text={article.excerpt}
+                    maxLength={300}
+                    className="mb-4"
+                    href={`/category/${articleCategory.slug}/${article.slug}`}
+                  ></ReadMore>
+                </div>
                 <p className="text-md mt-2 text-gray-500">
                   {getFirstAuthorName(article.author)}
                 </p>

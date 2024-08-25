@@ -30,6 +30,7 @@ export const ContributorWrapper = ({
       <Carousel
         slidesPerView={4}
         smSlidesPerView={2}
+        mdSlidesPerView={3}
         gridRows={2}
         loop={false}
         spaceBetween={20}

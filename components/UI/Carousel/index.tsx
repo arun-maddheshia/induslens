@@ -17,6 +17,7 @@ type CarouselProps = {
   spaceBetween: number;
   slidesPerView: number;
   smSlidesPerView?: number;
+  mdSlidesPerView?: number;
   gridRows: number;
   loop: boolean;
   navigationVariant?: 'center' | 'top';
@@ -29,6 +30,7 @@ export default function Carousel({
   gridRows,
   loop,
   smSlidesPerView,
+  mdSlidesPerView,
   navigationVariant = 'center',
 }: CarouselProps) {
   const prevRef = useRef<HTMLDivElement>(null);
@@ -75,7 +77,10 @@ export default function Carousel({
           0: {
             slidesPerView: smSlidesPerView ? smSlidesPerView : 1,
           },
-          1024: { slidesPerView: slidesPerView },
+          768: {
+            slidesPerView: mdSlidesPerView ? mdSlidesPerView : 1,
+          },
+          992: { slidesPerView: slidesPerView },
         }}
         navigation={{
           prevEl: prevRef.current!,

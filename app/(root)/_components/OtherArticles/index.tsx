@@ -35,7 +35,7 @@ export const OtherArticlesSection = ({
   return (
     <section className="py-0 pb-20">
       <PageTitle title="Other Stories" />
-      <div className="gap-5 lg:grid lg:grid-cols-2">
+      <div className="gap-5 md:grid md:grid-cols-2">
         {visibleArticles.map((article) => (
           <div
             key={`other_stories_${article._id}`}

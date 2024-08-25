@@ -12,8 +12,8 @@ export default function TrendingVideo() {
         <ImageComponent
           src={getImageUrl(video.images, 'featuredImage')}
           alt={video.name}
-          width={247}
-          height={394}
+          width={347}
+          height={494}
           className="mb-2"
         />
       </Link>
@@ -32,6 +32,7 @@ export default function TrendingVideo() {
         items={allPost}
         slidesPerView={6}
         smSlidesPerView={2}
+        mdSlidesPerView={3}
         spaceBetween={20}
         loop={true}
         gridRows={1}

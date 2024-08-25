@@ -12,6 +12,8 @@ export const EminenceWrapper = () => {
   return (
     <Carousel
       slidesPerView={4}
+      mdSlidesPerView={3}
+      smSlidesPerView={1}
       spaceBetween={20}
       gridRows={1}
       loop={true}

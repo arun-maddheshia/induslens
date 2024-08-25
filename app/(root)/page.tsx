@@ -45,19 +45,22 @@ export default function Home() {
   const articleCategories: ArticleCategory[] = categories;
 
   return (
-    <div className="mx-auto w-full px-4 py-4 lg:container lg:px-0 lg:py-10">
+    <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
       <FeaturedArticles />
 
       <TrendingVideo />
 
       <section className="py-0 pb-20">
         <PageTitle title="IndusTV" />
-        <div className="lg:grid lg:grid-cols-4 lg:gap-4">
+        <div className="md:grid md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-4">
           {videoNews
             .filter((video) => video.category === 'industv')
             .map((video) => (
               <div key={`video_page_${video._id}`} className="mb-5 lg:mb-0">
-                <Link href={`/industv/${video.slug}`} className="relative">
+                <Link
+                  href={`/industv/${video.slug}`}
+                  className="relative block"
+                >
                   <ImageComponent
                     src={getImageUrl(video.images, 'detailsPageBackground')}
                     alt={video.name}
@@ -102,6 +105,7 @@ export default function Home() {
           />
           <Carousel
             slidesPerView={4}
+            mdSlidesPerView={3}
             gridRows={1}
             loop={true}
             spaceBetween={20}

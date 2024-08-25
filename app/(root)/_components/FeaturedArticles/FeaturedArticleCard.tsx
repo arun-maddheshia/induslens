@@ -31,7 +31,8 @@ export const postCardTypeConfig: Record<
     imageClassName: 'aspect-[1/1] object-cover',
     titleClassName: 'text-black mb-2 leading-6 font-semibold',
     authorClassName: 'text-gray-500 font-semibold uppercase text-xs',
-    containerClassName: 'flex flex-row-reverse hover:underline',
+    containerClassName:
+      'flex flex-row-reverse hover:underline sm:flex sm:justify-between',
   },
   lg: {
     imageClassName: 'aspect-[3/2] mb-2',
@@ -70,8 +71,11 @@ const FeaturedArticleCard = ({
 
   return (
     <div className={cn('relative min-h-full', config.containerClassName)}>
-      <div className={type === 'md' ? 'basis-[30%]' : ''}>
-        <Link href={redirectUrl()}>
+      <div className={type === 'md' ? 'basis-[30%] sm:text-right' : ''}>
+        <Link
+          href={redirectUrl()}
+          className={type === 'md' ? 'inline-block' : ''}
+        >
           <ImageComponent
             src={getImageUrl(article.images, 'posterImage')}
             alt={article.name}

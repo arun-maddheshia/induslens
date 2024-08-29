@@ -5,6 +5,7 @@ import { articles } from '@/data/articles';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/utils';
 import { notFound } from 'next/navigation';
+import { categories } from '@/data/categories';
 
 type Props = {
   params: { slug: string };
@@ -16,6 +17,10 @@ function getArticle(slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle(params.slug);
+
+  const articleCategory = categories.filter(
+    (category) => category.id === article?.category,
+  )[0];
 
   const socialImage =
     article && article.images
@@ -29,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: article?.metaTitle,
     description: article?.metaDescription,
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_API_URL}/articles/${article?.slug}`,
+      canonical: `${process.env.NEXT_PUBLIC_API_URL}/category/${articleCategory.slug}/${article?.slug}`,
     },
     openGraph: {
       title: article?.metaTitle,

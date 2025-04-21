@@ -39,7 +39,7 @@ export default function ArticleView({ article, pageUrl }: Props) {
           {article.category === 'IndusLens_OSINT' ||
           article.category === 'Worldview_India'
             ? ''
-            : article.excerpt}
+            : article.alternativeHeadline}
         </p>
 
         {currentArticleAuthors.length > 0 && (

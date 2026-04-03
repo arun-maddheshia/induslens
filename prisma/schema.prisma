@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles Article[] @relation("ArticleAuthor")
+  edited   Article[] @relation("ArticleEditor")
+}
+
+// ─── Articles ────────────────────────────────────────────────────────
+
+enum ContentType {
+  NEWS
+  CONTENT_BLOCK
+  ARTICLES
+  ANCHOR
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+model Article {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ── Core content ──
+  headline             String
+  alternativeHeadline  String?
+  excerpt              String
+  description          String?
+  articleBody          String   @db.Text
+  pageContent          String?  @db.Text
+  diveContent          String?  @db.Text
+
+  // ── Classification ──
+  contentType   ContentType    @default(NEWS)
+  newsType      String?
+  category      String
+  subCategories String[]
+  genre         String[]
+  tags          String[]
+  keywords      String[]
+  language      String         @default("en")
+
+  // ── SEO / Meta ──
+  metaTitle       String
+  metaDescription String
+  slug            String   @unique
+  url             String?
+  canonicalUrl    String?
+
+  // ── Publishing ──
+  status      ArticleStatus @default(DRAFT)
+  visibility  Boolean       @default(true)
+  publishedAt DateTime?
+  archivedAt  DateTime?
+  expiresAt   DateTime?
+
+  // ── Authorship ──
+  authorId String?
+  author   User?   @relation("ArticleAuthor", fields: [authorId], references: [id])
+  editorId String?
+  editor   User?   @relation("ArticleEditor", fields: [editorId], references: [id])
+
+  // ── Source ──
+  agency     String?
+  publisher  String?
+  sourceType String?
+  siteId     String?
+
+  // ── Relations ──
+  images ArticleImage[]
+
+  @@index([slug])
+  @@index([status, publishedAt])
+  @@index([category])
+  @@index([contentType])
+}
+
+model ArticleImage {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  imageCategory      String
+  imageCategoryValue String?
+  imageDescription   String?
+  imageUrl           String[]
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+}
+

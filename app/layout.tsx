@@ -10,6 +10,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Inter } from 'next/font/google';
 import StickyFollowTwitter from '@/components/StickyFollowTwitter';
+import Providers from './providers';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -60,10 +61,12 @@ export default function RootLayout({
           fontInter.variable,
         )}
       >
-        <Navbar />
-        <main className="relative bg-inherit">{children}</main>
-        <StickyFollowTwitter />
-        <Footer />
+        <Providers>
+          <Navbar />
+          <main className="relative bg-inherit">{children}</main>
+          <StickyFollowTwitter />
+          <Footer />
+        </Providers>
         <Toaster
           position="top-center"
           reverseOrder={false}

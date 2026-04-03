@@ -2,7 +2,10 @@
 
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import clsx from "clsx"
+import ConfirmDialog from "../../_components/ConfirmDialog"
 
 interface Article {
   id: string
@@ -30,10 +33,57 @@ const statusColors = {
   DRAFT: "bg-gray-100 text-gray-800",
   PUBLISHED: "bg-green-100 text-green-800",
   ARCHIVED: "bg-red-100 text-red-800",
-  SCHEDULED: "bg-blue-100 text-blue-800",
 }
 
 export default function ArticlesTable({ articles }: ArticlesTableProps) {
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean
+    articleId: string | null
+    articleTitle: string
+  }>({
+    isOpen: false,
+    articleId: null,
+    articleTitle: ""
+  })
+  const [isDeleting, setIsDeleting] = useState(false)
+  const router = useRouter()
+
+  const handleDeleteClick = (articleId: string, articleTitle: string) => {
+    setDeleteDialog({
+      isOpen: true,
+      articleId,
+      articleTitle
+    })
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteDialog.articleId) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/articles/${deleteDialog.articleId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete article')
+      }
+
+      // Close dialog and refresh the page
+      setDeleteDialog({ isOpen: false, articleId: null, articleTitle: "" })
+      router.refresh()
+    } catch (error) {
+      console.error('Error deleting article:', error)
+      alert(error instanceof Error ? error.message : 'Failed to delete article')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteDialog({ isOpen: false, articleId: null, articleTitle: "" })
+  }
   if (articles.length === 0) {
     return (
       <div className="text-center py-12">
@@ -114,12 +164,7 @@ export default function ArticlesTable({ articles }: ArticlesTableProps) {
                 </Link>
                 <button
                   className="text-red-600 hover:text-red-900"
-                  onClick={() => {
-                    if (confirm("Are you sure you want to delete this article?")) {
-                      // TODO: Implement delete functionality
-                      console.log("Delete article:", article.id)
-                    }
-                  }}
+                  onClick={() => handleDeleteClick(article.id, article.headline)}
                 >
                   Delete
                 </button>
@@ -128,9 +173,18 @@ export default function ArticlesTable({ articles }: ArticlesTableProps) {
           ))}
         </tbody>
       </table>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Article"
+        message={`Are you sure you want to delete "${deleteDialog.articleTitle}"? This action cannot be undone.`}
+        confirmText="Delete Article"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+        type="danger"
+      />
     </div>
   )
 }
-
-// Add date-fns import note for the user
-// Note: You'll need to install date-fns: npm install date-fns

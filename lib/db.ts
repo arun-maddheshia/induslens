@@ -5,7 +5,18 @@ declare global {
   var prisma: PrismaClient | undefined
 }
 
-export const db = global.prisma ?? new PrismaClient()
+let prismaInstance: PrismaClient
+
+try {
+  prismaInstance = global.prisma ?? new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  })
+} catch (error) {
+  console.error("Failed to initialize Prisma client:", error)
+  throw error
+}
+
+export const db = prismaInstance
 
 if (process.env.NODE_ENV !== "production") {
   global.prisma = db
@@ -125,7 +136,7 @@ export async function createArticle(data: any, authorId: string) {
 }
 
 export async function updateArticle(id: string, data: any, editorId?: string) {
-  const { images, ...articleData } = data
+  const { images, authorId, author, editor, ...articleData } = data
 
   return await db.article.update({
     where: { id },

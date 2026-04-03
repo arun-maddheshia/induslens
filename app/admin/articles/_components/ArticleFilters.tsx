@@ -8,7 +8,6 @@ const statusOptions = [
   { value: "DRAFT", label: "Draft" },
   { value: "PUBLISHED", label: "Published" },
   { value: "ARCHIVED", label: "Archived" },
-  { value: "SCHEDULED", label: "Scheduled" },
 ]
 
 export default function ArticleFilters() {

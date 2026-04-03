@@ -26,7 +26,7 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
           </p>
         </div>
 
-        <div className="bg-white shadow rounded-lg">
+        <div className="bg-white shadow-lg rounded-xl">
           <ArticleForm article={article} isEdit={true} />
         </div>
       </div>

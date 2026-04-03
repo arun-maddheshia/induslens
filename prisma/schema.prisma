@@ -22,8 +22,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  articles Article[] @relation("ArticleAuthor")
-  edited   Article[] @relation("ArticleEditor")
+  legacyArticles Article[] @relation("LegacyArticleAuthor")
+  edited         Article[] @relation("ArticleEditor")
 }
 
 // ─── Articles ────────────────────────────────────────────────────────
@@ -39,7 +39,6 @@ enum ArticleStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
-  SCHEDULED
 }
 
 model Article {
@@ -81,10 +80,12 @@ model Article {
   expiresAt   DateTime?
 
   // ── Authorship ──
-  authorId String?
-  author   User?   @relation("ArticleAuthor", fields: [authorId], references: [id])
-  editorId String?
-  editor   User?   @relation("ArticleEditor", fields: [editorId], references: [id])
+  authorId       String? // Now points to Author table
+  author         Author? @relation("ArticleAuthor", fields: [authorId], references: [id])
+  editorId       String?
+  editor         User?   @relation("ArticleEditor", fields: [editorId], references: [id])
+  legacyAuthorId String? // Keep existing User references
+  legacyAuthor   User?   @relation("LegacyArticleAuthor", fields: [legacyAuthorId], references: [id])
 
   // ── Source ──
   agency     String?
@@ -114,5 +115,67 @@ model ArticleImage {
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@index([articleId])
+}
+
+// ─── Authors ────────────────────────────────────────────────────────
+
+model Author {
+  id        String   @id // Will preserve original _id from data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ── Core Info ──
+  name            String
+  aboutTheAnchor  String   @db.Text
+  email           String?
+  slug            String   @unique
+  description     String?
+
+  // ── Social Media Links ──
+  facebookUrl   String?
+  linkedinUrl   String?
+  twitterUrl    String?
+  instagramUrl  String?
+  youtubeUrl    String?
+  websiteUrl    String?
+  authorUrl     String?
+
+  // ── Meta Info ──
+  contentType   String   @default("anchor")
+  countryName   String?
+  status        String   @default("Published")
+  isContent     Boolean  @default(true)
+  key           Int?     @unique
+  siteId        String?
+
+  // ── Publishing ──
+  publishedAt   DateTime?
+
+  // ── Legacy Fields ──
+  anchorKey     String?
+  shows         String[] @default([])
+
+  // ── Relations ──
+  images        AuthorImage[]
+  articles      Article[] @relation("ArticleAuthor")
+
+  @@index([slug])
+  @@index([status])
+}
+
+model AuthorImage {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  imageCategory      String
+  imageCategoryValue String?
+  imageDescription   String?
+  imageUrl           String[]
+  key                String?
+
+  authorId String
+  author   Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([authorId])
 }
 

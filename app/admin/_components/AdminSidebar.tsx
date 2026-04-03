@@ -15,6 +15,7 @@ interface AdminSidebarProps {
 
 const navigation = [
   { name: "Articles", href: "/admin/articles", icon: "📄" },
+  { name: "Authors", href: "/admin/authors", icon: "👤" },
 ]
 
 export default function AdminSidebar({ user }: AdminSidebarProps) {
@@ -30,7 +31,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
         {/* Header */}
         <div className="flex-shrink-0 px-4 py-6 border-b border-gray-200">
           <h1 className="text-lg font-semibold text-gray-900">
-            Admin CMS
+            CMS
           </h1>
         </div>
 

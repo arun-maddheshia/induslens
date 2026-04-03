@@ -1,0 +1,82 @@
+/* Custom styles for admin interface */
+
+/* Rich text editor customizations */
+.ql-toolbar {
+  border-top: 1px solid #d1d5db !important;
+  border-left: 1px solid #d1d5db !important;
+  border-right: 1px solid #d1d5db !important;
+  border-bottom: none !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  background-color: #f9fafb !important;
+  padding: 12px !important;
+}
+
+.ql-container {
+  border-left: 1px solid #d1d5db !important;
+  border-right: 1px solid #d1d5db !important;
+  border-bottom: 1px solid #d1d5db !important;
+  border-top: none !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+}
+
+.ql-editor {
+  min-height: 150px !important;
+  padding: 16px !important;
+  line-height: 1.6 !important;
+}
+
+.ql-editor.ql-blank::before {
+  font-style: normal !important;
+  color: #9ca3af !important;
+  font-size: 14px !important;
+}
+
+/* Focus states for rich text editor */
+.ql-container.ql-focus .ql-editor,
+.ql-toolbar.ql-focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 1px #6366f1 !important;
+}
+
+/* Toolbar button styling */
+.ql-toolbar .ql-formats {
+  margin-right: 15px !important;
+}
+
+.ql-toolbar button {
+  margin: 0 2px !important;
+  padding: 5px !important;
+  border-radius: 4px !important;
+}
+
+.ql-toolbar button:hover {
+  background-color: #e5e7eb !important;
+}
+
+.ql-toolbar button.ql-active {
+  background-color: #6366f1 !important;
+  color: white !important;
+}
+
+/* Custom scrollbar for editor */
+.ql-editor::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ql-editor::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.ql-editor::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.ql-editor::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

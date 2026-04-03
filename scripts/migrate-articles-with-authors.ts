@@ -74,31 +74,39 @@ async function ensureUniqueSlug(baseSlug: string): Promise<string> {
   return slug
 }
 
-async function findOrCreateUser(authorData: { id: string; name: string } | null): Promise<string | null> {
-  if (!authorData || !authorData.name?.trim()) {
+async function findAuthorByOriginalId(authorData: { id: string; name: string } | null): Promise<string | null> {
+  if (!authorData || !authorData.id?.trim()) {
+    console.log('   ⚠️  No author data provided')
     return null
-  }
-
-  const email = `${authorData.id}@migrated.user` // Generate a temporary email
-  const existingUser = await db.user.findUnique({ where: { email } })
-
-  if (existingUser) {
-    return existingUser.id
   }
 
   try {
-    const newUser = await db.user.create({
-      data: {
-        email,
-        password: 'temp_password_' + Math.random().toString(36).substring(2), // Temporary password
-        name: authorData.name.trim(),
-      }
+    // Look up author by the original ID we preserved during author migration
+    const author = await db.author.findUnique({
+      where: { id: authorData.id }
     })
-    return newUser.id
+
+    if (author) {
+      console.log(`   👤 Found author: ${author.name} (${author.id})`)
+      return author.id
+    } else {
+      console.log(`   ❓ Author not found with ID: ${authorData.id} (${authorData.name})`)
+      return null
+    }
   } catch (error) {
-    console.warn(`Failed to create user for: ${authorData.name}`, error)
+    console.warn(`   ❌ Error finding author ${authorData.id}:`, error)
     return null
   }
+}
+
+async function clearExistingArticles() {
+  console.log('🗑️  Clearing existing articles...')
+
+  // Delete in correct order due to foreign key constraints
+  await db.articleImage.deleteMany({})
+  await db.article.deleteMany({})
+
+  console.log('✅ Cleared existing articles and images')
 }
 
 async function migrateArticles() {
@@ -106,6 +114,8 @@ async function migrateArticles() {
 
   let successCount = 0
   let errorCount = 0
+  let authorFoundCount = 0
+  let authorNotFoundCount = 0
   const errors: Array<{ article: any; error: string }> = []
 
   for (let i = 0; i < articles.length; i++) {
@@ -119,7 +129,13 @@ async function migrateArticles() {
         ? article.author[0]
         : null
 
-      const authorId = await findOrCreateUser(firstAuthor)
+      const authorId = await findAuthorByOriginalId(firstAuthor)
+
+      if (authorId) {
+        authorFoundCount++
+      } else if (firstAuthor) {
+        authorNotFoundCount++
+      }
 
       // Ensure unique slug
       const uniqueSlug = await ensureUniqueSlug(article.slug)
@@ -171,8 +187,8 @@ async function migrateArticles() {
         archivedAt: archivedAt,
         expiresAt: null, // Not present in source data
 
-        // Authorship
-        authorId: authorId,
+        // Authorship - Link to Author table, not User table
+        authorId: authorId, // This will link to Author table
         editorId: null, // Editor field in source is empty string
 
         // Source
@@ -191,6 +207,7 @@ async function migrateArticles() {
         data: articleData
       })
 
+      // Create images if they exist
       if (Array.isArray(article.images) && article.images.length > 0) {
         const imagePromises = article.images.map((img: any) => {
           if (!img.imageCategory) return null
@@ -213,7 +230,7 @@ async function migrateArticles() {
       }
 
       successCount++
-      console.log(`   ✅ Successfully migrated: ${createdArticle.headline}`)
+      console.log(`   ✅ Successfully migrated: ${createdArticle.headline}${authorId ? ' (with author)' : ' (no author)'}`)
 
     } catch (error) {
       errorCount++
@@ -231,12 +248,15 @@ async function migrateArticles() {
   }
 
   // Summary
-  console.log('\n' + '='.repeat(60))
+  console.log('\n' + '='.repeat(70))
   console.log(`📊 MIGRATION SUMMARY`)
-  console.log('='.repeat(60))
+  console.log('='.repeat(70))
   console.log(`✅ Successfully migrated: ${successCount} articles`)
   console.log(`❌ Failed migrations: ${errorCount} articles`)
+  console.log(`👤 Articles with authors found: ${authorFoundCount}`)
+  console.log(`❓ Articles with authors not found: ${authorNotFoundCount}`)
   console.log(`📈 Success rate: ${((successCount / articles.length) * 100).toFixed(2)}%`)
+  console.log(`📈 Author linking rate: ${((authorFoundCount / (authorFoundCount + authorNotFoundCount)) * 100).toFixed(2)}%`)
 
   if (errors.length > 0) {
     console.log('\n❌ ERRORS ENCOUNTERED:')
@@ -254,15 +274,30 @@ async function migrateArticles() {
   const publishedArticles = await db.article.count({
     where: { status: ArticleStatus.PUBLISHED }
   })
+  const articlesWithAuthors = await db.article.count({
+    where: { authorId: { not: null } }
+  })
   const totalImages = await db.articleImage.count()
-  const totalUsers = await db.user.count()
 
   console.log(`📰 Total articles in database: ${totalArticles}`)
   console.log(`📢 Published articles: ${publishedArticles}`)
+  console.log(`👤 Articles with authors: ${articlesWithAuthors}`)
   console.log(`🖼️  Total images: ${totalImages}`)
-  console.log(`👥 Total users created: ${totalUsers}`)
 
-  return { successCount, errorCount, errors }
+  // Show some sample articles with authors
+  console.log('\n📋 SAMPLE ARTICLES WITH AUTHORS:')
+  const samplesWithAuthors = await db.article.findMany({
+    where: { authorId: { not: null } },
+    include: { author: { select: { id: true, name: true } } },
+    take: 5
+  })
+
+  samplesWithAuthors.forEach((article, idx) => {
+    console.log(`${idx + 1}. "${article.headline}"`)
+    console.log(`   Author: ${article.author?.name} (${article.author?.id})`)
+  })
+
+  return { successCount, errorCount, errors, authorFoundCount, authorNotFoundCount }
 }
 
 async function main() {
@@ -271,6 +306,12 @@ async function main() {
     await db.$connect()
     console.log('✅ Connected to database successfully')
 
+    // Ask for confirmation before clearing data
+    console.log('\n⚠️  WARNING: This will DELETE all existing articles and re-migrate them.')
+    console.log('   Make sure you have a backup if needed.')
+    console.log('\n🔄 Starting migration...')
+
+    await clearExistingArticles()
     await migrateArticles()
 
     console.log('\n🎉 Migration completed!')

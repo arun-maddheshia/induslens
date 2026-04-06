@@ -134,6 +134,19 @@ export async function getArticleById(id: string) {
   })
 }
 
+export async function getArticleBySlug(slug: string) {
+  return await db.article.findFirst({
+    where: { slug, status: "PUBLISHED", visibility: true },
+    include: {
+      author: {
+        include: { images: true },
+      },
+      images: true,
+      categoryRef: { select: { id: true, name: true, slug: true } },
+    },
+  })
+}
+
 export async function createArticle(data: any, editorId?: string) {
   const { images, ...articleData } = data
 

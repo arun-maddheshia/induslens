@@ -6,41 +6,90 @@ import { Metadata } from 'next';
 
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { db } from '@/lib/db';
 
-async function fetchCategories(): Promise<ArticleCategory[]> {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public-categories`, {
-      cache: 'no-store'
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch categories');
-    }
-
-    const result = await response.json();
-    return result.success ? result.data : [];
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return [];
-  }
+async function getCategoryBySlug(slug: string) {
+  return db.category.findFirst({
+    where: { slug },
+  });
 }
 
 async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/category-articles/${categoryId}`, {
-      cache: 'no-store'
-    });
+  const articles = await db.article.findMany({
+    where: {
+      categoryId,
+      status: 'PUBLISHED',
+      visibility: true,
+    },
+    orderBy: [{ categoryOrder: 'asc' }, { publishedAt: 'desc' }],
+    include: {
+      author: { select: { id: true, name: true, slug: true } },
+      images: {
+        select: {
+          imageCategory: true,
+          imageCategoryValue: true,
+          imageDescription: true,
+          imageUrl: true,
+        },
+      },
+      categoryRef: { select: { id: true, name: true, slug: true } },
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch category articles');
-    }
-
-    const result = await response.json();
-    return result.success ? result.data : [];
-  } catch (error) {
-    console.error('Error fetching category articles:', error);
-    return [];
-  }
+  return articles.map((article) => ({
+    _id: article.id,
+    headline: article.headline || '',
+    excerpt: article.excerpt || '',
+    articleBody: article.articleBody || '',
+    datePublished: article.publishedAt?.toISOString() || '',
+    dateCreated: article.createdAt.toISOString(),
+    dateModified: article.updatedAt.toISOString(),
+    author: article.author ? [{ id: article.author.id, name: article.author.name || '' }] : [],
+    categories: article.categoryRef ? [article.categoryRef.id] : [],
+    category: article.categoryRef?.id || '',
+    categorySlug: article.categoryRef?.slug || '',
+    newsType: 'article',
+    agency: 'IndusLens',
+    alternativeHeadline: article.headline || '',
+    ampValidationMessage: '',
+    archivedAt: '',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    contentType: 'article' as any,
+    editor: '',
+    expires: '',
+    genre: [],
+    keywords: [],
+    language: 'en',
+    locationCreated: '',
+    mainEntityOfPage: '',
+    metaDescription: article.metaDescription || '',
+    metaTitle: article.metaTitle || '',
+    pageContent: article.pageContent || '',
+    publishedAt: article.publishedAt?.toISOString() || '',
+    publisher: 'IndusLens',
+    siteId: '1',
+    sourceType: 'original',
+    subCategories: [],
+    tags: [],
+    url: `/category/${article.categoryRef?.slug}/${article.slug}` || '',
+    key: parseInt(article.id.slice(-6), 16),
+    isContent: true,
+    description: article.excerpt || '',
+    name: article.headline || '',
+    slug: article.slug || '',
+    status: article.status,
+    visibility: article.visibility || true,
+    optionalfield: '',
+    createdAt: article.createdAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
+    images: (article.images || []).map((img) => ({
+      imageCategory: img.imageCategory || 'article',
+      imageCategoryValue: img.imageCategoryValue || 'posterImage',
+      imageDescription: img.imageDescription || '',
+      imageUrl: img.imageUrl || [],
+      key: article.id,
+    })),
+  }));
 }
 
 type Props = {
@@ -49,10 +98,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const categories = await fetchCategories();
-  const articleCategory = categories.find(
-    (category) => category.slug === params.category,
-  );
+  const articleCategory = await getCategoryBySlug(params.category);
 
   return {
     title: articleCategory?.name,
@@ -78,10 +124,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function page({ params, searchParams }: Props) {
   const { name } = searchParams;
-  const categories = await fetchCategories();
-  const articleCategory = categories.find(
-    (category) => category.slug === params.category,
-  );
+  const articleCategory = await getCategoryBySlug(params.category);
 
   if (!articleCategory) {
     notFound();

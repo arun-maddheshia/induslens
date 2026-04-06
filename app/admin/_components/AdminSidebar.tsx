@@ -19,6 +19,7 @@ const navigation = [
   { name: "Categories", href: "/admin/categories", icon: "🏷️" },
   { name: "Playlists", href: "/admin/playlists", icon: "📋" },
   { name: "Videos", href: "/admin/videos", icon: "🎬" },
+  { name: "Eminence", href: "/admin/eminence", icon: "🌟" },
 ]
 
 export default function AdminSidebar({ user }: AdminSidebarProps) {

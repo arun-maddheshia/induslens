@@ -11,18 +11,22 @@ import { useMemo, useRef } from 'react';
 type Props = {
   article: Article;
   pageUrl: string;
+  articleAuthors?: Author[];
 };
 
-export default function ArticleView({ article, pageUrl }: Props) {
+export default function ArticleView({ article, pageUrl, articleAuthors }: Props) {
   const authorBioRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const currentArticleAuthors = useMemo(() => {
+    if (articleAuthors && articleAuthors.length > 0) {
+      return articleAuthors;
+    }
     return article?.author
       .map((articleAuthor) =>
         anchors.find((author) => articleAuthor.id === author._id),
       )
       .filter(Boolean) as Author[];
-  }, [article?.author]);
+  }, [article?.author, articleAuthors]);
 
   const scrollToAuthorBio = (authorId: string) => {
     const authorRef = authorBioRefs.current[authorId];

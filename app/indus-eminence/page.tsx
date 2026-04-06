@@ -1,7 +1,7 @@
 import { InstagramIcon, LinkedinIcon, TwitterIcon } from '@/components/Icons';
 import ImageComponent from '@/components/ImageComponent';
 import ReadMore from '@/components/UI/ReadMore';
-import { contentBlockData } from '@/data/content-block';
+import { getPublishedEminence } from '@/lib/db-eminence';
 
 import { getImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
@@ -36,9 +36,7 @@ export const metadata: Metadata = {
 
 export default async function page({ searchParams }: Props) {
   const { authorName } = searchParams;
-  const authors = contentBlockData.filter(
-    (article) => article.category === 'Indus_Eminence',
-  );
+  const authors = await getPublishedEminence();
 
   if (authorName && authors.length) {
     const normalName = authorName.replace('_', ' ');

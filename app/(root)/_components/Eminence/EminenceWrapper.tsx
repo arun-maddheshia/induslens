@@ -1,13 +1,24 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import ImageComponent from '@/components/ImageComponent';
 import Carousel from '@/components/UI/Carousel';
-import { contentBlockData } from '@/data/content-block';
 import { getImageUrl } from '@/lib/utils';
 import Link from 'next/link';
 
 export const EminenceWrapper = () => {
-  const indusEminence = contentBlockData.filter(
-    (article) => article.category === 'Indus_Eminence',
-  );
+  const [indusEminence, setIndusEminence] = useState<Eminence[]>([]);
+
+  useEffect(() => {
+    fetch('/api/public-eminence')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setIndusEminence(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  if (indusEminence.length === 0) return null;
 
   return (
     <Carousel

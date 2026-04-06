@@ -24,9 +24,10 @@ const AuthorBio: React.FC<AuthorBioProps> = ({ author }) => (
         <a className="mb-2 inline-block" href={author.twitterUrl}>
           <TwitterIcon width={20} height={20} />
         </a>
-        <div className="md:text-md whitespace-pre-wrap pb-5 text-sm font-normal leading-6 text-gray-500 md:font-semibold md:leading-8">
-          {author.aboutTheAnchor}
-        </div>
+        <div
+          className="md:text-md pb-5 text-sm font-normal leading-6 text-gray-500 md:font-semibold md:leading-8"
+          dangerouslySetInnerHTML={{ __html: author.aboutTheAnchor }}
+        />
       </div>
     </div>
   </div>

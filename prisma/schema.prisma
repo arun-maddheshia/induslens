@@ -298,3 +298,53 @@ model VideoImage {
   @@index([videoId])
 }
 
+model Eminence {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order     Int      @default(1)
+  legacyId  String?  @unique
+  legacyKey Int?
+
+  name        String
+  slug        String   // role/title (e.g. "CEO, Chanel")
+  excerpt     String   @db.Text
+  pageContent String?  @db.Text
+  countryName String?
+  category    String?
+  language    String   @default("en")
+  status      String   @default("Published")
+  isContent   Boolean  @default(true)
+  siteId      String?
+
+  facebookUrl  String?
+  instagramUrl String?
+  twitterUrl   String?
+  linkedinUrl  String?
+  websiteUrl   String?
+
+  publishedAt DateTime?
+
+  images EminenceImage[]
+
+  @@index([status])
+  @@index([order])
+}
+
+model EminenceImage {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  imageCategory      String
+  imageCategoryValue String?
+  imageDescription   String?
+  imageUrl           String[]
+  key                String?
+
+  eminenceId String
+  eminence   Eminence @relation(fields: [eminenceId], references: [id], onDelete: Cascade)
+
+  @@index([eminenceId])
+}
+

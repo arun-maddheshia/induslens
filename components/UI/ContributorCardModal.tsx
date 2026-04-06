@@ -86,7 +86,7 @@ export default function ContributorCardModal({
           </div>
         </div>
       </div>
-      <p>{contributor.aboutTheAnchor}</p>
+      <div dangerouslySetInnerHTML={{ __html: contributor.aboutTheAnchor }} />
     </div>
   );
 }

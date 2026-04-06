@@ -136,7 +136,7 @@ export const OtherArticlesSection = ({
                 width={640}
                 height={427}
                 alt={article.name}
-                className="aspect-[11/7] object-cover"
+                className="w-full aspect-[11/7] object-cover"
               />
             </Link>
             <div className="p-5">

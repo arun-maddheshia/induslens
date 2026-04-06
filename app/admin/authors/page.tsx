@@ -30,7 +30,7 @@ export default async function AuthorsPage({ searchParams }: AuthorsPageProps) {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Authors</h1>
             <p className="mt-1 text-sm text-gray-500">
-              Manage your content authors and contributors
+              Manage your content authors and contributors. Drag to reorder.
             </p>
           </div>
           <Link

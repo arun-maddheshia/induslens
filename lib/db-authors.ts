@@ -37,7 +37,10 @@ export async function getAllAuthors(
         where,
         skip,
         take: limit,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [
+          { order: 'asc' },
+          { updatedAt: 'desc' }
+        ],
         include: {
           images: true,
           _count: {
@@ -199,5 +202,73 @@ export async function getAuthorsForDropdown() {
   } catch (error) {
     console.error("Error fetching authors for dropdown:", error)
     return []
+  }
+}
+
+// Get all authors for ordering (no pagination)
+export async function getAllAuthorsForOrdering() {
+  if (!db) {
+    return []
+  }
+
+  try {
+    const authors = await db.author.findMany({
+      orderBy: [
+        { order: 'asc' },
+        { name: 'asc' }
+      ],
+      include: {
+        images: true,
+        _count: {
+          select: { articles: true }
+        }
+      }
+    })
+
+    const orderValues = authors.map((a) => a.order)
+    const hasDuplicates = new Set(orderValues).size !== orderValues.length
+
+    if (hasDuplicates) {
+      await db.$transaction(
+        authors.map((author, index) =>
+          db.author.update({
+            where: { id: author.id },
+            data: { order: index + 1 }
+          })
+        )
+      )
+      return authors.map((author, index) => ({ ...author, order: index + 1 }))
+    }
+
+    return authors
+  } catch (error) {
+    console.error("Error fetching authors for ordering:", error)
+    return []
+  }
+}
+
+// Bulk update author orders
+
+export async function updateAuthorOrders(updates: { id: string; order: number }[]) {
+  if (!db) {
+    throw new Error("Database connection not available")
+  }
+
+  try {
+
+    const sorted = [...updates].sort((a, b) => a.order - b.order)
+    const normalized = sorted.map((item, index) => ({ id: item.id, order: index + 1 }))
+
+    return await db.$transaction(
+      normalized.map(({ id, order }) =>
+        db.author.update({
+          where: { id },
+          data: { order }
+        })
+      )
+    )
+  } catch (error) {
+    console.error("Error updating author orders:", error)
+    throw error
   }
 }

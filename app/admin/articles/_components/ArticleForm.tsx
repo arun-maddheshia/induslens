@@ -18,7 +18,8 @@ interface Article {
   diveContent?: string | null
   contentType: ContentType
   newsType?: string | null
-  category: string
+  category?: string | null
+  categoryId?: string | null
   subCategories: string[]
   genre: string[]
   tags: string[]
@@ -59,6 +60,8 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
   const [error, setError] = useState("")
   const [authors, setAuthors] = useState<Array<{ id: string; name: string; slug: string }>>([])
   const [authorsLoading, setAuthorsLoading] = useState(true)
+  const [categories, setCategories] = useState<Array<{ id: string; name: string; slug: string; isNews: boolean }>>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   const {
     register,
@@ -74,7 +77,8 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
       articleBody: "",
       contentType: ContentType.ARTICLES,
       images: [],
-      category: "",
+      category: null,
+      categoryId: null,
       subCategories: [],
       genre: [],
       tags: [],
@@ -89,28 +93,38 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
     },
   })
 
-  // Fetch authors for dropdown
+  // Fetch authors and categories for dropdowns
   useEffect(() => {
-    const fetchAuthors = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/authors/dropdown')
-        if (response.ok) {
-          const data = await response.json()
-          setAuthors(data || [])
+        const [authorsResponse, categoriesResponse] = await Promise.all([
+          fetch('/api/authors/dropdown'),
+          fetch('/api/categories/dropdown')
+        ])
+
+        if (authorsResponse.ok) {
+          const authorsData = await authorsResponse.json()
+          setAuthors(authorsData || [])
+        }
+
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json()
+          setCategories(categoriesData || [])
         }
       } catch (error) {
-        console.error('Failed to fetch authors:', error)
+        console.error('Failed to fetch dropdown data:', error)
       } finally {
         setAuthorsLoading(false)
+        setCategoriesLoading(false)
       }
     }
 
-    fetchAuthors()
+    fetchData()
   }, [])
 
-  // Reset form with article data once authors are loaded (for edit mode)
+  // Reset form with article data once authors and categories are loaded (for edit mode)
   useEffect(() => {
-    if (!authorsLoading && article) {
+    if (!authorsLoading && !categoriesLoading && article) {
       console.log('Resetting form with article data:', article)
       console.log('Article authorId:', article.authorId)
       console.log('Available authors:', authors.map(a => ({ id: a.id, name: a.name })))
@@ -122,12 +136,14 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
         genre: Array.isArray(article.genre) ? article.genre : [],
         subCategories: Array.isArray(article.subCategories) ? article.subCategories : [],
         images: Array.isArray(article.images) ? article.images : [],
+        // Ensure categoryId is set properly (use categoryId if available, otherwise fall back to category)
+        categoryId: article.categoryId || article.category || null,
       }
 
       console.log('Form data being set:', formData)
       reset(formData)
     }
-  }, [authorsLoading, article, reset, authors])
+  }, [authorsLoading, categoriesLoading, article, reset, authors, categories])
 
   // Register rich text editor fields for validation
   const articleBodyRegister = register("articleBody", { required: "Article body is required" })
@@ -160,6 +176,9 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
         keywords: processArrayField(data.keywords),
         genre: processArrayField(data.genre),
         subCategories: processArrayField(data.subCategories),
+        // Map categoryId to both fields for backward compatibility
+        categoryId: data.categoryId || null,
+        category: data.categoryId || null,
       }
 
       const response = await fetch(url, {
@@ -194,8 +213,8 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
   }
 
 
-  // Show loading state while authors are loading (especially important for edit mode)
-  if (authorsLoading && isEdit) {
+  // Show loading state while data is loading (especially important for edit mode)
+  if ((authorsLoading || categoriesLoading) && isEdit) {
     return (
       <div className="bg-white rounded-xl shadow-sm">
         <div className="p-8 text-center">
@@ -369,15 +388,48 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
           </div>
 
           <div>
-            <label htmlFor="category" className="block text-sm font-semibold text-gray-800 mb-2">
-              Category *
+            <label htmlFor="categoryId" className="block text-sm font-semibold text-gray-800 mb-2">
+              Category
             </label>
-            <input
-              {...register("category", { required: "Category is required" })}
-              type="text"
-              className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-            />
-            {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>}
+            <div className="relative">
+              <select
+                {...register("categoryId")}
+                disabled={categoriesLoading}
+                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed appearance-none"
+              >
+                <option value="">Select a category (optional)</option>
+                {categories.map((category) => (
+                  <option
+                    key={category.id}
+                    value={category.id}
+                    className={category.isNews ? 'text-red-700' : 'text-blue-700'}
+                  >
+                    {category.isNews ? '🔴 ' : '🔵 '}
+                    {category.name}
+                  </option>
+                ))}
+                {categories.length === 0 && !categoriesLoading && (
+                  <option value="" disabled>No categories available</option>
+                )}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </div>
+            {categoriesLoading && <p className="mt-1 text-xs text-gray-500">Loading categories...</p>}
+            {!categoriesLoading && categories.length === 0 && (
+              <p className="mt-1 text-xs text-red-500">No categories available. <a href="/admin/categories/new" className="text-indigo-600 hover:text-indigo-800">Create one</a>?</p>
+            )}
+            <div className="mt-1 flex items-center text-xs text-gray-500">
+              <span className="inline-flex items-center">
+                🔴 <span className="ml-1 mr-3">News categories</span>
+              </span>
+              <span className="inline-flex items-center">
+                🔵 <span className="ml-1">Content categories</span>
+              </span>
+            </div>
           </div>
 
           <div>

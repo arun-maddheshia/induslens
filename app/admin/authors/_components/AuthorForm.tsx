@@ -97,9 +97,19 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
       const method = isEdit ? "PUT" : "POST"
 
       // Process shows array
+      const processArrayField = (field: any): string[] => {
+        if (typeof field === "string") {
+          return field.split(",").map((item: string) => item.trim()).filter(Boolean)
+        }
+        if (Array.isArray(field)) {
+          return field
+        }
+        return []
+      }
+
       const processedData = {
         ...data,
-        shows: typeof data.shows === "string" ? data.shows.split(",").map((s: string) => s.trim()).filter(Boolean) : Array.isArray(data.shows) ? data.shows : [],
+        shows: processArrayField(data.shows),
         key: data.key ? parseInt(data.key.toString()) : null,
       }
 

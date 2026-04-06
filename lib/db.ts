@@ -45,6 +45,8 @@ export async function getAllArticles(
   filters?: {
     status?: string
     category?: string
+    categoryId?: string
+    unassignedToCategory?: string
     search?: string
   }
 ) {
@@ -60,11 +62,33 @@ export async function getAllArticles(
     where.category = filters.category
   }
 
-  if (filters?.search) {
+  if (filters?.categoryId) {
+    where.categoryId = filters.categoryId
+  }
+
+  if (filters?.unassignedToCategory) {
     where.OR = [
+      { categoryId: null },
+      { categoryId: { not: filters.unassignedToCategory } }
+    ]
+  }
+
+  if (filters?.search) {
+    const searchConditions = [
       { headline: { contains: filters.search, mode: 'insensitive' } },
       { excerpt: { contains: filters.search, mode: 'insensitive' } },
     ]
+
+    if (where.OR) {
+      // Combine with existing OR conditions
+      where.AND = [
+        { OR: where.OR },
+        { OR: searchConditions }
+      ]
+      delete where.OR
+    } else {
+      where.OR = searchConditions
+    }
   }
 
   const [articles, total] = await Promise.all([
@@ -177,8 +201,8 @@ export async function getCategories() {
     _count: true,
   })
 
-  return categories.map((cat: { category: string; _count: any }) => ({
-    category: cat.category,
+  return categories.map((cat: { category: string | null; _count: any }) => ({
+    category: cat.category || "Uncategorized",
     count: cat._count,
   }))
 }

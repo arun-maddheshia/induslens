@@ -130,7 +130,7 @@ export default function ImageUpload({ label, images, onChange, error }: ImageUpl
                   <div className="flex items-center space-x-2">
                     <input
                       type="file"
-                      ref={(el) => (fileInputRefs.current[category.value] = el)}
+                      ref={(el) => { fileInputRefs.current[category.value] = el }}
                       onChange={(e) => {
                         const file = e.target.files?.[0]
                         if (file) handleFileUpload(file, category)
@@ -152,7 +152,7 @@ export default function ImageUpload({ label, images, onChange, error }: ImageUpl
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <input
                     type="file"
-                    ref={(el) => (fileInputRefs.current[category.value] = el)}
+                    ref={(el) => { fileInputRefs.current[category.value] = el }}
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) handleFileUpload(file, category)

@@ -80,7 +80,7 @@ export default function AuthorFilters() {
             }}
             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">All Statuses</option>
+            <option value="">All </option>
             <option value="Published">Published</option>
             <option value="Draft">Draft</option>
             <option value="Archived">Archived</option>

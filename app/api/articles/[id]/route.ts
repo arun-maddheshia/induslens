@@ -71,6 +71,12 @@ export async function PUT(
       updateData.archivedAt = new Date()
     }
 
+    // Handle categoryId: if category field contains an ID, use it as categoryId
+    if (data.category !== undefined) {
+      updateData.categoryId = data.category || null
+      updateData.category = data.category || null
+    }
+
     const article = await updateArticle(params.id, updateData, session.user.id!)
 
     return NextResponse.json(article)

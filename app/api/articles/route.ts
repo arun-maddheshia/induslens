@@ -20,11 +20,15 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") ?? "10")
     const status = searchParams.get("status") || undefined
     const category = searchParams.get("category") || undefined
+    const categoryId = searchParams.get("categoryId") || undefined
+    const unassignedToCategory = searchParams.get("unassignedToCategory") || undefined
     const search = searchParams.get("search") || undefined
 
     const result = await getAllArticles(page, limit, {
       status,
       category,
+      categoryId,
+      unassignedToCategory,
       search,
     })
 
@@ -53,7 +57,7 @@ export async function POST(request: NextRequest) {
     const data = await request.json()
 
     // Validate required fields
-    const requiredFields = ["headline", "excerpt", "articleBody", "metaTitle", "metaDescription", "slug", "category"]
+    const requiredFields = ["headline", "excerpt", "articleBody", "metaTitle", "metaDescription", "slug"]
     for (const field of requiredFields) {
       if (!data[field]) {
         return NextResponse.json(
@@ -75,6 +79,10 @@ export async function POST(request: NextRequest) {
       genre: data.genre || [],
       subCategories: data.subCategories || [],
       publishedAt: data.status === ArticleStatus.PUBLISHED ? new Date() : null,
+      // Handle categoryId: if category field contains an ID, use it as categoryId
+      categoryId: data.category || data.categoryId || null,
+      // Keep the legacy category field for backward compatibility
+      category: data.category || null,
     }
 
     const article = await createArticle(articleData, session.user.id!)

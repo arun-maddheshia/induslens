@@ -12,16 +12,16 @@ interface Article {
   headline: string
   excerpt: string
   status: string
-  category: string
+  category: string | null
   publishedAt: Date | null
   updatedAt: Date
   author?: {
     name: string | null
-    email: string
+    email: string | null
   } | null
   editor?: {
     name: string | null
-    email: string
+    email: string | null
   } | null
 }
 

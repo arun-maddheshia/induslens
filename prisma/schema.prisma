@@ -26,6 +26,23 @@ model User {
   edited         Article[] @relation("ArticleEditor")
 }
 
+// ─── Categories ──────────────────────────────────────────────────────
+
+model Category {
+  id          String   @id  // e.g. "India_and_the_SDGs"
+  slug        String   @unique  // e.g. "India-and-the-SDGs"
+  name        String
+  description String   @db.Text
+  isNews      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  order       Int      @default(1)
+
+  articles    Article[]
+
+  @@index([slug])
+}
+
 // ─── Articles ────────────────────────────────────────────────────────
 
 enum ContentType {
@@ -56,14 +73,17 @@ model Article {
   diveContent          String?  @db.Text
 
   // ── Classification ──
-  contentType   ContentType    @default(NEWS)
-  newsType      String?
-  category      String
-  subCategories String[]
-  genre         String[]
-  tags          String[]
-  keywords      String[]
-  language      String         @default("en")
+  contentType     ContentType    @default(NEWS)
+  newsType        String?
+  category        String?
+  categoryId      String?
+  categoryRef     Category?      @relation(fields: [categoryId], references: [id])
+  categoryOrder   Int?           @default(1)  // Order within the category
+  subCategories   String[]
+  genre           String[]
+  tags            String[]
+  keywords        String[]
+  language        String         @default("en")
 
   // ── SEO / Meta ──
   metaTitle       String
@@ -94,11 +114,15 @@ model Article {
   siteId     String?
 
   // ── Relations ──
-  images ArticleImage[]
+  images               ArticleImage[]
+  heroPlaylists        HeroPlaylist[]        @relation("HeroPlaylistArticle")
+  otherStoriesPlaylists OtherStoriesPlaylist[] @relation("OtherStoriesPlaylistArticle")
 
   @@index([slug])
   @@index([status, publishedAt])
   @@index([category])
+  @@index([categoryId])
+  @@index([categoryId, categoryOrder])
   @@index([contentType])
 }
 
@@ -125,6 +149,7 @@ model Author {
   updatedAt DateTime @updatedAt
 
   // ── Core Info ──
+  order           Int      @default(1)
   name            String
   aboutTheAnchor  String   @db.Text
   email           String?
@@ -161,6 +186,7 @@ model Author {
 
   @@index([slug])
   @@index([status])
+  @@index([order])
 }
 
 model AuthorImage {
@@ -177,5 +203,29 @@ model AuthorImage {
   author   Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([authorId])
+}
+
+model HeroPlaylist {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order     Int
+  articleId String
+  article   Article @relation("HeroPlaylistArticle", fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([order])
+}
+
+model OtherStoriesPlaylist {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order     Int
+  articleId String
+  article   Article @relation("OtherStoriesPlaylistArticle", fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([order])
 }
 

@@ -16,6 +16,8 @@ interface AdminSidebarProps {
 const navigation = [
   { name: "Articles", href: "/admin/articles", icon: "📄" },
   { name: "Authors", href: "/admin/authors", icon: "👤" },
+  { name: "Categories", href: "/admin/categories", icon: "🏷️" },
+  { name: "Playlists", href: "/admin/playlists", icon: "📋" },
 ]
 
 export default function AdminSidebar({ user }: AdminSidebarProps) {

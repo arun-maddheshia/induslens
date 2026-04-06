@@ -4,7 +4,7 @@ import React from 'react';
 
 type FeaturedArticlesWrapperProps = {
   leftPosts: Article[];
-  mainPost: Article;
+  mainPost: Article | null;
   rightPosts: Article[];
 };
 
@@ -34,12 +34,14 @@ const FeaturedArticlesWrapper = ({
         ))}
       </div>
       <div className="order-first mb-4 px-0 md:order-1 md:w-full md:px-5 lg:mb-0 lg:w-1/2 lg:px-5">
-        <FeaturedArticleCard
-          article={mainPost}
-          width={740}
-          height={527}
-          type="lg"
-        />
+        {mainPost && (
+          <FeaturedArticleCard
+            article={mainPost}
+            width={740}
+            height={527}
+            type="lg"
+          />
+        )}
       </div>
       <div className="order-2 md:block md:w-full lg:w-1/4">
         {rightPosts.map((article, index) => (

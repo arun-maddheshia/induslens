@@ -28,6 +28,7 @@ declare interface Article {
   author: AuthorObject[];
   categories: string[];
   category: string;
+  categorySlug?: string;
   contentType: ContentType;
   dateCreated: string;
   dateModified: string;
@@ -72,6 +73,9 @@ declare interface ArticleCategory {
   slug: string;
   name: string;
   description: string;
+  isNews?: boolean;
+  order?: number;
+  articleCount?: number;
 }
 
 // PostImage interface

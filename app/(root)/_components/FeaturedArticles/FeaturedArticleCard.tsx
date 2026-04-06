@@ -62,10 +62,12 @@ const FeaturedArticleCard = ({
   const authorName = getFirstAuthorName(article.author);
 
   const redirectUrl = () => {
-    if (article.category === 'none') {
+    if (article.category === 'none' || !article.category) {
       return `/articles/${article.slug}`;
     } else {
-      return `/category/${slugify(article.category)}?${slugify(article.slug)}`;
+      // Use categorySlug if available, otherwise fallback to slugified category name
+      const categorySlug = article.categorySlug || slugify(article.category);
+      return `/category/${categorySlug}?name=${article.slug}`;
     }
   };
 

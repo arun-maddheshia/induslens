@@ -2,12 +2,29 @@ import ImageComponent from '@/components/ImageComponent';
 import ReadMore from '@/components/UI/ReadMore';
 import { Share } from '@/components/UI/Share';
 import { articles } from '@/data/articles';
-import { categories } from '@/data/categories';
 import { cn, getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import { Metadata } from 'next';
 
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+
+async function fetchCategories(): Promise<ArticleCategory[]> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/public-categories`, {
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+
+    const result = await response.json();
+    return result.success ? result.data : [];
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
 
 type Props = {
   params: { category: string };
@@ -15,9 +32,10 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const articleCategory = categories.filter(
+  const categories = await fetchCategories();
+  const articleCategory = categories.find(
     (category) => category.slug === params.category,
-  )[0];
+  );
 
   return {
     title: articleCategory?.name,
@@ -43,17 +61,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function page({ params, searchParams }: Props) {
   const { name } = searchParams;
-  const articleCategory = categories.filter(
+  const categories = await fetchCategories();
+  const articleCategory = categories.find(
     (category) => category.slug === params.category,
-  )[0];
+  );
 
   if (!articleCategory) {
     notFound();
   }
 
-  const isSingleGridView =
-    articleCategory.id === 'IndusLens_OSINT' ||
-    articleCategory.id === 'Worldview_India';
+  // Use isNews field from database instead of hardcoded IDs
+  const isSingleGridView = articleCategory.isNews === true;
 
   const gridColumnClass = isSingleGridView
     ? 'lg:max-w-[60%] mx-auto'

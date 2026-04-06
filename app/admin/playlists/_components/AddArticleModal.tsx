@@ -148,7 +148,7 @@ export default function AddArticleModal({ type, onClose, onArticleAdded }: AddAr
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search articles by title or excerpt..."
+                placeholder="Search articles by headline or excerpt..."
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>

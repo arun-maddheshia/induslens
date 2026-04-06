@@ -1,8 +1,10 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import ImageComponent from '@/components/ImageComponent';
 import TrendingVideo from '@/components/UI/TrendingVideo';
 import Carousel from '@/components/UI/Carousel';
 import { articles } from '@/data/articles';
-import { categories } from '@/data/categories';
 import { videoNews } from '@/data/video-news';
 import { cn, getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import Link from 'next/link';
@@ -10,39 +12,123 @@ import FeaturedContributor from './_components/Contributors';
 import FeaturedEminence from './_components/Eminence';
 import FeaturedArticles from './_components/FeaturedArticles';
 import { PageTitle } from './_components/FeaturedArticles/PageTitle';
-import { Metadata } from 'next';
 import ReadMore from '@/components/UI/ReadMore';
 import { OtherArticlesSection } from './_components/OtherArticles';
 import styles from './Home.module.scss';
 
-const pageTitle =
-  "IndusLens | Chronicling cutting-edge global perspectives on India's success stories";
-const pageDescription =
-  "Explore India's vibrant journey to 2050 as a global economic powerhouse, guided by insightful global perspectives on its innovative entrepreneurship, tech revolution, pivotal policies and its dazzling soft power.";
-
-export const metadata: Metadata = {
-  title: pageTitle,
-  description: pageDescription,
-  alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_API_URL}`,
-  },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@Indus_Lens',
-    title: pageTitle,
-    description: pageDescription,
-    images: `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
-  },
-};
-
 export default function Home() {
-  const articleCategories: ArticleCategory[] = categories;
+  const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>([]);
+  const [categoryArticles, setCategoryArticles] = useState<Record<string, Article[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategoriesAndArticles = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch categories
+        const categoriesResponse = await fetch('/api/public-categories');
+        const categoriesResult = await categoriesResponse.json();
+
+        if (!categoriesResponse.ok) {
+          throw new Error(categoriesResult.error || 'Failed to fetch categories');
+        }
+
+        if (!categoriesResult.success) {
+          throw new Error(categoriesResult.error || 'Failed to fetch categories');
+        }
+
+        const categories = categoriesResult.data;
+        setArticleCategories(categories);
+
+        // Fetch articles for each category
+        const articlesPromises = categories.map(async (category: ArticleCategory) => {
+          try {
+            const response = await fetch(`/api/category-articles/${category.id}`);
+            const result = await response.json();
+
+            if (result.success) {
+              return { categoryId: category.id, articles: result.data };
+            }
+            return { categoryId: category.id, articles: [] };
+          } catch (err) {
+            console.error(`Error fetching articles for category ${category.id}:`, err);
+            return { categoryId: category.id, articles: [] };
+          }
+        });
+
+        const articlesResults = await Promise.all(articlesPromises);
+
+        // Build categoryArticles object
+        const categoryArticlesMap: Record<string, Article[]> = {};
+        articlesResults.forEach(({ categoryId, articles }) => {
+          categoryArticlesMap[categoryId] = articles;
+        });
+
+        setCategoryArticles(categoryArticlesMap);
+
+      } catch (err) {
+        console.error('Error fetching categories and articles:', err);
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoriesAndArticles();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
+        <FeaturedArticles />
+        <TrendingVideo />
+
+        <section className="py-0 pb-20">
+          <PageTitle href="indus-eminence" title="Indus Eminence" />
+          <FeaturedEminence />
+        </section>
+
+        <section className="py-0 pb-20">
+          <PageTitle title="Our Contributors" href="our-contributors" />
+          <FeaturedContributor />
+        </section>
+
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+
+        <OtherArticlesSection articles={articles} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
+        <FeaturedArticles />
+        <TrendingVideo />
+
+        <section className="py-0 pb-20">
+          <PageTitle href="indus-eminence" title="Indus Eminence" />
+          <FeaturedEminence />
+        </section>
+
+        <section className="py-0 pb-20">
+          <PageTitle title="Our Contributors" href="our-contributors" />
+          <FeaturedContributor />
+        </section>
+
+        <div className="flex justify-center items-center py-8 text-red-600">
+          <span>Error loading categories: {error}</span>
+        </div>
+
+        <OtherArticlesSection articles={articles} />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
@@ -103,48 +189,51 @@ export default function Home() {
             maxLength={300}
             href={`category/${category.slug}`}
           />
-          <Carousel
-            slidesPerView={4}
-            mdSlidesPerView={3}
-            gridRows={1}
-            loop={true}
-            spaceBetween={20}
-            items={articles
-              .filter(
-                (article) =>
-                  article.category === category.id && article.images.length,
-              )
-              .map((articleItem) => (
-                <div key={articleItem._id} className="py-0 lg:py-4">
-                  <Link
-                    href={`category/${category.slug}?name=${articleItem.slug}`}
-                  >
-                    <ImageComponent
-                      src={getImageUrl(articleItem.images, 'posterImage')}
-                      alt={articleItem.name}
-                      width={810}
-                      height={540}
-                      className="mb-2 aspect-[3/2]"
-                    />
-                  </Link>
-                  <h6 className="mb-2 text-lg font-bold leading-6 text-black">
+          {(categoryArticles[category.id] || []).filter((article) => article.images.length).length > 0 ? (
+            <Carousel
+              slidesPerView={4}
+              mdSlidesPerView={3}
+              gridRows={1}
+              loop={true}
+              spaceBetween={20}
+              items={(categoryArticles[category.id] || [])
+                .filter((article) => article.images.length)
+                .map((articleItem) => (
+                  <div key={articleItem._id} className="py-0 lg:py-4">
                     <Link
                       href={`category/${category.slug}?name=${articleItem.slug}`}
-                      className="hover:underline"
                     >
-                      {articleItem.name}
+                      <ImageComponent
+                        src={getImageUrl(articleItem.images, 'posterImage')}
+                        alt={articleItem.name}
+                        width={810}
+                        height={540}
+                        className="mb-2 aspect-[3/2]"
+                      />
                     </Link>
-                  </h6>
-                  <p className="mb-2 text-sm text-gray-500">
-                    {getFirstAuthorName(articleItem.author)}
-                  </p>
-                </div>
-              ))}
-          />
+                    <h6 className="mb-2 text-lg font-bold leading-6 text-black">
+                      <Link
+                        href={`category/${category.slug}?name=${articleItem.slug}`}
+                        className="hover:underline"
+                      >
+                        {articleItem.name}
+                      </Link>
+                    </h6>
+                    <p className="mb-2 text-sm text-gray-500">
+                      {getFirstAuthorName(articleItem.author)}
+                    </p>
+                  </div>
+                ))}
+            />
+          ) : (
+            <div className="text-center text-muted-foreground py-8">
+              <p>No articles found for this category</p>
+            </div>
+          )}
         </section>
       ))}
 
-      <OtherArticlesSection articles={articles} />
+      <OtherArticlesSection articles={[]} />
     </div>
   );
 }

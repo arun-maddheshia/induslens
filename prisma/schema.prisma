@@ -229,3 +229,72 @@ model OtherStoriesPlaylist {
   @@index([order])
 }
 
+// ─── Videos ──────────────────────────────────────────────────────────
+
+model Video {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ── Ordering ──
+  order     Int      @default(1)
+
+  // ── Identity (preserved from source) ──
+  legacyId  String?  @unique  // original _id from dummy data
+
+  // ── Core content ──
+  name            String
+  slug            String   @unique
+  synopsis        String   @db.Text
+  metaTitle       String
+  metaDescription String   @db.Text
+
+  // ── Video source ──
+  contentId       String           // YouTube video ID or other source ID
+  sourceType      String           // "youtube", "audio/mp3", etc.
+  channelId       String?
+  channelName     String?
+  streamingSource String?
+  duration        String?          // e.g. "22:41" — kept as string to match source
+
+  // ── Classification ──
+  contentType     String   @default("news")
+  category        String?
+  genre           String[]
+  tags            String[]
+  language        String   @default("en")
+  languageCode    String?
+
+  // ── Publishing ──
+  status          String   @default("Published")
+  isContent       Boolean  @default(true)
+  key             Int?
+  siteId          String?
+  author          String?  // plain string author name from source (e.g. "IndusLens")
+  publishedAt     DateTime?
+
+  // ── Relations ──
+  images          VideoImage[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([order])
+  @@index([category])
+}
+
+model VideoImage {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  imageCategory      String
+  imageCategoryValue String?
+  imageDescription   String?
+  imageUrl           String[]
+  key                String?
+
+  videoId String
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([videoId])
+}
+

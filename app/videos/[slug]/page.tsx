@@ -1,5 +1,5 @@
 import VideoPlayer from '@/components/VideoPlayer';
-import { videoNews } from '@/data/video-news';
+import { getVideoArticleBySlug } from '@/lib/db-videos';
 import { getImageUrl, getFormattedDate } from '@/lib/utils';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -8,12 +8,8 @@ type Props = {
   params: { slug: string };
 };
 
-function getActiveVideo(slug: string) {
-  return videoNews.filter((video) => video.slug === slug)[0];
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const video = getActiveVideo(params.slug);
+  const video = await getVideoArticleBySlug(params.slug);
 
   return {
     title: video?.metaTitle,
@@ -25,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getImageUrl(video?.images, 'detailsPageBackground')
+        ? getImageUrl(video.images, 'detailsPageBackground')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
       type: 'website',
     },
@@ -35,14 +31,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getImageUrl(video?.images, 'detailsPageBackground')
+        ? getImageUrl(video.images, 'detailsPageBackground')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
     },
   };
 }
 
-const page = ({ params }: Props) => {
-  const activeVideo = getActiveVideo(params.slug);
+const page = async ({ params }: Props) => {
+  const activeVideo = await getVideoArticleBySlug(params.slug);
 
   if (!activeVideo) {
     notFound();
@@ -72,4 +68,5 @@ const page = ({ params }: Props) => {
     </section>
   );
 };
+
 export default page;

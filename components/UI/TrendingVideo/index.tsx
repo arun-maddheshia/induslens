@@ -1,12 +1,25 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Carousel from '@/components//UI/Carousel';
-import { videoNews } from '@/data/video-news';
 import { cn, getImageUrl } from '@/lib/utils';
 import ImageComponent from '../../ImageComponent';
 import Link from 'next/link';
 import styles from './TrendingVideo.module.scss';
 
 export default function TrendingVideo() {
-  const allPost = videoNews.map((video) => (
+  const [videos, setVideos] = useState<VideoArticle[]>([]);
+
+  useEffect(() => {
+    fetch('/api/trending-videos')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setVideos(data);
+      })
+      .catch(console.error);
+  }, []);
+
+  const allPost = videos.map((video) => (
     <div key={`video_${video._id}`}>
       <Link href={`/videos/${video.slug}`}>
         <ImageComponent

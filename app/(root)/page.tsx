@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import ImageComponent from '@/components/ImageComponent';
 import TrendingVideo from '@/components/UI/TrendingVideo';
 import Carousel from '@/components/UI/Carousel';
-import { videoNews } from '@/data/video-news';
 import { cn, getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import Link from 'next/link';
 import FeaturedContributor from './_components/Contributors';
@@ -18,6 +17,7 @@ import styles from './Home.module.scss';
 export default function Home() {
   const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>([]);
   const [categoryArticles, setCategoryArticles] = useState<Record<string, Article[]>>({});
+  const [industvVideos, setIndustvVideos] = useState<VideoArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,8 +27,12 @@ export default function Home() {
         setLoading(true);
         setError(null);
 
-        // Fetch categories
-        const categoriesResponse = await fetch('/api/public-categories');
+        // Fetch IndusTv videos and categories in parallel
+        const [categoriesResponse, industvResponse] = await Promise.all([
+          fetch('/api/public-categories'),
+          fetch('/api/industv-videos'),
+        ]);
+
         const categoriesResult = await categoriesResponse.json();
 
         if (!categoriesResponse.ok) {
@@ -37,6 +41,11 @@ export default function Home() {
 
         if (!categoriesResult.success) {
           throw new Error(categoriesResult.error || 'Failed to fetch categories');
+        }
+
+        if (industvResponse.ok) {
+          const industvData = await industvResponse.json();
+          if (Array.isArray(industvData)) setIndustvVideos(industvData);
         }
 
         const categories = categoriesResult.data;
@@ -138,30 +147,28 @@ export default function Home() {
       <section className="py-0 pb-20">
         <PageTitle title="IndusTV" />
         <div className="md:grid md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-4">
-          {videoNews
-            .filter((video) => video.category === 'industv')
-            .map((video) => (
-              <div key={`video_page_${video._id}`} className="mb-5 lg:mb-0">
-                <Link
-                  href={`/industv/${video.slug}`}
-                  className="relative block"
-                >
-                  <ImageComponent
-                    src={getImageUrl(video.images, 'detailsPageBackground')}
-                    alt={video.name}
-                    width={640}
-                    height={427}
-                    className="mb-2"
-                  />
-                  <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-2 text-xs font-bold leading-6 text-white">
-                    {video.duration}
-                  </span>
-                </Link>
-                <h6 className="mb-2 text-lg font-bold leading-6 text-black hover:underline">
-                  <Link href={`/industv/${video.slug}`}>{video.name}</Link>
-                </h6>
-              </div>
-            ))}
+          {industvVideos.map((video) => (
+            <div key={`video_page_${video._id}`} className="mb-5 lg:mb-0">
+              <Link
+                href={`/industv/${video.slug}`}
+                className="relative block"
+              >
+                <ImageComponent
+                  src={getImageUrl(video.images, 'detailsPageBackground')}
+                  alt={video.name}
+                  width={640}
+                  height={427}
+                  className="mb-2"
+                />
+                <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-2 text-xs font-bold leading-6 text-white">
+                  {video.duration}
+                </span>
+              </Link>
+              <h6 className="mb-2 text-lg font-bold leading-6 text-black hover:underline">
+                <Link href={`/industv/${video.slug}`}>{video.name}</Link>
+              </h6>
+            </div>
+          ))}
         </div>
       </section>
 

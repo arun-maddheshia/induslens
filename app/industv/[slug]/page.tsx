@@ -1,6 +1,6 @@
 import SocialShare from '@/components/ArticleView/SocialShare';
 import VideoPlayer from '@/components/VideoPlayer';
-import { videoNews } from '@/data/video-news';
+import { getVideoArticleBySlug } from '@/lib/db-videos';
 import { getImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -9,12 +9,8 @@ type Props = {
   params: { slug: string };
 };
 
-function getActiveVideo(slug: string) {
-  return videoNews.filter((video) => video.slug === slug)[0];
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const video = getActiveVideo(params.slug);
+  const video = await getVideoArticleBySlug(params.slug);
 
   return {
     title: video?.metaTitle,
@@ -26,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getImageUrl(video?.images, 'detailsPageBackground')
+        ? getImageUrl(video.images, 'detailsPageBackground')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
       type: 'website',
     },
@@ -36,15 +32,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getImageUrl(video?.images, 'detailsPageBackground')
+        ? getImageUrl(video.images, 'detailsPageBackground')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
     },
   };
 }
 
-const page = ({ params }: Props) => {
+const page = async ({ params }: Props) => {
   const { slug } = params;
-  const activeVideo = getActiveVideo(slug);
+  const activeVideo = await getVideoArticleBySlug(slug);
 
   if (!activeVideo) {
     notFound();

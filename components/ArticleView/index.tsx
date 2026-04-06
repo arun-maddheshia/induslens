@@ -75,7 +75,7 @@ export default function ArticleView({ article, pageUrl, articleAuthors }: Props)
         />
         <div
           className="mb-5 text-lg font-medium"
-          dangerouslySetInnerHTML={{ __html: article.pageContent || '' }}
+          dangerouslySetInnerHTML={{ __html: article.pageContent || article.articleBody || '' }}
         />
 
         {currentArticleAuthors.map((currentAuthor) => (

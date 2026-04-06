@@ -64,6 +64,7 @@ export default function VideoImageUpload({ images, onChange, isIndusTv = false }
       const formData = new FormData()
       formData.append("file", file)
       formData.append("category", slot.folder)
+      formData.append("type", "videos")
 
       const res = await fetch("/api/upload", { method: "POST", body: formData })
       if (!res.ok) throw new Error("Upload failed")

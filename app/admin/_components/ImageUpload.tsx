@@ -41,6 +41,7 @@ export default function ImageUpload({ label, images, onChange, error }: ImageUpl
       const formData = new FormData()
       formData.append('file', file)
       formData.append('category', category.folder)
+      formData.append('type', 'articles')
 
       const response = await fetch('/api/upload', {
         method: 'POST',

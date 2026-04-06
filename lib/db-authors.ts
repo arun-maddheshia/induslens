@@ -106,9 +106,14 @@ export async function createAuthor(data: any) {
 
   const { images, ...authorData } = data
 
+  // Generate a unique ID for new authors using crypto
+  const crypto = require('crypto')
+  const authorId = crypto.randomBytes(16).toString('hex')
+
   try {
     return await db.author.create({
       data: {
+        id: authorId, // Provide the generated ID
         ...authorData,
         images: images && Array.isArray(images) ? {
           create: images.map((img: any) => ({
@@ -136,7 +141,15 @@ export async function updateAuthor(id: string, data: any) {
     throw new Error("Database connection or ID not available")
   }
 
-  const { images, ...authorData } = data
+  // Exclude relational and computed fields that shouldn't be directly updated
+  const {
+    images,
+    articles,
+    _count,
+    createdAt,
+    updatedAt,
+    ...authorData
+  } = data
 
   try {
     return await db.author.update({
@@ -177,6 +190,30 @@ export async function deleteAuthor(id: string) {
   } catch (error) {
     console.error("Error deleting author:", error)
     throw error
+  }
+}
+
+// Search authors by name (lightweight, for filter suggestions)
+export async function searchAuthorsByName(query: string, limit: number = 10) {
+  if (!db) return []
+
+  try {
+    return await db.author.findMany({
+      where: {
+        name: { contains: query, mode: "insensitive" },
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        status: true,
+      },
+      orderBy: [{ order: "asc" }, { name: "asc" }],
+      take: limit,
+    })
+  } catch (error) {
+    console.error("Error searching authors by name:", error)
+    return []
   }
 }
 

@@ -1,36 +1,125 @@
 'use client';
 import { getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageTitle } from '../FeaturedArticles/PageTitle';
 import ImageComponent from '@/components/ImageComponent';
 
 type OtherArticlesSectionProps = {
-  articles: Article[];
+  articles?: Article[]; // Make it optional for backward compatibility
 };
 
 export const OtherArticlesSection = ({
-  articles,
+  articles: propArticles = [],
 }: OtherArticlesSectionProps) => {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
   const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    const fetchOtherStories = async () => {
+      console.log('🔄 Starting to fetch other stories...');
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Add timeout to prevent infinite loading
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const response = await fetch('/api/other-stories', {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        console.log('📡 API response status:', response.status);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch other stories');
+        }
+
+        const result = await response.json();
+        console.log('📊 API result:', { success: result.success, dataLength: result.data?.length });
+
+        if (result.success) {
+          setArticles(result.data);
+          console.log('✅ Articles set, length:', result.data.length);
+          // Set hasMore based on initial data
+          setHasMore(result.data.length > 12);
+        } else {
+          throw new Error(result.error || 'Failed to fetch other stories');
+        }
+      } catch (err) {
+        console.error('❌ Error fetching other stories:', err);
+        if (err instanceof Error && err.name === 'AbortError') {
+          setError('Request timed out. Please try again.');
+        } else {
+          setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+        }
+        // Fallback to prop articles if available
+        if (propArticles.length > 0) {
+          setArticles(propArticles.filter((article) => article.category === 'none'));
+        }
+      } finally {
+        console.log('🏁 Setting loading to false');
+        setLoading(false);
+      }
+    };
+
+    // Add a small delay to avoid rapid re-renders
+    const timer = setTimeout(fetchOtherStories, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const loadMoreArticles = () => {
     const newCount = visibleCount + 12;
     setVisibleCount(newCount);
 
     // Check if there are more articles to load
-    if (
-      newCount >=
-      articles.filter((article) => article.category === 'none').length
-    ) {
+    if (newCount >= articles.length) {
       setHasMore(false);
     }
   };
 
-  const visibleArticles = articles
-    .filter((article) => article.category === 'none')
-    .slice(0, visibleCount);
+  const visibleArticles = articles.slice(0, visibleCount);
+
+  if (loading) {
+    return (
+      <section className="py-0 pb-20">
+        <PageTitle title="Other Stories" />
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+          <span className="ml-2 text-gray-500">Loading other stories...</span>
+        </div>
+      </section>
+    );
+  }
+
+  console.log('🎯 Render state:', { loading, error, articlesLength: articles.length });
+
+  if (error && articles.length === 0) {
+    return (
+      <section className="py-0 pb-20">
+        <PageTitle title="Other Stories" />
+        <div className="flex justify-center items-center py-8 text-red-600">
+          <span>Error loading stories: {error}</span>
+        </div>
+      </section>
+    );
+  }
+
+  if (articles.length === 0) {
+    return (
+      <section className="py-0 pb-20">
+        <PageTitle title="Other Stories" />
+        <div className="flex justify-center items-center py-8 text-muted-foreground">
+          <span>No other stories found</span>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-0 pb-20">

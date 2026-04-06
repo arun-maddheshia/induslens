@@ -1,6 +1,6 @@
+
 import { Metadata } from 'next';
 import ContributorsList from './_components/ContributorsList';
-import { anchors } from '@/data/anchor';
 
 const pageTitle = 'Our Contributors';
 const pageDescription = '';
@@ -27,10 +27,11 @@ export const metadata: Metadata = {
 };
 
 const page = () => {
+  
   return (
     <section className="container mx-auto px-4 py-10 md:px-0">
       <h1 className="mb-10 text-center text-4xl font-bold">Our Contributors</h1>
-      <ContributorsList initialContributors={anchors} />
+      <ContributorsList />
     </section>
   );
 };

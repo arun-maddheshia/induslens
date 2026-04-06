@@ -34,13 +34,6 @@ async function createAdminUser() {
         name,
       }
     })
-
-    console.log(`✅ Admin user created successfully!`)
-    console.log(`📧 Email: ${user.email}`)
-    console.log(`👤 Name: ${user.name}`)
-    console.log(`🆔 ID: ${user.id}`)
-    console.log(`\nYou can now login to the admin panel at: http://localhost:3000/admin/login`)
-
   } catch (error) {
     console.error("Error creating admin user:", error)
     process.exit(1)

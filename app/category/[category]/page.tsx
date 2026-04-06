@@ -1,7 +1,6 @@
 import ImageComponent from '@/components/ImageComponent';
 import ReadMore from '@/components/UI/ReadMore';
 import { Share } from '@/components/UI/Share';
-import { articles } from '@/data/articles';
 import { cn, getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import { Metadata } from 'next';
 
@@ -10,7 +9,7 @@ import { notFound } from 'next/navigation';
 
 async function fetchCategories(): Promise<ArticleCategory[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/public-categories`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public-categories`, {
       cache: 'no-store'
     });
 
@@ -22,6 +21,24 @@ async function fetchCategories(): Promise<ArticleCategory[]> {
     return result.success ? result.data : [];
   } catch (error) {
     console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/category-articles/${categoryId}`, {
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch category articles');
+    }
+
+    const result = await response.json();
+    return result.success ? result.data : [];
+  } catch (error) {
+    console.error('Error fetching category articles:', error);
     return [];
   }
 }
@@ -77,10 +94,10 @@ export default async function page({ params, searchParams }: Props) {
     ? 'lg:max-w-[60%] mx-auto'
     : 'lg:grid lg:grid-cols-2 gap-5 lg:max-w-[90%] mx-auto';
 
-  const articleList = articles.filter(
-    (article) => article.category === articleCategory.id,
-  );
+  // Fetch articles from API instead of using dummy data
+  const articleList = await fetchCategoryArticles(articleCategory.id);
 
+  // If there's a specific article name in query params, sort to show it first
   if (name && articleList.length) {
     articleList.sort((a, b) => {
       const aIsArticle = a.slug === name;
@@ -108,8 +125,15 @@ export default async function page({ params, searchParams }: Props) {
           {articleCategory ? articleCategory.description : ''}
         </p>
       </div>
-      <div className={gridColumnClass}>
-        {articleList.map((article: Article) => (
+
+      {articleList.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-xl text-gray-600 mb-4">No articles found in this category</p>
+          <p className="text-gray-500">Check back later for new content!</p>
+        </div>
+      ) : (
+        <div className={gridColumnClass}>
+          {articleList.map((article: Article) => (
           <div key={article._id} className="relative mb-5 border">
             <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
               <ImageComponent
@@ -125,18 +149,18 @@ export default async function page({ params, searchParams }: Props) {
                 <h6 className="mb-4 text-2xl font-bold leading-8 text-black hover:underline md:text-3xl">
                   {article.name}
                 </h6>
-                <div className="pr-[40px]">
-                  <ReadMore
-                    text={article.excerpt}
-                    maxLength={300}
-                    className="mb-4"
-                    href={`/category/${articleCategory.slug}/${article.slug}`}
-                  ></ReadMore>
-                </div>
-                <p className="text-md mt-2 text-gray-500">
-                  {getFirstAuthorName(article.author)}
-                </p>
               </Link>
+              <div className="pr-[40px]">
+                <ReadMore
+                  text={article.excerpt}
+                  maxLength={300}
+                  className="mb-4"
+                  href={`/category/${articleCategory.slug}/${article.slug}`}
+                ></ReadMore>
+              </div>
+              <p className="text-md mt-2 text-gray-500">
+                {getFirstAuthorName(article.author)}
+              </p>
             </div>
             <div className="absolute bottom-2 right-4">
               <Share
@@ -146,7 +170,8 @@ export default async function page({ params, searchParams }: Props) {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </section>
   );
 }

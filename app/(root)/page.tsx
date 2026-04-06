@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import ImageComponent from '@/components/ImageComponent';
 import TrendingVideo from '@/components/UI/TrendingVideo';
 import Carousel from '@/components/UI/Carousel';
-import { articles } from '@/data/articles';
 import { videoNews } from '@/data/video-news';
 import { cn, getImageUrl, getFirstAuthorName } from '@/lib/utils';
 import Link from 'next/link';
@@ -100,7 +99,7 @@ export default function Home() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
 
-        <OtherArticlesSection articles={articles} />
+        <OtherArticlesSection />
       </div>
     );
   }
@@ -125,7 +124,7 @@ export default function Home() {
           <span>Error loading categories: {error}</span>
         </div>
 
-        <OtherArticlesSection articles={articles} />
+        <OtherArticlesSection />
       </div>
     );
   }
@@ -233,7 +232,7 @@ export default function Home() {
         </section>
       ))}
 
-      <OtherArticlesSection articles={[]} />
+      <OtherArticlesSection />
     </div>
   );
 }

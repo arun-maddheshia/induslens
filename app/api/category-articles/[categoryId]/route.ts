@@ -54,7 +54,6 @@ export async function GET(
           }
         }
       },
-      take: 20 // Limit to 20 articles per category for performance
     });
 
     // Transform data to match Article interface

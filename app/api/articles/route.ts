@@ -79,13 +79,13 @@ export async function POST(request: NextRequest) {
       genre: data.genre || [],
       subCategories: data.subCategories || [],
       publishedAt: data.status === ArticleStatus.PUBLISHED ? new Date() : null,
-      // Handle categoryId: if category field contains an ID, use it as categoryId
-      categoryId: data.category || data.categoryId || null,
-      // Keep the legacy category field for backward compatibility
+      // Coerce empty strings to null for optional FK fields
+      authorId: data.authorId || null,
+      categoryId: data.categoryId || data.category || null,
       category: data.category || null,
     }
-
-    const article = await createArticle(articleData, session.user.id!)
+ 
+    const article = await createArticle(articleData, session.user.id)
 
     return NextResponse.json(article, { status: 201 })
   } catch (error) {

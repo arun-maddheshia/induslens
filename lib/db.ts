@@ -134,13 +134,14 @@ export async function getArticleById(id: string) {
   })
 }
 
-export async function createArticle(data: any, authorId: string) {
+export async function createArticle(data: any, editorId?: string) {
   const { images, ...articleData } = data
 
   return await db.article.create({
     data: {
       ...articleData,
-      authorId,
+      authorId: articleData.authorId || null,
+      editorId: editorId || null,
       images: images ? {
         create: images.map((img: any) => ({
           imageCategory: img.imageCategory,

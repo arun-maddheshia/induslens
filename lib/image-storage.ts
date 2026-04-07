@@ -1,9 +1,9 @@
-/**
- * Media storage: DB keeps filenames (or legacy full URLs / paths).
- * Public URLs are built from NEXT_PUBLIC_MEDIA_BASE_URL (or AWS bucket+region) + images/{entity}/{folder}/{filename}.
- */
 
 export type MediaEntity = "articles" | "authors" | "videos" | "eminence"
+
+function mediaBaseEndsWithImages(base: string): boolean {
+  return /\/images$/i.test(base.replace(/\/$/, ""))
+}
 
 const ENTITY_FOLDER: Record<
   MediaEntity,
@@ -29,23 +29,23 @@ const ENTITY_FOLDER: Record<
 }
 
 export function getMediaBaseUrl(): string {
-  const explicit =
-    typeof process !== "undefined" && process.env.NEXT_PUBLIC_MEDIA_BASE_URL
-      ? process.env.NEXT_PUBLIC_MEDIA_BASE_URL.trim().replace(/\/$/, "")
-      : ""
-  if (explicit) return explicit
+  if (typeof process === "undefined") return ""
+
+  const candidates = [
+    process.env.NEXT_PUBLIC_AWS_MEDIA_BASE_URL,
+    process.env.NEXT_PUBLIC_MEDIA_BASE_URL,
+    process.env.AWS_MEDIA_BASE_URL,
+  ]
+  for (const c of candidates) {
+    if (c?.trim()) return c.trim().replace(/\/$/, "")
+  }
 
   const bucket =
-    typeof process !== "undefined"
-      ? process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME ||
-        process.env.AWS_S3_BUCKET_NAME
-      : ""
+    process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME || process.env.AWS_S3_BUCKET_NAME
   const region =
-    typeof process !== "undefined"
-      ? process.env.NEXT_PUBLIC_AWS_REGION ||
-        process.env.AWS_REGION ||
-        "ap-south-1"
-      : "ap-south-1"
+    process.env.NEXT_PUBLIC_AWS_REGION ||
+    process.env.AWS_REGION ||
+    "ap-south-1"
   if (bucket) {
     return `https://${bucket}.s3.${region}.amazonaws.com`
   }
@@ -90,11 +90,19 @@ export function resolveStoredImageToUrl(
     return trimmed
   }
 
+  const baseEndsImages = mediaBaseEndsWithImages(base)
+
   if (trimmed.startsWith("images/")) {
+    if (baseEndsImages) {
+      return `${base}/${trimmed.slice("images/".length)}`
+    }
     return `${base}/${trimmed}`
   }
 
   const folder = folderPathForSlot(entity, imageCategoryValue)
+  if (baseEndsImages) {
+    return `${base}/${entity}/${folder}/${trimmed}`
+  }
   return `${base}/images/${entity}/${folder}/${trimmed}`
 }
 

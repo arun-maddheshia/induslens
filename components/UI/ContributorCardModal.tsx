@@ -22,7 +22,7 @@ export default function ContributorCardModal({
       <div className="mb-0 md:flex md:content-center lg:mb-5">
         <div>
           <ImageComponent
-            src={getImageUrl(contributor.images, 'mobileDetailsPageBackground')}
+            src={getImageUrl(contributor.images, 'mobileDetailsPageBackground', '', 'authors')}
             width={150}
             height={150}
             alt={contributor.name}

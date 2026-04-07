@@ -38,7 +38,7 @@ export const EminenceWrapper = () => {
           className="relative h-full border px-10 py-10 text-center"
         >
           <ImageComponent
-            src={getImageUrl(author.images, 'mobileDetailsPageBackground')}
+            src={getImageUrl(author.images, 'mobileDetailsPageBackground', '', 'eminence')}
             width={100}
             height={100}
             alt={author.name}

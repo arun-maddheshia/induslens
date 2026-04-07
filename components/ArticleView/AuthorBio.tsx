@@ -2,6 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { TwitterIcon } from '@/components/Icons';
+import { resolveStoredImageToUrl } from '@/lib/image-storage';
 
 type AuthorBioProps = {
   author: Author;
@@ -12,7 +13,11 @@ const AuthorBio: React.FC<AuthorBioProps> = ({ author }) => (
     <div className="md:flex md:flex-row">
       <div className="md:basis-[20%]">
         <Image
-          src={author.images[0].imageUrl[0]}
+          src={resolveStoredImageToUrl(
+            author.images[0].imageUrl[0] || '',
+            'authors',
+            author.images[0].imageCategoryValue,
+          )}
           width={100}
           height={100}
           alt={author.name}

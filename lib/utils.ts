@@ -1,5 +1,9 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import {
+  resolveStoredImageToUrl,
+  type MediaEntity,
+} from '@/lib/image-storage';
 
 /*
     Merge multiple classnames
@@ -14,16 +18,28 @@ export function truncate(text: string, truncateLength: number) {
     : text;
 }
 
+/**
+ * Resolves the image URL for a slot. DB may store a bare filename; this builds the full S3 (or legacy) URL.
+ * Pass `entity` for non-article images (authors, videos, eminence).
+ */
 export function getImageUrl(
   images: PostImage[],
   type: string,
   defaultImageUrl: string = '',
+  entity: MediaEntity = 'articles',
 ): string {
   if (images && images.length > 0) {
     const matchedImage = images.find(
       (image) => image.imageCategoryValue === type,
     );
-    return matchedImage ? matchedImage.imageUrl[0] : defaultImageUrl;
+    if (!matchedImage) return defaultImageUrl;
+    const raw = matchedImage.imageUrl[0] || '';
+    if (!raw) return defaultImageUrl;
+    return resolveStoredImageToUrl(
+      raw,
+      entity,
+      matchedImage.imageCategoryValue || type,
+    );
   }
   return defaultImageUrl;
 }

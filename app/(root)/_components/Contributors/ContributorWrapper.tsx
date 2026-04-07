@@ -46,6 +46,8 @@ export const ContributorWrapper = ({
               imageSrc={getImageUrl(
                 contributor.images,
                 'mobileDetailsPageBackground',
+                '',
+                'authors',
               )}
               countryName={contributor.countryName}
             />

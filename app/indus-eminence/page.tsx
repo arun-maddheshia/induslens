@@ -66,6 +66,8 @@ export default async function page({ searchParams }: Props) {
                   src={getImageUrl(
                     author.images,
                     'mobileDetailsPageBackground',
+                    '',
+                    'eminence',
                   )}
                   width={120}
                   height={120}

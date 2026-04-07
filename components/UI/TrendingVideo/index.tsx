@@ -28,7 +28,7 @@ export default function TrendingVideo() {
     <div key={`video_${video._id}`}>
       <Link href={`/videos/${video.slug}`}>
         <ImageComponent
-          src={getImageUrl(video.images, 'featuredImage')}
+          src={getImageUrl(video.images, 'featuredImage', '', 'videos')}
           alt={video.name}
           width={347}
           height={494}

@@ -92,6 +92,8 @@ export default function ContributorsList() {
                 imageSrc={getImageUrl(
                   contributor.images,
                   'mobileDetailsPageBackground',
+                  '',
+                  'authors',
                 )}
                 countryName={contributor.countryName}
                 singleView

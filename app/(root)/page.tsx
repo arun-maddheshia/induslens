@@ -157,7 +157,7 @@ export default function Home() {
                 className="relative block"
               >
                 <ImageComponent
-                  src={getImageUrl(video.images, 'detailsPageBackground')}
+                  src={getImageUrl(video.images, 'detailsPageBackground', '', 'videos')}
                   alt={video.name}
                   width={640}
                   height={427}

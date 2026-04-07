@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getImageUrl(video.images, 'detailsPageBackground')
+        ? getImageUrl(video.images, 'detailsPageBackground', '', 'videos')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
       type: 'website',
     },
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: video?.metaTitle,
       description: video?.metaDescription,
       images: video?.images
-        ? getImageUrl(video.images, 'detailsPageBackground')
+        ? getImageUrl(video.images, 'detailsPageBackground', '', 'videos')
         : `${process.env.NEXT_PUBLIC_API_URL}/social.png`,
     },
   };

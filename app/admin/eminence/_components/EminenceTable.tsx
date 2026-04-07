@@ -23,6 +23,7 @@ import {
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import ConfirmDialog from "../../_components/ConfirmDialog"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
 interface EminenceImage {
   id: string
@@ -56,7 +57,14 @@ function getPhoto(images: EminenceImage[]): string | null {
   const img =
     images.find((i) => i.imageCategoryValue === "mobileDetailsPageBackground") ||
     images[0]
-  return img?.imageUrl?.[0] ?? null
+  const raw = img?.imageUrl?.[0]
+  if (!raw) return null
+  const url = resolveStoredImageToUrl(
+    raw,
+    "eminence",
+    img?.imageCategoryValue ?? "mobileDetailsPageBackground"
+  )
+  return url || null
 }
 
 // ─── Sortable row ─────────────────────────────────────────────────────────────

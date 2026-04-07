@@ -65,7 +65,7 @@ export default function ArticleView({ article, pageUrl, articleAuthors }: Props)
         />
 
         <ImageComponent
-          src={getImageUrl(article.images, 'posterImage')}
+          src={getImageUrl(article.images, 'detailsPageBackground')}
           alt={article.headline}
           width={813}
           height={546}

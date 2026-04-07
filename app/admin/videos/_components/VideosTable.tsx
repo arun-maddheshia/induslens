@@ -23,6 +23,7 @@ import {
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import ConfirmDialog from "../../_components/ConfirmDialog"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
 interface VideoImage {
   id: string
@@ -60,7 +61,14 @@ function getThumbnail(images: VideoImage[]): string | null {
     images.find((img) => img.imageCategoryValue === "featuredImage") ||
     images.find((img) => img.imageCategoryValue === "detailsPageBackground") ||
     images[0]
-  return thumb?.imageUrl?.[0] ?? null
+  const raw = thumb?.imageUrl?.[0]
+  if (!raw) return null
+  const url = resolveStoredImageToUrl(
+    raw,
+    "videos",
+    thumb?.imageCategoryValue ?? "featuredImage"
+  )
+  return url || null
 }
 
 // ─── Sortable row ─────────────────────────────────────────────────────────────

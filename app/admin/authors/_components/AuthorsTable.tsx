@@ -26,6 +26,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import ConfirmDialog from "../../_components/ConfirmDialog"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
 interface Author {
   id: string
@@ -82,8 +83,20 @@ function SortableAuthorRow({
   }
 
   const getAuthorImage = (author: Author) => {
-    const posterImage = author.images?.find(img => img.imageCategoryValue === 'posterImage')
-    return posterImage?.imageUrl?.[0] || null
+    const profile =
+      author.images?.find(
+        (img) => img.imageCategoryValue === "mobileDetailsPageBackground"
+      ) ||
+      author.images?.find((img) => img.imageCategoryValue === "posterImage") ||
+      author.images?.[0]
+    const raw = profile?.imageUrl?.[0]
+    if (!raw) return null
+    const url = resolveStoredImageToUrl(
+      raw,
+      "authors",
+      profile?.imageCategoryValue ?? "mobileDetailsPageBackground"
+    )
+    return url || null
   }
 
   const authorImage = getAuthorImage(author)

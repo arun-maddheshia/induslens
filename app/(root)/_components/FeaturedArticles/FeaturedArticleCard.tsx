@@ -69,9 +69,9 @@ const FeaturedArticleCard = ({
       case 'md':
         return 'mobileDetailsPageBackground'; // 1:1 ratio for medium cards
       case 'lg':
-        return 'posterImage'; // 3:2 ratio for large cards
+        return 'detailsPageBackground'; // 3:2 ratio for large cards
       default:
-        return 'posterImage';
+        return 'detailsPageBackground';
     }
   };
 

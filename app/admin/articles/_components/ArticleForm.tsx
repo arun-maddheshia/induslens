@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { ArticleStatus, ContentType } from "@prisma/client"
 import RichTextEditor from "../../_components/RichTextEditor"
 import ImageUpload from "../../_components/ImageUpload"
@@ -64,6 +64,13 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
   const [categories, setCategories] = useState<Array<{ id: string; name: string; slug: string; isNews: boolean }>>([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
 
+  /** After `reset()` from server data, skip auto-sync so custom meta title/description are preserved. */
+  const suppressMetaAutoSyncRef = useRef(false)
+  const suppressMetaAutoSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const META_SYNC_DEBOUNCE_MS = 1000
+  const META_SYNC_SUPPRESS_AFTER_RESET_MS = 1100
+
   const {
     register,
     handleSubmit,
@@ -71,6 +78,7 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
     setValue,
     reset,
     formState: { errors },
+    control
   } = useForm<Article>({
     defaultValues: {
       headline: "",
@@ -144,6 +152,20 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
 
       console.log('Form data being set:', formData)
       reset(formData)
+      suppressMetaAutoSyncRef.current = true
+      if (suppressMetaAutoSyncTimerRef.current) {
+        clearTimeout(suppressMetaAutoSyncTimerRef.current)
+      }
+      suppressMetaAutoSyncTimerRef.current = setTimeout(() => {
+        suppressMetaAutoSyncRef.current = false
+        suppressMetaAutoSyncTimerRef.current = null
+      }, META_SYNC_SUPPRESS_AFTER_RESET_MS)
+    }
+    return () => {
+      if (suppressMetaAutoSyncTimerRef.current) {
+        clearTimeout(suppressMetaAutoSyncTimerRef.current)
+        suppressMetaAutoSyncTimerRef.current = null
+      }
     }
   }, [authorsLoading, categoriesLoading, article, reset, authors, categories])
 
@@ -213,6 +235,31 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
       setIsLoading(false)
     }
   }
+
+  const headline = useWatch({ control, name: "headline" })
+  const excerpt = useWatch({ control, name: "excerpt" })
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      if (suppressMetaAutoSyncRef.current) return
+      setValue("metaTitle", headline?.trim() ?? "", {
+        shouldDirty: false,
+        shouldValidate: true,
+      })
+    }, META_SYNC_DEBOUNCE_MS)
+    return () => window.clearTimeout(id)
+  }, [headline, setValue])
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      if (suppressMetaAutoSyncRef.current) return
+      setValue("metaDescription", excerpt ?? "", {
+        shouldDirty: false,
+        shouldValidate: true,
+      })
+    }, META_SYNC_DEBOUNCE_MS)
+    return () => window.clearTimeout(id)
+  }, [excerpt, setValue])
 
   // Generate slug from headline
   const generateSlug = (headline: string) => {

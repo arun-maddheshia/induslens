@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 import "../../admin.css"
 
 export type PlaylistType = 'hero' | 'other-stories'
@@ -18,6 +19,7 @@ interface Article {
   } | null
   images: Array<{
     imageUrl: string[]
+    imageCategoryValue?: string | null
   }>
 }
 
@@ -111,7 +113,14 @@ export default function AddArticleModal({ type, onClose, onArticleAdded }: AddAr
 
   const getArticleImage = (article: Article) => {
     const image = article.images?.[0]
-    return image?.imageUrl?.[0] || null
+    const raw = image?.imageUrl?.[0]
+    if (!raw) return null
+    const url = resolveStoredImageToUrl(
+      raw,
+      "articles",
+      image?.imageCategoryValue ?? "posterImage"
+    )
+    return url || null
   }
 
   const getModalTitle = () => {

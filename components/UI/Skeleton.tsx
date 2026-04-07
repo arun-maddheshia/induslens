@@ -110,6 +110,23 @@ export function ContributorsSkeleton() {
   );
 }
 
+/** /our-contributors grid — matches ContributorCard (singleView): square image + name + badge */
+export function ContributorsListSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="border h-full">
+          <Skeleton className="aspect-square w-full rounded-none" />
+          <div className="space-y-2 p-3 lg:p-5">
+            <Skeleton className="h-6 w-4/5" />
+            <Skeleton className="h-8 w-28 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function OtherArticlesSkeleton() {
   return (
     <div className="gap-5 md:grid md:grid-cols-2">

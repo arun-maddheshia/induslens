@@ -5,10 +5,7 @@ import ContributorCard from '@/components/ContributorCard';
 import { getImageUrl } from '@/lib/utils';
 import ContributorCardModal from '@/components/UI/ContributorCardModal';
 import Modal from '@/components/UI/Modal';
-
-type ContributorsListProps = {
-  initialContributors: Author[];
-};
+import { ContributorsListSkeleton } from '@/components/UI/Skeleton';
 
 export default function ContributorsList() {
   
@@ -55,11 +52,7 @@ export default function ContributorsList() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <ContributorsListSkeleton />;
   }
 
   if (error) {

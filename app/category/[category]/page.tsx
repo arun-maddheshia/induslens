@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
+import { hydratePostImages } from '@/lib/image-storage';
 
 async function getCategoryBySlug(slug: string) {
   return db.category.findFirst({
@@ -83,13 +84,16 @@ async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
     optionalfield: '',
     createdAt: article.createdAt.toISOString(),
     updatedAt: article.updatedAt.toISOString(),
-    images: (article.images || []).map((img) => ({
-      imageCategory: img.imageCategory || 'article',
-      imageCategoryValue: img.imageCategoryValue || 'posterImage',
-      imageDescription: img.imageDescription || '',
-      imageUrl: img.imageUrl || [],
-      key: article.id,
-    })),
+    images: hydratePostImages(
+      (article.images || []).map((img) => ({
+        imageCategory: img.imageCategory || 'article',
+        imageCategoryValue: img.imageCategoryValue || '',
+        imageDescription: img.imageDescription || '',
+        imageUrl: img.imageUrl || [],
+        key: article.id,
+      })),
+      'articles'
+    ),
   }));
 }
 

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react"
 import Image from "next/image"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
 export interface VideoImageEntry {
   id?: string
@@ -69,13 +70,15 @@ export default function VideoImageUpload({ images, onChange, isIndusTv = false }
       const res = await fetch("/api/upload", { method: "POST", body: formData })
       if (!res.ok) throw new Error("Upload failed")
 
-      const { filePath } = await res.json()
+      const { fileName, filePath } = await res.json()
+      const stored =
+        (fileName as string) || (filePath ? String(filePath).split("/").filter(Boolean).pop() : "")
 
       const newEntry: VideoImageEntry = {
         imageCategory: slot.label,
         imageCategoryValue: slot.value,
         imageDescription: "",
-        imageUrl: [filePath],
+        imageUrl: stored ? [stored] : [],
         key: null,
       }
 
@@ -142,7 +145,11 @@ export default function VideoImageUpload({ images, onChange, isIndusTv = false }
                   }`}
                 >
                   <Image
-                    src={existing.imageUrl[0]}
+                    src={resolveStoredImageToUrl(
+                      existing.imageUrl[0] || "",
+                      "videos",
+                      existing.imageCategoryValue
+                    )}
                     alt={existing.imageDescription || slot.label}
                     fill
                     className="object-cover"

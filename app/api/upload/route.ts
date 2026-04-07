@@ -56,7 +56,12 @@ export async function POST(request: NextRequest) {
 
     const filePath = await uploadToS3(body, key, file.type)
 
-    return NextResponse.json({ filePath, message: "File uploaded successfully" })
+    return NextResponse.json({
+      fileName: filename,
+      key,
+      filePath,
+      message: "File uploaded successfully",
+    })
   } catch (error) {
     console.error("Upload error:", error)
     return NextResponse.json({ error: "Failed to upload file" }, { status: 500 })

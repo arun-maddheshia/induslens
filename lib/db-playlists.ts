@@ -27,7 +27,8 @@ export async function getPlaylist(type: PlaylistType) {
                   imageCategoryValue: 'posterImage'
                 },
                 select: {
-                  imageUrl: true
+                  imageUrl: true,
+                  imageCategoryValue: true,
                 },
                 take: 1
               }
@@ -54,7 +55,8 @@ export async function getPlaylist(type: PlaylistType) {
                   imageCategoryValue: 'posterImage'
                 },
                 select: {
-                  imageUrl: true
+                  imageUrl: true,
+                  imageCategoryValue: true,
                 },
                 take: 1
               }

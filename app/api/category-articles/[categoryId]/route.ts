@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { hydratePostImages } from "@/lib/image-storage";
 
 export async function GET(
   request: Request,
@@ -58,7 +59,7 @@ export async function GET(
     });
 
     // Transform data to match Article interface
-    const transformedArticles = articles.map(article => ({
+    const transformedArticles = articles.map((article) => ({
       _id: article.id,
       headline: article.headline || '',
       excerpt: article.excerpt || '',
@@ -107,13 +108,16 @@ export async function GET(
       optionalfield: '',
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
-      images: (article.images || []).map(img => ({
-        imageCategory: img.imageCategory || 'article',
-        imageCategoryValue: img.imageCategoryValue || 'posterImage',
-        imageDescription: img.imageDescription || '',
-        imageUrl: img.imageUrl || [],
-        key: article.id
-      }))
+      images: hydratePostImages(
+        (article.images || []).map((img) => ({
+          imageCategory: img.imageCategory || "article",
+          imageCategoryValue: img.imageCategoryValue || "",
+          imageDescription: img.imageDescription || "",
+          imageUrl: img.imageUrl || [],
+          key: article.id,
+        })),
+        "articles"
+      ),
     }));
 
     return NextResponse.json({

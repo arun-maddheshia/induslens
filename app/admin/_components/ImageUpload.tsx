@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import Image from "next/image"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
 interface ImageUploadProps {
   label: string
@@ -52,15 +53,16 @@ export default function ImageUpload({ label, images, onChange, error }: ImageUpl
         throw new Error('Upload failed')
       }
 
-      const { filePath } = await response.json()
+      const { fileName, filePath } = await response.json()
+      const stored = (fileName as string) || (filePath ? String(filePath).split("/").filter(Boolean).pop() : "")
 
-      // Update images array
+      // Update images array (store filename only; API resolves to S3 URL when serving)
       const existingImageIndex = images.findIndex(img => img.imageCategoryValue === category.value)
       const newImageData = {
         imageCategory: category.label,
         imageCategoryValue: category.value,
         imageDescription: '',
-        imageUrl: [filePath],
+        imageUrl: stored ? [stored] : [],
       }
 
       let updatedImages
@@ -122,7 +124,11 @@ export default function ImageUpload({ label, images, onChange, error }: ImageUpl
                 <div className="space-y-3">
                   <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
                     <Image
-                      src={existingImage.imageUrl[0]}
+                      src={resolveStoredImageToUrl(
+                        existingImage.imageUrl[0] || "",
+                        "articles",
+                        existingImage.imageCategoryValue
+                      )}
                       alt={existingImage.imageDescription || category.label}
                       fill
                       className="object-cover"

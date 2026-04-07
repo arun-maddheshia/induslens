@@ -1,4 +1,5 @@
 import { db } from "./db"
+import { hydratePostImages } from "./image-storage"
 
 export async function getAllVideos(
   page: number = 1,
@@ -154,13 +155,16 @@ function toVideoArticle(v: DbVideo): VideoArticle {
     publishedAt: v.publishedAt ? v.publishedAt.toISOString() : undefined,
     isContent: v.isContent,
     key: v.key ?? v.order,
-    images: v.images.map((img) => ({
-      imageCategory: img.imageCategory,
-      imageCategoryValue: img.imageCategoryValue || "",
-      imageDescription: img.imageDescription || "",
-      imageUrl: img.imageUrl,
-      key: img.key || "",
-    })),
+    images: hydratePostImages(
+      v.images.map((img) => ({
+        imageCategory: img.imageCategory,
+        imageCategoryValue: img.imageCategoryValue || "",
+        imageDescription: img.imageDescription || "",
+        imageUrl: img.imageUrl,
+        key: img.key || "",
+      })),
+      "videos"
+    ),
   }
 }
 

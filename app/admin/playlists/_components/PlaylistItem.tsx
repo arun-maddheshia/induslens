@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 import {
   useSortable
 } from "@dnd-kit/sortable"
@@ -26,6 +27,7 @@ interface PlaylistItemData {
     } | null
     images: Array<{
       imageUrl: string[]
+      imageCategoryValue?: string | null
     }>
   }
 }
@@ -53,7 +55,9 @@ export default function PlaylistItem({ item, index, onRemove }: PlaylistItemProp
 
   const getArticleImage = () => {
     const image = item.article.images?.[0]
-    return image?.imageUrl?.[0] || null
+    const raw = image?.imageUrl?.[0]
+    if (!raw) return null
+    return resolveStoredImageToUrl(raw, "articles", image?.imageCategoryValue ?? "posterImage")
   }
 
   const articleImage = getArticleImage()

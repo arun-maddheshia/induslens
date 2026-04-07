@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react"
 import Image from "next/image"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
 export interface EminenceImageEntry {
   id?: string
@@ -41,13 +42,15 @@ export default function EminenceImageUpload({ images, onChange }: EminenceImageU
       const res = await fetch("/api/upload", { method: "POST", body: formData })
       if (!res.ok) throw new Error("Upload failed")
 
-      const { filePath } = await res.json()
+      const { fileName, filePath } = await res.json()
+      const stored =
+        (fileName as string) || (filePath ? String(filePath).split("/").filter(Boolean).pop() : "")
 
       const newEntry: EminenceImageEntry = {
         imageCategory: "Small Image (1:1)",
         imageCategoryValue: SLOT.value,
         imageDescription: "",
-        imageUrl: [filePath],
+        imageUrl: stored ? [stored] : [],
         key: "category_0",
       }
 
@@ -104,7 +107,11 @@ export default function EminenceImageUpload({ images, onChange }: EminenceImageU
         <div className="space-y-3">
           <div className="relative w-28 h-28 bg-gray-100 rounded-lg overflow-hidden">
             <Image
-              src={existing.imageUrl[0]}
+              src={resolveStoredImageToUrl(
+                existing.imageUrl[0] || "",
+                "eminence",
+                existing.imageCategoryValue
+              )}
               alt={existing.imageDescription || SLOT.label}
               fill
               className="object-cover"

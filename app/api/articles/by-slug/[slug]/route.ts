@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getArticleBySlug } from "@/lib/db"
+import { hydratePostImages } from "@/lib/image-storage"
 
 export async function GET(
   _request: Request,
@@ -12,6 +13,17 @@ export async function GET(
     if (!article) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 })
     }
+
+    const hydratedImages = hydratePostImages(
+      (article.images || []).map((img) => ({
+        imageCategory: img.imageCategory || "",
+        imageCategoryValue: img.imageCategoryValue || "",
+        imageDescription: img.imageDescription || "",
+        imageUrl: img.imageUrl || [],
+        key: article.id,
+      })),
+      "articles"
+    )
 
     const response: Article = {
       _id: article.id,
@@ -33,7 +45,6 @@ export async function GET(
       categorySlug: article.categoryRef?.slug || "",
       newsType: "",
       agency: "",
-      alternativeHeadline: article.alternativeHeadline || "",
       ampValidationMessage: "",
       archivedAt: "",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,13 +72,7 @@ export async function GET(
       status: article.status,
       visibility: article.visibility ?? true,
       optionalfield: "",
-      images: (article.images || []).map((img) => ({
-        imageCategory: img.imageCategory || "",
-        imageCategoryValue: img.imageCategoryValue || "",
-        imageDescription: img.imageDescription || "",
-        imageUrl: img.imageUrl || [],
-        key: article.id,
-      })),
+      images: hydratedImages,
     }
 
     return NextResponse.json(response)

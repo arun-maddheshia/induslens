@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { getEminenceById, updateEminence, deleteEminence } from "@/lib/db-eminence"
+import {
+  getEminenceById,
+  updateEminence,
+  deleteEminence,
+  type EminenceImageEntry,
+} from "@/lib/db-eminence"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 
 export async function GET(
   request: NextRequest,
@@ -34,6 +40,10 @@ export async function PUT(
     }
     const { id } = await params
     const data = await request.json()
+    const normalizedImages: EminenceImageEntry[] | undefined =
+      data.images !== undefined
+        ? (normalizeImagesForStorage(data.images) as EminenceImageEntry[])
+        : undefined
     const eminence = await updateEminence(id, {
       name: data.name,
       slug: data.slug,
@@ -50,7 +60,7 @@ export async function PUT(
       linkedinUrl: data.linkedinUrl ?? undefined,
       websiteUrl: data.websiteUrl ?? undefined,
       order: data.order ?? undefined,
-      images: data.images !== undefined ? data.images : undefined,
+      images: normalizedImages,
     })
     return NextResponse.json(eminence)
   } catch (error) {

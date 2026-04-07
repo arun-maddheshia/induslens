@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { hydratePostImages } from "@/lib/image-storage"
 
 // GET /api/industv-videos
 // Public endpoint — returns published IndusTv videos (category = 'industv')
@@ -54,13 +55,16 @@ export async function GET() {
       publishedAt: v.publishedAt ? v.publishedAt.toISOString() : null,
       isContent: v.isContent,
       key: v.key ?? v.order,
-      images: v.images.map((img) => ({
-        imageCategory: img.imageCategory,
-        imageCategoryValue: img.imageCategoryValue || "",
-        imageDescription: img.imageDescription || "",
-        imageUrl: img.imageUrl,
-        key: img.key || "",
-      })),
+      images: hydratePostImages(
+        v.images.map((img) => ({
+          imageCategory: img.imageCategory,
+          imageCategoryValue: img.imageCategoryValue || "",
+          imageDescription: img.imageDescription || "",
+          imageUrl: img.imageUrl,
+          key: img.key || "",
+        })),
+        "videos"
+      ),
     }))
 
     return NextResponse.json(shaped)

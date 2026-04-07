@@ -1,4 +1,5 @@
 import type { getArticleBySlug } from "./db"
+import { hydratePostImages } from "./image-storage"
 
 type DbArticle = NonNullable<Awaited<ReturnType<typeof getArticleBySlug>>>
 
@@ -52,12 +53,15 @@ export function mapArticleToFrontend(article: DbArticle, urlPrefix = "/articles"
     status: article.status,
     visibility: article.visibility ?? true,
     optionalfield: "",
-    images: (article.images || []).map((img) => ({
-      imageCategory: img.imageCategory || "",
-      imageCategoryValue: img.imageCategoryValue || "",
-      imageDescription: img.imageDescription || "",
-      imageUrl: img.imageUrl || [],
-      key: article.id,
-    })),
+    images: hydratePostImages(
+      (article.images || []).map((img) => ({
+        imageCategory: img.imageCategory || "",
+        imageCategoryValue: img.imageCategoryValue || "",
+        imageDescription: img.imageDescription || "",
+        imageUrl: img.imageUrl || [],
+        key: article.id,
+      })),
+      "articles"
+    ),
   }
 }

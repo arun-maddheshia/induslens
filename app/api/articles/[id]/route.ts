@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { getArticleById, updateArticle, deleteArticle } from "@/lib/db"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 import { ArticleStatus } from "@prisma/client"
 
 // GET /api/articles/[id] - Get single article
@@ -53,6 +54,10 @@ export async function PUT(
     }
 
     const data = await request.json()
+
+    if (Array.isArray(data.images)) {
+      data.images = normalizeImagesForStorage(data.images)
+    }
 
     // Check if article exists
     const existingArticle = await getArticleById(params.id)

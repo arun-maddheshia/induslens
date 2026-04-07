@@ -2,6 +2,7 @@ import ArticleView from '@/components/ArticleView';
 import { getArticleBySlug } from '@/lib/db';
 import { mapArticleToFrontend } from '@/lib/map-article';
 import { mapAuthorToFrontend } from '@/lib/map-author';
+import { absoluteUrlForOg, hydratePostImages } from '@/lib/image-storage';
 import { getImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -13,8 +14,8 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = await getArticleBySlug(params.slug);
 
-  const socialImage = article?.images?.length
-    ? `${process.env.NEXT_PUBLIC_API_URL}/${getImageUrl(
+  const hydrated = article?.images?.length
+    ? hydratePostImages(
         article.images.map((img) => ({
           imageCategory: img.imageCategory || '',
           imageCategoryValue: img.imageCategoryValue || '',
@@ -22,9 +23,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           imageUrl: img.imageUrl || [],
           key: article.id,
         })),
-        'detailsPageBackground',
-      )}`
-    : `${process.env.NEXT_PUBLIC_API_URL}/social.png`;
+        'articles'
+      )
+    : [];
+  const ogRaw =
+    hydrated.length > 0
+      ? getImageUrl(hydrated, 'detailsPageBackground') ||
+        getImageUrl(hydrated, 'posterImage')
+      : '';
+  const socialImage = absoluteUrlForOg(
+    ogRaw,
+    process.env.NEXT_PUBLIC_API_URL || '',
+    '/social.png'
+  );
 
   return {
     title: article?.metaTitle,

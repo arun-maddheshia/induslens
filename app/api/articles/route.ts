@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { getAllArticles, createArticle } from "@/lib/db"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 import { ArticleStatus, ContentType } from "@prisma/client"
 
 // GET /api/articles - List articles with pagination and filters
@@ -70,6 +71,9 @@ export async function POST(request: NextRequest) {
     // Set defaults (excerpt is optional in CMS; DB column is non-null so persist empty string)
     const articleData = {
       ...data,
+      images: Array.isArray(data.images)
+        ? normalizeImagesForStorage(data.images)
+        : data.images,
       excerpt:
         data.excerpt != null && String(data.excerpt).trim() !== ""
           ? String(data.excerpt).trim()

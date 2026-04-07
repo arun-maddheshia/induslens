@@ -1,3 +1,4 @@
+import { hydratePostImages } from "./image-storage"
 
 export function mapAuthorToFrontend(
   author: {
@@ -40,13 +41,16 @@ export function mapAuthorToFrontend(
     email: author.email || "",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     contentType: author.contentType as any,
-    images: author.images.map((img) => ({
-      imageCategory: img.imageCategory,
-      imageCategoryValue: img.imageCategoryValue || "",
-      imageDescription: img.imageDescription || "",
-      imageUrl: img.imageUrl,
-      key: img.key || "",
-    })),
+    images: hydratePostImages(
+      author.images.map((img) => ({
+        imageCategory: img.imageCategory,
+        imageCategoryValue: img.imageCategoryValue || "",
+        imageDescription: img.imageDescription || "",
+        imageUrl: img.imageUrl,
+        key: img.key || "",
+      })),
+      "authors"
+    ),
     facebookUrl: author.facebookUrl || "",
     linkedinUrl: author.linkedinUrl || "",
     twitterUrl: author.twitterUrl || "",

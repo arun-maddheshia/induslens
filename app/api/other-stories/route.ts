@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { hydratePostImages } from "@/lib/image-storage";
 
 export async function GET() {
   try {
@@ -18,13 +19,13 @@ export async function GET() {
                 name: true,
                 aboutTheAnchor: true,
                 images: {
-                  where: {
-                    imageCategoryValue: 'avatar'
-                  },
                   select: {
-                    imageUrl: true
+                    imageCategory: true,
+                    imageCategoryValue: true,
+                    imageDescription: true,
+                    imageUrl: true,
                   },
-                  take: 1
+                  take: 1,
                 }
               }
             },
@@ -55,6 +56,17 @@ export async function GET() {
       .filter(item => item.article !== null && item.article.status === 'PUBLISHED')
       .map(item => {
         const article = item.article!;
+
+        const articleImagesHydrated = hydratePostImages(
+          (article.images || []).map((img) => ({
+            imageCategory: img.imageCategory || "",
+            imageCategoryValue: img.imageCategoryValue || "",
+            imageDescription: img.imageDescription || "",
+            imageUrl: img.imageUrl || [],
+            key: article.id,
+          })),
+          "articles"
+        );
 
         // Transform to match Article interface
         return {
@@ -107,13 +119,7 @@ export async function GET() {
           createdAt: article.createdAt.toISOString(),
           updatedAt: article.updatedAt.toISOString(),
           // Add images array in PostImage format
-          images: (article.images || []).map(img => ({
-            imageCategory: img.imageCategory || 'article',
-            imageCategoryValue: img.imageCategoryValue || 'detailsPageBackground',
-            imageDescription: img.imageDescription || '',
-            imageUrl: img.imageUrl || [],
-            key: article.id
-          }))
+          images: articleImagesHydrated
         };
       });
 

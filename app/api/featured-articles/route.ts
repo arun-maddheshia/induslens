@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { hydratePostImages } from "@/lib/image-storage"
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,13 +19,13 @@ export async function GET(request: NextRequest) {
                 name: true,
                 aboutTheAnchor: true,
                 images: {
-                  where: {
-                    imageCategoryValue: 'avatar'
-                  },
                   select: {
-                    imageUrl: true
+                    imageCategory: true,
+                    imageCategoryValue: true,
+                    imageDescription: true,
+                    imageUrl: true,
                   },
-                  take: 1
+                  take: 3,
                 }
               }
             },
@@ -56,6 +57,33 @@ export async function GET(request: NextRequest) {
       .map(item => {
         const article = item.article!
 
+        const authorImagesHydrated = article.author?.images?.length
+          ? hydratePostImages(
+              article.author.images.map((img) => ({
+                imageCategory: img.imageCategory || "",
+                imageCategoryValue: img.imageCategoryValue || "",
+                imageDescription: img.imageDescription || "",
+                imageUrl: img.imageUrl || [],
+                key: "",
+              })),
+              "authors"
+            )
+          : []
+        const authorCardImage =
+          authorImagesHydrated[0]?.imageUrl[0] ||
+          ""
+
+        const articleImagesHydrated = hydratePostImages(
+          (article.images || []).map((img) => ({
+            imageCategory: img.imageCategory || "",
+            imageCategoryValue: img.imageCategoryValue || "",
+            imageDescription: img.imageDescription || "",
+            imageUrl: img.imageUrl || [],
+            key: article.id,
+          })),
+          "articles"
+        )
+
         // Transform to match Article interface
         return {
           _id: article.id,
@@ -69,7 +97,7 @@ export async function GET(request: NextRequest) {
             _id: article.author.id,
             name: article.author.name || '',
             bio: article.author.aboutTheAnchor || '',
-            image: article.author.images[0]?.imageUrl[0] || ''
+            image: authorCardImage
           }] : [],
           categories: article.categoryRef ? [article.categoryRef.id] : [],
           category: article.categoryRef?.name || '',
@@ -108,13 +136,7 @@ export async function GET(request: NextRequest) {
           optionalfield: '',
           createdAt: article.createdAt.toISOString(),
           // Add images array in PostImage format
-          images: (article.images || []).map(img => ({
-            imageCategory: img.imageCategory || 'article',
-            imageCategoryValue: img.imageCategoryValue || 'posterImage',
-            imageDescription: img.imageDescription || '',
-            imageUrl: img.imageUrl || [],
-            key: article.id
-          }))
+          images: articleImagesHydrated
         }
       })
 

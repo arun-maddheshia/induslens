@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { hydratePostImages } from "@/lib/image-storage"
 
 // ─── Public mapper (DB → frontend Eminence type) ──────────────────────────────
 
@@ -23,13 +24,16 @@ function toEminenceModel(e: DbEminence): Eminence {
     category: e.category || "Indus_Eminence",
     excerpt: e.excerpt,
     facebookUrl: e.facebookUrl || "",
-    images: e.images.map((img) => ({
-      imageCategory: img.imageCategory,
-      imageCategoryValue: img.imageCategoryValue || "",
-      imageDescription: img.imageDescription || "",
-      imageUrl: img.imageUrl,
-      key: img.key || "",
-    })),
+    images: hydratePostImages(
+      e.images.map((img) => ({
+        imageCategory: img.imageCategory,
+        imageCategoryValue: img.imageCategoryValue || "",
+        imageDescription: img.imageDescription || "",
+        imageUrl: img.imageUrl,
+        key: img.key || "",
+      })),
+      "eminence"
+    ),
     instagramUrl: e.instagramUrl || "",
     isContent: e.isContent,
     key: e.legacyKey ?? undefined,

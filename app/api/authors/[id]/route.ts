@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { getAuthorById, updateAuthor, deleteAuthor } from "@/lib/db-authors"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 
 // GET /api/authors/[id] - Get single author
 export async function GET(
@@ -52,6 +53,10 @@ export async function PUT(
     }
 
     const data = await request.json()
+
+    if (Array.isArray(data.images)) {
+      data.images = normalizeImagesForStorage(data.images)
+    }
 
     // Check if author exists
     const existingAuthor = await getAuthorById(params.id)

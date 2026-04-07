@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { getAllEminence, createEminence } from "@/lib/db-eminence"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 
 export async function GET(request: NextRequest) {
   try {
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
       linkedinUrl: data.linkedinUrl || null,
       websiteUrl: data.websiteUrl || null,
       order: data.order || 1,
-      images: data.images || [],
+      images: normalizeImagesForStorage(data.images || []),
     })
     return NextResponse.json(eminence, { status: 201 })
   } catch (error) {

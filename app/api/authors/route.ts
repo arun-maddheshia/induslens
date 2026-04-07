@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { getAllAuthors, createAuthor } from "@/lib/db-authors"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 
 // GET /api/authors - List authors with pagination and filters
 export async function GET(request: NextRequest) {
@@ -59,6 +60,9 @@ export async function POST(request: NextRequest) {
     // Set defaults
     const authorData = {
       ...data,
+      images: Array.isArray(data.images)
+        ? normalizeImagesForStorage(data.images)
+        : data.images,
       status: data.status || "Published",
       contentType: data.contentType || "anchor",
       isContent: data.isContent ?? true,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { getAllVideos, createVideo } from "@/lib/db-videos"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 
 // GET /api/videos - List videos with pagination and filters
 export async function GET(request: NextRequest) {
@@ -47,6 +48,9 @@ export async function POST(request: NextRequest) {
 
     const videoData = {
       ...data,
+      images: Array.isArray(data.images)
+        ? normalizeImagesForStorage(data.images)
+        : data.images,
       status: data.status || "Published",
       isContent: data.isContent ?? true,
       genre: data.genre || [],

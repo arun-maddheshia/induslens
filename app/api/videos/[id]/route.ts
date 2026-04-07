@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { getVideoById, updateVideo, deleteVideo } from "@/lib/db-videos"
+import { normalizeImagesForStorage } from "@/lib/image-storage"
 
 // GET /api/videos/[id]
 export async function GET(
@@ -45,6 +46,9 @@ export async function PUT(
     }
 
     const data = await request.json()
+    if (Array.isArray(data.images)) {
+      data.images = normalizeImagesForStorage(data.images)
+    }
     const video = await updateVideo(params.id, data)
 
     return NextResponse.json(video)

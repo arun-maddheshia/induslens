@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import RichTextEditor from "../../_components/RichTextEditor"
+import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
 interface Author {
   id?: string
@@ -161,7 +162,9 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
         throw new Error('Upload failed')
       }
 
-      const { filePath } = await response.json()
+      const { fileName, filePath } = await response.json()
+      const stored =
+        (fileName as string) || (filePath ? String(filePath).split("/").filter(Boolean).pop() : "")
 
       // Update images array
       const currentImages = watch("images") || []
@@ -171,7 +174,7 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
           imageCategory: 'Small Image (1:1)',
           imageCategoryValue: 'mobileDetailsPageBackground',
           imageDescription: '',
-          imageUrl: [filePath],
+          imageUrl: stored ? [stored] : [],
           key: 'category_0',
         }
       ]
@@ -324,7 +327,11 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
               <div className="space-y-3">
                 <div className="relative w-24 h-24 bg-gray-100 rounded-full overflow-hidden">
                   <img
-                    src={currentImage.imageUrl[0]}
+                    src={resolveStoredImageToUrl(
+                      currentImage.imageUrl[0] || "",
+                      "authors",
+                      currentImage.imageCategoryValue
+                    )}
                     alt="Author profile"
                     className="w-full h-full object-cover"
                   />

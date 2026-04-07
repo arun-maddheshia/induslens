@@ -1,5 +1,3 @@
-"use client"
-
 import AuthenticatedLayout from "../../_components/AuthenticatedLayout"
 import CategoryForm from "../_components/CategoryForm"
 

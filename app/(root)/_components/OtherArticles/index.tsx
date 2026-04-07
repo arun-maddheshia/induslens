@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { PageTitle } from '../FeaturedArticles/PageTitle';
 import ImageComponent from '@/components/ImageComponent';
+import { OtherArticlesSkeleton } from '@/components/UI/Skeleton';
 
 type OtherArticlesSectionProps = {
   articles?: Article[]; // Make it optional for backward compatibility
@@ -89,10 +90,7 @@ export const OtherArticlesSection = ({
     return (
       <section className="py-0 pb-20">
         <PageTitle title="Other Stories" />
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-          <span className="ml-2 text-gray-500">Loading other stories...</span>
-        </div>
+        <OtherArticlesSkeleton />
       </section>
     );
   }

@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     const data = await request.json()
 
     // Validate required fields
-    const requiredFields = ["headline", "excerpt", "articleBody", "metaTitle", "metaDescription", "slug"]
+    const requiredFields = ["headline", "metaTitle", "metaDescription", "slug"]
     for (const field of requiredFields) {
       if (!data[field]) {
         return NextResponse.json(
@@ -67,9 +67,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Set defaults
+    // Set defaults (excerpt is optional in CMS; DB column is non-null so persist empty string)
     const articleData = {
       ...data,
+      excerpt:
+        data.excerpt != null && String(data.excerpt).trim() !== ""
+          ? String(data.excerpt).trim()
+          : "",
       status: data.status || ArticleStatus.DRAFT,
       contentType: data.contentType || ContentType.ARTICLES,
       language: data.language || "en",

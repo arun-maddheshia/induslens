@@ -5,9 +5,11 @@ import ImageComponent from '@/components/ImageComponent';
 import Carousel from '@/components/UI/Carousel';
 import { getImageUrl } from '@/lib/utils';
 import Link from 'next/link';
+import { EminenceSkeleton } from '@/components/UI/Skeleton';
 
 export const EminenceWrapper = () => {
   const [indusEminence, setIndusEminence] = useState<Eminence[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/public-eminence')
@@ -15,9 +17,11 @@ export const EminenceWrapper = () => {
       .then((data) => {
         if (Array.isArray(data)) setIndusEminence(data);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
+  if (loading) return <EminenceSkeleton />;
   if (indusEminence.length === 0) return null;
 
   return (

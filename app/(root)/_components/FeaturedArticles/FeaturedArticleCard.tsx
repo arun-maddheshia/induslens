@@ -61,6 +61,20 @@ const FeaturedArticleCard = ({
 
   const authorName = getFirstAuthorName(article.author);
 
+  // Get appropriate image category based on card type
+  const getImageCategory = () => {
+    switch (type) {
+      case 'sm':
+        return 'posterImage'; // 3:2 ratio for small cards
+      case 'md':
+        return 'mobileDetailsPageBackground'; // 1:1 ratio for medium cards
+      case 'lg':
+        return 'posterImage'; // 3:2 ratio for large cards
+      default:
+        return 'posterImage';
+    }
+  };
+
   const redirectUrl = () => {
     if (article.category === 'none' || !article.category) {
       return `/articles/${article.slug}`;
@@ -79,7 +93,7 @@ const FeaturedArticleCard = ({
           className={type === 'md' ? 'inline-block' : ''}
         >
           <ImageComponent
-            src={getImageUrl(article.images, 'posterImage')}
+            src={getImageUrl(article.images, getImageCategory())}
             alt={article.name}
             width={width}
             height={height}

@@ -77,6 +77,13 @@ export async function PUT(
       updateData.category = data.category || null
     }
 
+    // Excerpt is optional in CMS; normalize to empty string when omitted or blank
+    if (data.excerpt !== undefined) {
+      const raw = data.excerpt
+      updateData.excerpt =
+        raw != null && String(raw).trim() !== "" ? String(raw).trim() : ""
+    }
+
     const article = await updateArticle(params.id, updateData, session.user.id!)
 
     return NextResponse.json(article)

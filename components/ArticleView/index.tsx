@@ -40,10 +40,7 @@ export default function ArticleView({ article, pageUrl, articleAuthors }: Props)
       <section className="article-container mx-auto px-5 py-10 lg:px-0 lg:py-20 lg:pb-10">
         <h1 className="mb-2 text-4xl font-bold">{article.name}</h1>
         <p className="pb-7 text-xl">
-          {article.category === 'IndusLens_OSINT' ||
-          article.category === 'Worldview_India'
-            ? ''
-            : article.alternativeHeadline}
+          { article.alternativeHeadline || article.excerpt}
         </p>
 
         {currentArticleAuthors.length > 0 && (

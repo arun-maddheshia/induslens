@@ -4,6 +4,25 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 
+function generateSlug(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim()
+    .replace(/^-+|-+$/g, "")
+}
+
+function generateId(name: string) {
+  return name
+    .replace(/[^a-zA-Z0-9\s_]/g, "")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .trim()
+    .replace(/^_+|_+$/g, "")
+}
+
 interface Category {
   id: string
   slug: string
@@ -95,36 +114,13 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
     }
   }
 
-  // Generate slug from name
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
-      .trim()
-      .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
-  }
-
-  // Generate ID from name
-  const generateId = (name: string) => {
-    return name
-      .replace(/[^a-zA-Z0-9\s_]/g, '') // Remove special characters except spaces and underscores
-      .replace(/\s+/g, '_') // Replace spaces with underscores
-      .replace(/_+/g, '_') // Replace multiple underscores with single
-      .trim()
-      .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
-  }
-
-  const watchedName = watch("name")
-
-  // Auto-generate ID and slug when name changes (only for new categories)
-  useEffect(() => {
-    if (!isEdit && watchedName) {
-      setValue("id", generateId(watchedName))
-      setValue("slug", generateSlug(watchedName))
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isEdit) {
+      const name = e.target.value
+      setValue("id", generateId(name))
+      setValue("slug", generateSlug(name))
     }
-  }, [watchedName, isEdit, setValue])
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm">
@@ -154,7 +150,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
                 Name *
               </label>
               <input
-                {...register("name", { required: "Name is required" })}
+                {...register("name", { required: "Name is required", onChange: handleNameChange })}
                 type="text"
                 className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
                 placeholder="Enter category name"

@@ -6,9 +6,11 @@ import { cn, getImageUrl } from '@/lib/utils';
 import ImageComponent from '../../ImageComponent';
 import Link from 'next/link';
 import styles from './TrendingVideo.module.scss';
+import { TrendingVideoSkeleton } from '@/components/UI/Skeleton';
 
 export default function TrendingVideo() {
   const [videos, setVideos] = useState<VideoArticle[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/trending-videos')
@@ -16,8 +18,11 @@ export default function TrendingVideo() {
       .then((data) => {
         if (Array.isArray(data)) setVideos(data);
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) return <TrendingVideoSkeleton />;
 
   const allPost = videos.map((video) => (
     <div key={`video_${video._id}`}>

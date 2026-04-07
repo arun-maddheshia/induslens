@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ContributorWrapper } from './ContributorWrapper';
+import { ContributorsSkeleton } from '@/components/UI/Skeleton';
 
 export default function FeaturedContributor() {
   const [contributors, setContributors] = useState<Author[]>([]);
@@ -38,11 +39,7 @@ export default function FeaturedContributor() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <ContributorsSkeleton />;
   }
 
   if (error) {

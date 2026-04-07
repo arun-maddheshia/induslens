@@ -6,12 +6,13 @@ import { useForm } from "react-hook-form"
 import { ArticleStatus, ContentType } from "@prisma/client"
 import RichTextEditor from "../../_components/RichTextEditor"
 import ImageUpload from "../../_components/ImageUpload"
+import { processRichTextImages } from "@/lib/process-rich-text-images"
 
 interface Article {
   id?: string
   headline: string
   alternativeHeadline?: string | null
-  excerpt: string
+  excerpt?: string | null
   description?: string | null
   articleBody: string
   pageContent?: string | null
@@ -73,6 +74,7 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
   } = useForm<Article>({
     defaultValues: {
       headline: "",
+      alternativeHeadline: "",
       excerpt: "",
       articleBody: "",
       contentType: ContentType.ARTICLES,
@@ -146,8 +148,7 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
   }, [authorsLoading, categoriesLoading, article, reset, authors, categories])
 
   // Register rich text editor fields for validation
-  const articleBodyRegister = register("articleBody", { required: "Article body is required" })
-  const pageContentRegister = register("pageContent")
+  const pageContentRegister = register("pageContent", { required: "Page content is required" })
   const diveContentRegister = register("diveContent")
   const imagesRegister = register("images")
 
@@ -170,8 +171,19 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
         return []
       }
 
+      // Upload any base64 images embedded in the rich text content to S3
+      const processedPageContent = data.pageContent
+        ? await processRichTextImages(data.pageContent, "articles")
+        : data.pageContent
+
+      const processedDiveContent = data.diveContent
+        ? await processRichTextImages(data.diveContent, "articles")
+        : data.diveContent
+
       const processedData = {
         ...data,
+        pageContent: processedPageContent,
+        diveContent: processedDiveContent,
         tags: processArrayField(data.tags),
         keywords: processArrayField(data.keywords),
         genre: processArrayField(data.genre),
@@ -269,6 +281,7 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
           <div className="md:col-span-2">
             <label htmlFor="alternativeHeadline" className="block text-sm font-semibold text-gray-800 mb-2">
               Alternative Headline
+              <span className="ml-1 text-xs font-normal text-gray-400">(optional)</span>
             </label>
             <input
               {...register("alternativeHeadline")}
@@ -279,23 +292,14 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
 
           <div className="md:col-span-2">
             <label htmlFor="excerpt" className="block text-sm font-semibold text-gray-800 mb-2">
-              Excerpt *
+              Excerpt
+              <span className="ml-1 text-xs font-normal text-gray-400">(optional)</span>
             </label>
             <textarea
-              {...register("excerpt", { required: "Excerpt is required" })}
+              {...register("excerpt")}
+              id="excerpt"
               rows={3}
-              className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-            />
-            {errors.excerpt && <p className="mt-1 text-sm text-red-600">{errors.excerpt.message}</p>}
-          </div>
-
-          <div className="md:col-span-2">
-            <label htmlFor="description" className="block text-sm font-semibold text-gray-800 mb-2">
-              Description
-            </label>
-            <textarea
-              {...register("description")}
-              rows={2}
+              placeholder="Short summary for listings, cards, and previews…"
               className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
             />
           </div>
@@ -308,28 +312,15 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
 
         <div>
           <RichTextEditor
-            label="Article Body"
-            value={watch("articleBody") || ""}
-            onChange={(value) => {
-              setValue("articleBody", value)
-              // Trigger validation
-              articleBodyRegister.onChange({ target: { value } })
-            }}
-            placeholder="Enter the main content of the article..."
-            error={errors.articleBody?.message}
-            required
-          />
-        </div>
-
-        <div>
-          <RichTextEditor
             label="Page Content"
             value={watch("pageContent") || ""}
             onChange={(value) => {
               setValue("pageContent", value)
               pageContentRegister.onChange({ target: { value } })
             }}
-            placeholder="Enter additional page-specific content..."
+            placeholder="Enter the main content of the article..."
+            error={errors.pageContent?.message}
+            required
           />
         </div>
 

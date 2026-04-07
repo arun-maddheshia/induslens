@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
               select: {
                 id: true,
                 name: true,
-                slug: true
+                slug: true,
+                isNews: true,
               }
             }
           }
@@ -72,10 +73,11 @@ export async function GET(request: NextRequest) {
           }] : [],
           categories: article.categoryRef ? [article.categoryRef.id] : [],
           category: article.categoryRef?.name || '',
+          categoryIsNews: article.categoryRef?.isNews ?? false,
           categorySlug: article.categoryRef?.slug || '',
           newsType: 'article',
           agency: 'IndustLens',
-          alternativeHeadline: article.headline || '',
+          alternativeHeadline: article.alternativeHeadline || '',
           ampValidationMessage: '',
           archivedAt: '',
           contentType: 'article' as any,
@@ -98,7 +100,7 @@ export async function GET(request: NextRequest) {
           url: `/articles/${article.slug || article.id}`,
           key: parseInt(article.id.slice(-6), 16), // Generate numeric key from id
           isContent: true,
-          description: article.excerpt || '',
+          description: article.alternativeHeadline || '',
           name: article.headline || '',
           slug: article.slug || '',
           status: article.status,

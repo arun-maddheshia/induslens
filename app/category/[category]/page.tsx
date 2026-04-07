@@ -32,7 +32,7 @@ async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
           imageUrl: true,
         },
       },
-      categoryRef: { select: { id: true, name: true, slug: true } },
+      categoryRef: { select: { id: true, name: true, slug: true, isNews: true } },
     },
   });
 
@@ -47,10 +47,11 @@ async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
     author: article.author ? [{ id: article.author.id, name: article.author.name || '' }] : [],
     categories: article.categoryRef ? [article.categoryRef.id] : [],
     category: article.categoryRef?.id || '',
+    categoryIsNews: article.categoryRef?.isNews ?? false,
     categorySlug: article.categoryRef?.slug || '',
     newsType: 'article',
     agency: 'IndusLens',
-    alternativeHeadline: article.headline || '',
+    alternativeHeadline: article.alternativeHeadline || '',
     ampValidationMessage: '',
     archivedAt: '',
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,7 +75,7 @@ async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
     url: `/category/${article.categoryRef?.slug}/${article.slug}` || '',
     key: parseInt(article.id.slice(-6), 16),
     isContent: true,
-    description: article.excerpt || '',
+    description: article.alternativeHeadline || '',
     name: article.headline || '',
     slug: article.slug || '',
     status: article.status,
@@ -178,13 +179,16 @@ export default async function page({ params, searchParams }: Props) {
         <div className={gridColumnClass}>
           {articleList.map((article: Article) => (
           <div key={article._id} className="relative mb-5 border">
-            <Link href={`/category/${articleCategory.slug}/${article.slug}`}>
+            <Link
+              href={`/category/${articleCategory.slug}/${article.slug}`}
+              className="relative mb-2 block aspect-[11/7] w-full overflow-hidden bg-neutral-100"
+            >
               <ImageComponent
                 src={getImageUrl(article.images, 'detailsPageBackground')}
                 alt={article.name}
-                width={810}
-                height={540}
-                className="mb-2 aspect-[11/7] object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                className="object-contain object-center"
               />
             </Link>
             <div className="relative p-5">
@@ -194,12 +198,12 @@ export default async function page({ params, searchParams }: Props) {
                 </h6>
               </Link>
               <div className="pr-[40px]">
-                <ReadMore
-                  text={article.excerpt}
-                  maxLength={300}
-                  className="mb-4"
-                  href={`/category/${articleCategory.slug}/${article.slug}`}
-                ></ReadMore>
+                  <ReadMore
+                    text={article.alternativeHeadline || article.excerpt || ''}
+                    maxLength={300}
+                    className="mb-4"
+                    href={`/category/${articleCategory.slug}/${article.slug}`}
+                  />
               </div>
               <p className="text-md mt-2 text-gray-500">
                 {getFirstAuthorName(article.author)}

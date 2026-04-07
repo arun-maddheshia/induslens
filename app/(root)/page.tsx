@@ -13,6 +13,7 @@ import { PageTitle } from './_components/FeaturedArticles/PageTitle';
 import ReadMore from '@/components/UI/ReadMore';
 import { OtherArticlesSection } from './_components/OtherArticles';
 import styles from './Home.module.scss';
+import { IndusTvSkeleton, CategorySectionSkeleton } from '@/components/UI/Skeleton';
 
 export default function Home() {
   const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>([]);
@@ -93,6 +94,7 @@ export default function Home() {
       <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
         <FeaturedArticles />
         <TrendingVideo />
+        <IndusTvSkeleton />
 
         <section className="py-0 pb-20">
           <PageTitle href="indus-eminence" title="Indus Eminence" />
@@ -104,9 +106,10 @@ export default function Home() {
           <FeaturedContributor />
         </section>
 
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+        {/* Categories skeleton — show 3 placeholder sections */}
+        {Array.from({ length: 3 }).map((_, i) => (
+          <CategorySectionSkeleton key={i} />
+        ))}
 
         <OtherArticlesSection />
       </div>
@@ -129,9 +132,9 @@ export default function Home() {
           <FeaturedContributor />
         </section>
 
-        <div className="flex justify-center items-center py-8 text-red-600">
-          <span>Error loading categories: {error}</span>
-        </div>
+        <p className="py-6 text-center text-sm text-red-500">
+          Could not load categories. Please refresh the page.
+        </p>
 
         <OtherArticlesSection />
       </div>

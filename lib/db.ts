@@ -142,7 +142,7 @@ export async function getArticleBySlug(slug: string) {
         include: { images: true },
       },
       images: true,
-      categoryRef: { select: { id: true, name: true, slug: true } },
+      categoryRef: { select: { id: true, name: true, slug: true, isNews: true } },
     },
   })
 }

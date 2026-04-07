@@ -40,7 +40,8 @@ export async function GET() {
               select: {
                 id: true,
                 name: true,
-                slug: true
+                slug: true,
+                isNews: true,
               }
             }
           }
@@ -70,10 +71,11 @@ export async function GET() {
           }] : [],
           categories: article.categoryRef ? [article.categoryRef.id] : [],
           category: article.categoryRef?.name || 'none',
+          categoryIsNews: article.categoryRef?.isNews ?? false,
           categorySlug: article.categoryRef?.slug || '',
           newsType: 'article',
           agency: 'IndusLens',
-          alternativeHeadline: article.headline || '',
+          alternativeHeadline: article.alternativeHeadline || '',
           ampValidationMessage: '',
           archivedAt: '',
           contentType: 'article' as any,
@@ -96,7 +98,7 @@ export async function GET() {
           url: `/articles/${article.slug || article.id}`,
           key: parseInt(article.id.slice(-6), 16), // Generate numeric key from id
           isContent: true,
-          description: article.excerpt || '',
+          description: article.alternativeHeadline || '',
           name: article.headline || '',
           slug: article.slug || '',
           status: article.status,

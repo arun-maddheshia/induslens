@@ -21,6 +21,7 @@ export function mapArticleToFrontend(article: DbArticle, urlPrefix = "/articles"
     author: article.author ? [{ id: article.author.id, name: article.author.name || "" }] : [],
     categories: article.categoryRef ? [article.categoryRef.id] : [],
     category: article.categoryRef?.id || article.category || "",
+    categoryIsNews: article.categoryRef?.isNews ?? false,
     categorySlug: article.categoryRef?.slug || "",
     newsType: "",
     agency: "",

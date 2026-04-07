@@ -4,8 +4,11 @@ import Image from 'next/image';
 interface ImageComponentProps {
   src: string;
   alt: string;
-  width: number;
-  height: number;
+  /** Use with a sized parent (`relative` + aspect ratio). Omit `width`/`height` when true. */
+  fill?: boolean;
+  sizes?: string;
+  width?: number;
+  height?: number;
   className?: string;
 }
 
@@ -31,18 +34,24 @@ const toBase64 = (str: string) =>
 const ImageComponent = ({
   src,
   alt,
+  fill,
+  sizes,
   width,
   height,
   className,
 }: ImageComponentProps) => {
   // const imageUrl = src || getFallbackImageUrl();
 
+  const dims =
+    fill === true
+      ? { fill: true, sizes: sizes ?? '(max-width: 1024px) 100vw, 45vw' }
+      : { width: width!, height: height! };
+
   return (
     <Image
       src={src}
       alt={alt}
-      width={width}
-      height={height}
+      {...dims}
       className={className}
       placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`}
       loading="lazy"

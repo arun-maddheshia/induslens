@@ -28,6 +28,8 @@ declare interface Article {
   author: AuthorObject[];
   categories: string[];
   category: string;
+  /** True when the article's category has isNews set (hides subheadline in article views). */
+  categoryIsNews?: boolean;
   categorySlug?: string;
   contentType: ContentType;
   dateCreated: string;

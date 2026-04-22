@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAllCategories } from "@/lib/db-categories";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Get all categories ordered by order field (no auth required for public data)
-    const result = await getAllCategories(1, 100, {});
+    const siteId = new URL(request.url).searchParams.get("siteId") || undefined
+    const result = await getAllCategories(1, 100, { siteId });
 
     // Transform data to match the ArticleCategory interface
     const categories = result.categories.map(category => ({

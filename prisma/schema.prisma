@@ -34,6 +34,7 @@ model Category {
   name        String
   description String   @db.Text
   isNews      Boolean  @default(false)
+  siteId      String   @default("induslens")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   order       Int      @default(1)
@@ -42,6 +43,7 @@ model Category {
   specials    Special[]
 
   @@index([slug])
+  @@index([siteId])
 }
 
 // ─── Articles ────────────────────────────────────────────────────────

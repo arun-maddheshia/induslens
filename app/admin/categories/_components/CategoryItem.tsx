@@ -11,6 +11,7 @@ interface Category {
   name: string
   description: string
   isNews: boolean
+  siteId: string
   order: number
   createdAt: Date
   updatedAt: Date
@@ -67,13 +68,22 @@ export default function CategoryItem({ category, index, showDragHandle = true, o
 
       {/* Type */}
       <td className="px-4 py-3">
-        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-          category.isNews
-            ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200"
-            : "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200"
-        }`}>
-          {category.isNews ? "News" : "Content"}
-        </span>
+        <div className="flex flex-wrap gap-1">
+          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+            category.isNews
+              ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200"
+              : "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200"
+          }`}>
+            {category.isNews ? "News" : "Content"}
+          </span>
+          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+            category.siteId === "industales"
+              ? "bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200"
+              : "bg-gray-100 text-gray-600 ring-1 ring-inset ring-gray-200"
+          }`}>
+            {category.siteId === "industales" ? "IndusTales" : "IndusLens"}
+          </span>
+        </div>
       </td>
 
       {/* Articles count */}

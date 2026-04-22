@@ -10,10 +10,16 @@ const typeOptions = [
   { value: "false", label: "Content" },
 ]
 
+const siteOptions = [
+  { value: "induslens",  label: "IndusLens" },
+  { value: "industales", label: "IndusTales" },
+]
+
 export default function CategoryFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [isNews, setIsNews] = useState(searchParams.get("isNews") || "")
+  const [isNews,  setIsNews]  = useState(searchParams.get("isNews")  || "")
+  const [siteId,  setSiteId]  = useState(searchParams.get("siteId")  || "induslens")
   const searchTimer = useRef<NodeJS.Timeout | null>(null)
 
   const updateParam = (key: string, value: string) => {
@@ -28,7 +34,7 @@ export default function CategoryFilters() {
     searchTimer.current = setTimeout(() => updateParam("search", value), 400)
   }
 
-  const hasFilters = searchParams.get("search") || searchParams.get("isNews")
+  const hasFilters = searchParams.get("search") || searchParams.get("isNews") || searchParams.get("siteId")
 
   return (
     <div className="flex items-center gap-3 flex-none flex-wrap">
@@ -43,6 +49,24 @@ export default function CategoryFilters() {
         />
       </div>
 
+      {/* Site tabs */}
+      <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+        {siteOptions.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => { setSiteId(opt.value); updateParam("siteId", opt.value) }}
+            className={
+              siteId === opt.value
+                ? "rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white"
+                : "rounded-md px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors"
+            }
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Type tabs */}
       <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
         {typeOptions.map((opt) => (
           <button
@@ -61,7 +85,7 @@ export default function CategoryFilters() {
 
       {hasFilters && (
         <button
-          onClick={() => { setIsNews(""); router.push("/admin/categories") }}
+          onClick={() => { setIsNews(""); setSiteId("induslens"); router.push("/admin/categories?siteId=induslens") }}
           className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-500 shadow-sm hover:text-gray-800 transition-colors"
         >
           <X className="h-3 w-3" />

@@ -7,6 +7,7 @@ export async function getAllCategories(
   filters: {
     search?: string
     isNews?: boolean
+    siteId?: string
   } = {}
 ) {
   if (!db) {
@@ -29,6 +30,11 @@ export async function getAllCategories(
   // Add isNews filter
   if (typeof filters.isNews === 'boolean') {
     where.isNews = filters.isNews
+  }
+
+  // Add siteId filter
+  if (filters.siteId) {
+    where.siteId = filters.siteId
   }
 
   try {

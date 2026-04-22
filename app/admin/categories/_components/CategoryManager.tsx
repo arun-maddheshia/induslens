@@ -28,6 +28,7 @@ interface Category {
   name: string
   description: string
   isNews: boolean
+  siteId: string
   order: number
   createdAt: Date
   updatedAt: Date
@@ -56,16 +57,18 @@ export default function CategoryManager() {
 
   const search = searchParams.get("search")?.toLowerCase() ?? ""
   const isNewsFilter = searchParams.get("isNews")
-  const isFiltered = !!search || isNewsFilter !== null && isNewsFilter !== ""
+  const siteFilter = searchParams.get("siteId") ?? ""
+  const isFiltered = !!search || (isNewsFilter !== null && isNewsFilter !== "")
 
   const visibleCategories = useMemo(() => {
     return categories.filter((cat) => {
       if (search && !cat.name.toLowerCase().includes(search) && !cat.slug.toLowerCase().includes(search)) return false
       if (isNewsFilter === "true" && !cat.isNews) return false
       if (isNewsFilter === "false" && cat.isNews) return false
+      if (siteFilter && cat.siteId !== siteFilter) return false
       return true
     })
-  }, [categories, search, isNewsFilter])
+  }, [categories, search, isNewsFilter, siteFilter])
 
   const loadCategories = useCallback(async () => {
     setLoading(true)

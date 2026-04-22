@@ -19,8 +19,9 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") ?? "10")
     const search = searchParams.get("search") || undefined
     const isNews = searchParams.get("isNews")
+    const siteId = searchParams.get("siteId") || undefined
 
-    const filters: any = { search }
+    const filters: any = { search, siteId }
 
     if (isNews !== null && isNews !== undefined) {
       filters.isNews = isNews === 'true'

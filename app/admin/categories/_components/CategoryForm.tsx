@@ -29,6 +29,7 @@ interface Category {
   name: string
   description: string
   isNews: boolean
+  siteId: string
   order: number
   createdAt?: string | Date
   updatedAt?: string | Date
@@ -40,6 +41,7 @@ interface CategoryFormData {
   name: string
   description: string
   isNews: boolean
+  siteId: string
   order: number
 }
 
@@ -67,6 +69,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
       name: "",
       description: "",
       isNews: false,
+      siteId: "induslens",
       order: 1,
     },
   })
@@ -79,6 +82,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
         name: category.name,
         description: category.description,
         isNews: category.isNews,
+        siteId: category.siteId || "induslens",
         order: category.order,
       })
     }
@@ -212,6 +216,29 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
                 />
                 {errors.order && <p className="mt-1 text-xs text-red-500">{errors.order.message}</p>}
                 <p className="mt-1 text-xs text-gray-400">Lower numbers appear first</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Site</label>
+                <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1">
+                  {[
+                    { value: "induslens",  label: "IndusLens" },
+                    { value: "industales", label: "IndusTales" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setValue("siteId", opt.value)}
+                      className={
+                        watch("siteId") === opt.value
+                          ? "flex-1 rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white"
+                          : "flex-1 rounded-md px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors"
+                      }
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="flex items-start gap-3 pt-1">

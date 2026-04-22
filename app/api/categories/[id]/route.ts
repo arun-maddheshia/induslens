@@ -76,6 +76,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (data.slug !== undefined) updateData.slug = data.slug
     if (data.description !== undefined) updateData.description = data.description
     if (data.isNews !== undefined) updateData.isNews = data.isNews
+    if (data.siteId !== undefined) updateData.siteId = data.siteId
     if (data.order !== undefined) updateData.order = data.order
 
     const category = await updateCategory(params.id, updateData)

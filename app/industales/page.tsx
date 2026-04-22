@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import FeaturedArticlesWrapper from '@/app/(root)/_components/FeaturedArticles/FeaturedArticlesWrapper';
-import { Skeleton, FeaturedArticlesSkeleton } from '@/components/UI/Skeleton';
+import { FeaturedArticlesSkeleton, CategorySectionSkeleton } from '@/components/UI/Skeleton';
 import { OtherArticlesSection } from '@/app/(root)/_components/OtherArticles';
 import { PageTitle } from '@/app/(root)/_components/FeaturedArticles/PageTitle';
 import Carousel from '@/components/UI/Carousel';
 import ImageComponent from '@/components/ImageComponent';
-import { getImageUrl, getFirstAuthorName } from '@/lib/utils';
+import ReadMore from '@/components/UI/ReadMore';
+import { getImageUrl, getFirstAuthorName, cn } from '@/lib/utils';
 import Link from 'next/link';
-
-const RACE_TO_ZERO_CATEGORY_ID = 'Race_to_Zero';
-const RACE_TO_ZERO_SLUG = 'race-to-zero';
-const RACE_TO_ZERO_TITLE = "Race to Zero: India's Journey to Sustainability";
+import styles from '@/app/(root)/Home.module.scss';
 
 type FeaturedData = {
   leftPosts: Article[];
@@ -23,23 +21,10 @@ type FeaturedData = {
 function IndusTalesPageSkeleton() {
   return (
     <>
-      {/* Hero skeleton */}
       <FeaturedArticlesSkeleton />
-
-      {/* Race to Zero carousel skeleton */}
-      <section className="mt-10 py-0 pb-7 lg:pb-10">
-        <Skeleton className="mb-5 h-7 w-96" />
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i}>
-              <Skeleton className="mb-2 aspect-[3/2] w-full rounded" />
-              <Skeleton className="mb-1 h-4 w-full" />
-              <Skeleton className="mb-1 h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/3" />
-            </div>
-          ))}
-        </div>
-      </section>
+      {Array.from({ length: 3 }).map((_, i) => (
+        <CategorySectionSkeleton key={i} />
+      ))}
     </>
   );
 }
@@ -50,53 +35,39 @@ export default function IndusTalesPage() {
     mainPost: null,
     rightPosts: [],
   });
-  const [raceToZeroArticles, setRaceToZeroArticles] = useState<Article[]>([]);
+  const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>([]);
+  const [categoryArticles, setCategoryArticles] = useState<Record<string, Article[]>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/industales-featured')
-        .then((r) => r.json())
-        .catch(() => null),
-      fetch(
-        `/api/category-articles/${RACE_TO_ZERO_CATEGORY_ID}?siteId=industales`,
-      )
-        .then((r) => r.json())
-        .catch(() => null),
-    ])
-      .then(([featuredData, raceData]) => {
-        if (featuredData) setFeatured(featuredData);
-        if (raceData?.success) setRaceToZeroArticles(raceData.data || []);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    const fetchAll = async () => {
+      const [featuredData, categoriesResult] = await Promise.all([
+        fetch('/api/industales-featured').then((r) => r.json()).catch(() => null),
+        fetch('/api/public-categories?siteId=industales').then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+      ]);
 
-  const raceToZeroItems = raceToZeroArticles
-    .filter((article) => article.images.length)
-    .map((article) => (
-      <div key={article._id} className="py-0 lg:py-4">
-        <Link href={`/category/${RACE_TO_ZERO_SLUG}?name=${article.slug}`}>
-          <ImageComponent
-            src={getImageUrl(article.images, 'posterImage')}
-            alt={article.name}
-            width={810}
-            height={540}
-            className="mb-2 aspect-[3/2]"
-          />
-        </Link>
-        <h6 className="mb-2 text-lg font-bold leading-6 text-black">
-          <Link
-            href={`/category/${RACE_TO_ZERO_SLUG}?name=${article.slug}`}
-            className="hover:underline"
-          >
-            {article.name}
-          </Link>
-        </h6>
-        <p className="mb-2 text-sm text-gray-500">
-          {getFirstAuthorName(article.author)}
-        </p>
-      </div>
-    ));
+      if (featuredData) setFeatured(featuredData);
+
+      const categories: ArticleCategory[] = categoriesResult.success ? categoriesResult.data : [];
+      setArticleCategories(categories);
+
+      const articlesResults = await Promise.all(
+        categories.map((cat) =>
+          fetch(`/api/category-articles/${cat.id}?siteId=industales`)
+            .then((r) => r.json())
+            .then((res) => ({ categoryId: cat.id, articles: res.success ? res.data : [] }))
+            .catch(() => ({ categoryId: cat.id, articles: [] }))
+        )
+      );
+
+      const map: Record<string, Article[]> = {};
+      articlesResults.forEach(({ categoryId, articles }) => { map[categoryId] = articles; });
+      setCategoryArticles(map);
+      setLoading(false);
+    };
+
+    fetchAll();
+  }, []);
 
   return (
     <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
@@ -105,9 +76,7 @@ export default function IndusTalesPage() {
       ) : (
         <>
           {/* Hero playlist section */}
-          {(featured.mainPost ||
-            featured.leftPosts.length > 0 ||
-            featured.rightPosts.length > 0) && (
+          {(featured.mainPost || featured.leftPosts.length > 0 || featured.rightPosts.length > 0) && (
             <FeaturedArticlesWrapper
               leftPosts={featured.leftPosts}
               mainPost={featured.mainPost}
@@ -115,27 +84,64 @@ export default function IndusTalesPage() {
             />
           )}
 
-          {/* Race to Zero carousel */}
-          {raceToZeroItems.length > 0 && (
-            <section className="mt-10 py-0 pb-7 lg:pb-10">
-              <PageTitle
-                title={RACE_TO_ZERO_TITLE}
-                href={`category/${RACE_TO_ZERO_SLUG}`}
+          {/* Dynamic category carousels ordered by admin */}
+          {articleCategories.map((category) => (
+            <section
+              key={category.id}
+              className={cn('py-0 pb-7 lg:pb-10', styles.categoryListing)}
+            >
+              <PageTitle title={category.name} href={`category/${category.slug}`} />
+              <ReadMore
+                className="mb-5 text-lg"
+                text={category.description}
+                maxLength={300}
+                href={`category/${category.slug}`}
               />
-              <Carousel
-                slidesPerView={4}
-                mdSlidesPerView={3}
-                gridRows={1}
-                loop={true}
-                spaceBetween={20}
-                items={raceToZeroItems}
-              />
+              {(categoryArticles[category.id] || []).filter((a) => a.images.length).length > 0 ? (
+                <Carousel
+                  slidesPerView={4}
+                  mdSlidesPerView={3}
+                  gridRows={1}
+                  loop={true}
+                  spaceBetween={20}
+                  items={(categoryArticles[category.id] || [])
+                    .filter((a) => a.images.length)
+                    .map((article) => (
+                      <div key={article._id} className="py-0 lg:py-4">
+                        <Link href={`category/${category.slug}?name=${article.slug}`}>
+                          <ImageComponent
+                            src={getImageUrl(article.images, 'posterImage')}
+                            alt={article.name}
+                            width={810}
+                            height={540}
+                            className="mb-2 aspect-[3/2]"
+                          />
+                        </Link>
+                        <h6 className="mb-2 text-lg font-bold leading-6 text-black">
+                          <Link
+                            href={`category/${category.slug}?name=${article.slug}`}
+                            className="hover:underline"
+                          >
+                            {article.name}
+                          </Link>
+                        </h6>
+                        <p className="mb-2 text-sm text-gray-500">
+                          {getFirstAuthorName(article.author)}
+                        </p>
+                      </div>
+                    ))}
+                />
+              ) : (
+                <div className="py-8 text-center text-sm text-gray-400">
+                  No articles found for this category.
+                </div>
+              )}
             </section>
-          )}
+          ))}
         </>
       )}
 
-      {/* Other Stories — has its own internal skeleton */}
+      {/* Other Stories */}
       <OtherArticlesSection apiEndpoint="/api/industales-other-stories" />
     </div>
   );

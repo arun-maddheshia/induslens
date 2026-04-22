@@ -1,9 +1,7 @@
 import ArticleForm from "../_components/ArticleForm"
-import AuthenticatedLayout from "../../_components/AuthenticatedLayout"
 
 export default async function NewArticlePage() {
   return (
-    <AuthenticatedLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Create New Article</h1>
@@ -16,6 +14,5 @@ export default async function NewArticlePage() {
           <ArticleForm isEdit={false} />
         </div>
       </div>
-    </AuthenticatedLayout>
   )
 }

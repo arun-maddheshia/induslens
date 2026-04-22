@@ -5,9 +5,6 @@ import {
   type MediaEntity,
 } from '@/lib/image-storage';
 
-/*
-    Merge multiple classnames
-*/
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -18,10 +15,6 @@ export function truncate(text: string, truncateLength: number) {
     : text;
 }
 
-/**
- * Resolves the image URL for a slot. DB may store a bare filename; this builds the full S3 (or legacy) URL.
- * Pass `entity` for non-article images (authors, videos, eminence).
- */
 export function getImageUrl(
   images: PostImage[],
   type: string,
@@ -48,30 +41,18 @@ export function normalizeText(text: string) {
   return text.replace('_', ' ').replace('-', ' ');
 }
 
-/**
- * Extracts the name of the first author from the given input.
- * @param author - The author input, which can be an array of author objects or an array of names.
- * @returns The name of the first author or an empty string if no author is found.
- */
 export function getFirstAuthorName(author: ArticleAuthor): string {
   if (Array.isArray(author) && author.length > 0) {
     if (typeof author[0] === 'string') {
-      // If the first element is a string, return it directly
       return author[0] as string;
     } else {
-      // Assume the array contains objects with 'name' property
       return (author[0] as AuthorObject).name;
     }
   }
   return '';
 }
 
-// export const getFallbackImageUrl = () => '/fallback-image.jpg';
-// export const getPlaceholderImageUrl = () => '/placeholder-image.jpg';
-
 export function isMeaningfulContent(html: string) {
-  // Simple client-side check for non-empty content
-  // Strip HTML tags and whitespace
   const strippedContent = html.replace(/<\/?[^>]+(>|$)/g, '').trim();
   return strippedContent.length > 0;
 }
@@ -87,22 +68,17 @@ export function slugify(url: string) {
 export function getFormattedDate(date: string) {
   const newDate = new Date(date);
   const formatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' });
-  const formattedDate = formatter.format(newDate);
-  return formattedDate;
+  return formatter.format(newDate);
 }
 
 export function getFacebookShareUrl(url: string) {
-  const encodedUrl = encodeURIComponent(url);
-  return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+  return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
 }
 
 export function getTwitterShareUrl(url: string, title: string) {
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
-  return `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+  return `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
 }
 
 export function getLinkedinShareUrl(url: string) {
-  const encodedUrl = encodeURIComponent(url);
-  return `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+  return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
 }

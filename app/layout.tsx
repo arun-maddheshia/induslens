@@ -6,10 +6,8 @@ import { Analytics } from '@vercel/analytics/react';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { cn } from '@/lib/utils';
 
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
 import { Inter } from 'next/font/google';
-import StickyFollowTwitter from '@/components/StickyFollowTwitter';
+import PublicLayout from '@/components/PublicLayout';
 import Providers from './providers';
 
 const fontInter = Inter({
@@ -24,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="font-sans">
       <link
         rel="apple-touch-icon"
         sizes="180x180"
@@ -62,10 +60,7 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <Navbar />
-          <main className="relative bg-inherit">{children}</main>
-          <StickyFollowTwitter />
-          <Footer />
+          <PublicLayout>{children}</PublicLayout>
         </Providers>
         <Toaster
           position="top-center"

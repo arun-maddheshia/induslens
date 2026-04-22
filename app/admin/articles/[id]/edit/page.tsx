@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation"
 import { getArticleById } from "@/lib/db"
 import ArticleForm from "../../_components/ArticleForm"
-import AuthenticatedLayout from "../../../_components/AuthenticatedLayout"
 
 interface EditArticlePageProps {
   params: {
@@ -17,7 +16,6 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
   }
 
   return (
-    <AuthenticatedLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Edit Article</h1>
@@ -30,6 +28,5 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
           <ArticleForm article={article} isEdit={true} />
         </div>
       </div>
-    </AuthenticatedLayout>
   )
 }

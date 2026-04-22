@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface PaginationProps {
   currentPage: number
@@ -13,81 +15,79 @@ export default function Pagination({ currentPage, totalPages, baseUrl }: Paginat
   const searchParams = useSearchParams()
 
   const createPageUrl = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams)
     params.set("page", page.toString())
     return `${baseUrl}?${params.toString()}`
   }
 
-  const getPageNumbers = () => {
-    const pages = []
-    const maxPagesToShow = 5
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2))
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1)
+  const getPages = () => {
+    const delta = 2
+    const pages: (number | "…")[] = []
 
-    if (endPage - startPage + 1 < maxPagesToShow) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1)
-    }
+    const left = Math.max(2, currentPage - delta)
+    const right = Math.min(totalPages - 1, currentPage + delta)
 
-    for (let i = startPage; i <= endPage; i++) pages.push(i)
+    if (left > 2) pages.push(1, "…")
+    else pages.push(1)
+
+    for (let i = left; i <= right; i++) pages.push(i)
+
+    if (right < totalPages - 1) pages.push("…", totalPages)
+    else if (totalPages > 1) pages.push(totalPages)
+
     return pages
   }
 
   if (totalPages <= 1) return null
 
-  const pages = getPageNumbers()
+  const pages = getPages()
+  const btnBase = "inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm transition-colors"
 
   return (
-    <nav className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-      <div className="flex flex-1 justify-between sm:hidden">
-        <Link
-          href={createPageUrl(currentPage - 1)}
-          className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${currentPage <= 1 ? "pointer-events-none opacity-50" : ""}`}
-        >
-          Previous
-        </Link>
-        <Link
-          href={createPageUrl(currentPage + 1)}
-          className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}`}
-        >
-          Next
-        </Link>
-      </div>
-
-      <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <p className="text-sm text-gray-700">
-          Page <span className="font-medium">{currentPage}</span> of{" "}
-          <span className="font-medium">{totalPages}</span>
-        </p>
-        <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm">
-          <Link
-            href={createPageUrl(currentPage - 1)}
-            className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ${currentPage <= 1 ? "pointer-events-none opacity-50" : ""}`}
-          >
-            <span className="sr-only">Previous</span>
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-            </svg>
+    <div className="flex items-center justify-between px-4 py-3">
+      <p className="text-xs text-gray-400">
+        Page {currentPage} of {totalPages}
+      </p>
+      <nav className="flex items-center gap-1">
+        {currentPage > 1 ? (
+          <Link href={createPageUrl(currentPage - 1)} className={cn(btnBase, "text-gray-500 hover:bg-gray-100")}>
+            <ChevronLeft className="h-4 w-4" />
           </Link>
-          {pages.map((page) => (
+        ) : (
+          <span className={cn(btnBase, "cursor-not-allowed text-gray-300")}>
+            <ChevronLeft className="h-4 w-4" />
+          </span>
+        )}
+
+        {pages.map((page, i) =>
+          page === "…" ? (
+            <span key={`dots-${i}`} className={cn(btnBase, "text-gray-400 cursor-default")}>…</span>
+          ) : (
             <Link
               key={page}
-              href={createPageUrl(page)}
-              className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ${page === currentPage ? "z-10 bg-indigo-600 text-white" : "text-gray-900"}`}
+              href={createPageUrl(page as number)}
+              className={cn(
+                btnBase,
+                page === currentPage
+                  ? "bg-gray-900 text-white font-medium"
+                  : "text-gray-600 hover:bg-gray-100"
+              )}
             >
               {page}
             </Link>
-          ))}
-          <Link
-            href={createPageUrl(currentPage + 1)}
-            className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ${currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}`}
-          >
-            <span className="sr-only">Next</span>
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-            </svg>
+          )
+        )}
+
+        {currentPage < totalPages ? (
+          <Link href={createPageUrl(currentPage + 1)} className={cn(btnBase, "text-gray-500 hover:bg-gray-100")}>
+            <ChevronRight className="h-4 w-4" />
           </Link>
-        </nav>
-      </div>
-    </nav>
+        ) : (
+          <span className={cn(btnBase, "cursor-not-allowed text-gray-300")}>
+            <ChevronRight className="h-4 w-4" />
+          </span>
+        )}
+      </nav>
+    </div>
   )
 }

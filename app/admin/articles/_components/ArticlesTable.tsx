@@ -4,7 +4,7 @@ import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import clsx from "clsx"
+import { Pencil, Trash2 } from "lucide-react"
 import ConfirmDialog from "../../_components/ConfirmDialog"
 
 interface Article {
@@ -15,82 +15,51 @@ interface Article {
   category: string | null
   publishedAt: Date | null
   updatedAt: Date
-  author?: {
-    name: string | null
-    email: string | null
-  } | null
-  editor?: {
-    name: string | null
-    email: string | null
-  } | null
+  author?: { name: string | null; email: string | null } | null
+  editor?: { name: string | null; email: string | null } | null
 }
 
-interface ArticlesTableProps {
-  articles: Article[]
+const statusStyle: Record<string, string> = {
+  DRAFT:     "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
+  PUBLISHED: "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
+  ARCHIVED:  "bg-gray-100 text-gray-500 ring-1 ring-inset ring-gray-200",
 }
 
-const statusColors = {
-  DRAFT: "bg-gray-100 text-gray-800",
-  PUBLISHED: "bg-green-100 text-green-800",
-  ARCHIVED: "bg-red-100 text-red-800",
-}
-
-export default function ArticlesTable({ articles }: ArticlesTableProps) {
+export default function ArticlesTable({ articles }: { articles: Article[] }) {
   const [deleteDialog, setDeleteDialog] = useState<{
-    isOpen: boolean
-    articleId: string | null
-    articleTitle: string
-  }>({
-    isOpen: false,
-    articleId: null,
-    articleTitle: ""
-  })
+    isOpen: boolean; articleId: string | null; articleTitle: string
+  }>({ isOpen: false, articleId: null, articleTitle: "" })
   const [isDeleting, setIsDeleting] = useState(false)
   const router = useRouter()
 
-  const handleDeleteClick = (articleId: string, articleTitle: string) => {
-    setDeleteDialog({
-      isOpen: true,
-      articleId,
-      articleTitle
-    })
-  }
+  const openDelete = (id: string, title: string) =>
+    setDeleteDialog({ isOpen: true, articleId: id, articleTitle: title })
 
-  const handleDeleteConfirm = async () => {
+  const cancelDelete = () =>
+    setDeleteDialog({ isOpen: false, articleId: null, articleTitle: "" })
+
+  const confirmDelete = async () => {
     if (!deleteDialog.articleId) return
-
     setIsDeleting(true)
     try {
-      const response = await fetch(`/api/articles/${deleteDialog.articleId}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to delete article')
-      }
-
-      // Close dialog and refresh the page
-      setDeleteDialog({ isOpen: false, articleId: null, articleTitle: "" })
+      const res = await fetch(`/api/articles/${deleteDialog.articleId}`, { method: "DELETE" })
+      if (!res.ok) throw new Error((await res.json()).error || "Failed to delete")
+      cancelDelete()
       router.refresh()
-    } catch (error) {
-      console.error('Error deleting article:', error)
-      alert(error instanceof Error ? error.message : 'Failed to delete article')
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete article")
     } finally {
       setIsDeleting(false)
     }
   }
 
-  const handleDeleteCancel = () => {
-    setDeleteDialog({ isOpen: false, articleId: null, articleTitle: "" })
-  }
   if (articles.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">No articles found.</p>
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <p className="text-sm text-gray-500">No articles found.</p>
         <Link
           href="/admin/articles/new"
-          className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200"
+          className="mt-3 text-sm font-medium text-gray-900 underline underline-offset-2 hover:no-underline"
         >
           Create your first article
         </Link>
@@ -99,75 +68,74 @@ export default function ArticlesTable({ articles }: ArticlesTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    <>
+      <table className="min-w-full text-sm">
+        <thead className="sticky top-0 z-10 bg-white">
+          <tr className="border-b border-gray-100">
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400 w-[40%]">
               Article
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
               Status
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
               Category
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
               Author
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Last Modified
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
+              Modified
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
+            <th className="px-4 py-3 w-20" />
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="divide-y divide-gray-50">
           {articles.map((article) => (
-            <tr key={article.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4">
+            <tr key={article.id} className="group hover:bg-gray-50/60 transition-colors">
+              <td className="px-4 py-3">
                 <div className="max-w-sm">
-                  <div className="text-sm font-medium text-gray-900 truncate">
+                  <p className="font-medium text-gray-900 truncate leading-snug">
                     {article.headline}
-                  </div>
-                  <div className="text-sm text-gray-500 truncate mt-1">
-                    {article.excerpt}
-                  </div>
+                  </p>
+                  {article.excerpt && (
+                    <p className="mt-0.5 text-xs text-gray-400 truncate">
+                      {article.excerpt}
+                    </p>
+                  )}
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span
-                  className={clsx(
-                    "inline-flex px-2 py-1 text-xs font-semibold rounded-full",
-                    statusColors[article.status as keyof typeof statusColors] || "bg-gray-100 text-gray-800"
-                  )}
-                >
-                  {article.status}
+              <td className="px-4 py-3 whitespace-nowrap">
+                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle[article.status] ?? statusStyle.ARCHIVED}`}>
+                  {article.status.charAt(0) + article.status.slice(1).toLowerCase()}
                 </span>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {article.category || "Uncategorized"}
+              <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                {article.category || <span className="text-gray-300">—</span>}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {article.author?.name || article.author?.email || "Unknown"}
+              <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                {article.author?.name || article.author?.email || <span className="text-gray-300">—</span>}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
                 {formatDistanceToNow(new Date(article.updatedAt), { addSuffix: true })}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                <Link
-                  href={`/admin/articles/${article.id}/edit`}
-                  className="text-indigo-600 hover:text-indigo-900"
-                >
-                  Edit
-                </Link>
-                <button
-                  className="text-red-600 hover:text-red-900"
-                  onClick={() => handleDeleteClick(article.id, article.headline)}
-                >
-                  Delete
-                </button>
+              <td className="px-4 py-3 whitespace-nowrap">
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Link
+                    href={`/admin/articles/${article.id}/edit`}
+                    className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                    title="Edit"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Link>
+                  <button
+                    className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    onClick={() => openDelete(article.id, article.headline)}
+                    title="Delete"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -176,8 +144,8 @@ export default function ArticlesTable({ articles }: ArticlesTableProps) {
 
       <ConfirmDialog
         isOpen={deleteDialog.isOpen}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
         title="Delete Article"
         message={`Are you sure you want to delete "${deleteDialog.articleTitle}"? This action cannot be undone.`}
         confirmText="Delete Article"
@@ -185,6 +153,6 @@ export default function ArticlesTable({ articles }: ArticlesTableProps) {
         isLoading={isDeleting}
         type="danger"
       />
-    </div>
+    </>
   )
 }

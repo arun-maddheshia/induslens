@@ -30,8 +30,8 @@ interface Category {
   description: string
   isNews: boolean
   order: number
-  createdAt?: string
-  updatedAt?: string
+  createdAt?: string | Date
+  updatedAt?: string | Date
 }
 
 interface CategoryFormData {
@@ -152,7 +152,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
               <input
                 {...register("name", { required: "Name is required", onChange: handleNameChange })}
                 type="text"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
+                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
                 placeholder="Enter category name"
               />
               {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
@@ -166,7 +166,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
                 {...register("id", { required: "ID is required" })}
                 type="text"
                 disabled={isEdit}
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="Category ID"
               />
               {errors.id && <p className="mt-1 text-sm text-red-600">{errors.id.message}</p>}
@@ -182,7 +182,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
               <input
                 {...register("slug", { required: "Slug is required" })}
                 type="text"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
+                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
                 placeholder="category-slug"
               />
               {errors.slug && <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>}
@@ -196,7 +196,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
               <textarea
                 {...register("description", { required: "Description is required" })}
                 rows={4}
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
+                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
                 placeholder="Enter category description"
               />
               {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
@@ -214,7 +214,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
                 })}
                 type="number"
                 min="1"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
+                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
                 placeholder="1"
               />
               {errors.order && <p className="mt-1 text-sm text-red-600">{errors.order.message}</p>}
@@ -274,14 +274,14 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
           <button
             type="button"
             onClick={() => router.back()}
-            className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex justify-center py-2 px-4 border border-gray-200 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Saving..." : isEdit ? "Update Category" : "Create Category"}
           </button>

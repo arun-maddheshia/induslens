@@ -5,7 +5,7 @@ import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import clsx from "clsx"
+import { Pencil, Trash2 } from "lucide-react"
 import {
   DndContext,
   closestCenter,
@@ -54,10 +54,10 @@ interface AuthorsTableProps {
   authors: Author[]
 }
 
-const statusColors = {
-  Published: "bg-green-100 text-green-800",
-  Draft: "bg-gray-100 text-gray-800",
-  Archived: "bg-red-100 text-red-800",
+const statusStyle: Record<string, string> = {
+  Published: "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
+  Draft:     "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
+  Archived:  "bg-gray-100 text-gray-500 ring-1 ring-inset ring-gray-200",
 }
 
 // Sortable author row component
@@ -105,90 +105,73 @@ function SortableAuthorRow({
     <tr
       ref={setNodeRef}
       style={style}
-      className={`hover:bg-gray-50 ${isDragging ? 'bg-gray-100 shadow-lg z-10' : ''}`}
+      className={`group transition-colors ${isDragging ? "bg-gray-50 shadow-sm z-10" : "hover:bg-gray-50/60"}`}
     >
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-3">
-          {/* Drag handle */}
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-3">
           <button
             {...attributes}
             {...listeners}
-            className="cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600 flex-shrink-0"
+            className="cursor-grab hover:cursor-grabbing text-gray-300 hover:text-gray-500 flex-shrink-0"
             aria-label="Drag to reorder"
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
               <path d="M7 2a2 2 0 1 1 .001 4.001A2 2 0 0 1 7 2zM7 8a2 2 0 1 1 .001 4.001A2 2 0 0 1 7 8zM7 14a2 2 0 1 1 .001 4.001A2 2 0 0 1 7 14zM13 2a2 2 0 1 1 .001 4.001A2 2 0 0 1 13 2zM13 8a2 2 0 1 1 .001 4.001A2 2 0 0 1 13 8zM13 14a2 2 0 1 1 .001 4.001A2 2 0 0 1 13 14z" />
             </svg>
           </button>
-          <div className="flex-shrink-0 h-10 w-10">
+          <div className="flex-shrink-0 h-9 w-9">
             {authorImage ? (
-              <Image
-                src={authorImage}
-                alt={author.name}
-                width={40}
-                height={40}
-                className="h-10 w-10 rounded-full object-cover"
-              />
+              <Image src={authorImage} alt={author.name} width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-700">
-                  {author.name.charAt(0)}
-                </span>
+              <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">
+                <span className="text-xs font-medium text-gray-500">{author.name.charAt(0)}</span>
               </div>
             )}
           </div>
-          <div className="max-w-xs">
-            <div className="text-sm font-medium text-gray-900 truncate">
-              {author.name}
-            </div>
-            <div className="text-sm text-gray-500 truncate">
-              {author.email || author.slug}
-            </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{author.name}</p>
+            <p className="text-xs text-gray-400 truncate max-w-[200px]">{author.email || author.slug}</p>
           </div>
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-4 py-3 whitespace-nowrap">
         <span
-          className={clsx(
-            "inline-flex px-2 py-1 text-xs font-semibold rounded-full",
-            statusColors[author.status as keyof typeof statusColors] || "bg-gray-100 text-gray-800"
-          )}
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle[author.status] ?? statusStyle.Archived}`}
         >
           {author.status}
         </span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        {author.countryName || "Not specified"}
+      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+        {author.countryName || <span className="text-gray-300">—</span>}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+      <td className="px-4 py-3 whitespace-nowrap">
+        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200">
           {author._count.articles}
         </span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
         {author.order}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
         {formatDistanceToNow(new Date(author.updatedAt), { addSuffix: true })}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-        <Link
-          href={`/admin/authors/${author.id}/edit`}
-          className="text-indigo-600 hover:text-indigo-900"
-        >
-          Edit
-        </Link>
-        <button
-          className="text-red-600 hover:text-red-900"
-          onClick={() => onDeleteClick(author.id, author.name)}
-        >
-          Delete
-        </button>
+      <td className="px-4 py-3 whitespace-nowrap">
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Link
+            href={`/admin/authors/${author.id}/edit`}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            title="Edit"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Link>
+          <button
+            className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+            onClick={() => onDeleteClick(author.id, author.name)}
+            title="Delete"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </td>
     </tr>
   )
@@ -329,12 +312,9 @@ export default function AuthorsTable({ authors }: AuthorsTableProps) {
 
   if (localAuthors.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">No authors found.</p>
-        <Link
-          href="/admin/authors/new"
-          className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200"
-        >
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <p className="text-sm text-gray-500">No authors found.</p>
+        <Link href="/admin/authors/new" className="mt-3 text-sm font-medium text-gray-900 underline underline-offset-2 hover:no-underline">
           Create your first author
         </Link>
       </div>
@@ -343,97 +323,42 @@ export default function AuthorsTable({ authors }: AuthorsTableProps) {
 
   return (
     <div>
-      {/* Save Order Controls */}
       {hasUnsavedChanges && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <svg className="w-5 h-5 text-amber-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-              <span className="text-sm font-medium text-amber-800">
-                You have unsaved changes to the author order
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={handleResetOrder}
-                disabled={isSaving}
-                className="px-3 py-1.5 text-sm font-medium text-amber-700 bg-white border border-amber-300 rounded-md shadow-sm hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Reset
-              </button>
-              <button
-                onClick={handleSaveOrder}
-                disabled={isSaving}
-                className="px-4 py-1.5 text-sm font-medium text-white bg-amber-600 border border-transparent rounded-md shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-              >
-                {isSaving ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Saving...
-                  </>
-                ) : (
-                  'Save Order'
-                )}
-              </button>
-            </div>
+        <div className="flex items-center justify-between border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-sm">
+          <span className="font-medium text-amber-800">Unsaved changes to author order</span>
+          <div className="flex items-center gap-2">
+            <button onClick={handleResetOrder} disabled={isSaving} className="rounded-md border border-amber-300 bg-white px-3 py-1 text-xs font-medium text-amber-700 hover:bg-amber-50 disabled:opacity-50">
+              Reset
+            </button>
+            <button onClick={handleSaveOrder} disabled={isSaving} className="rounded-md bg-amber-600 px-3 py-1 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50">
+              {isSaving ? "Saving…" : "Save Order"}
+            </button>
           </div>
         </div>
       )}
 
-      <div className="overflow-x-auto">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={localAuthors.map(author => author.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Author
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Country
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Articles
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Modified
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {localAuthors.map((author) => (
-                  <SortableAuthorRow
-                    key={author.id}
-                    author={author}
-                    onDeleteClick={handleDeleteClick}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </SortableContext>
-        </DndContext>
-      </div>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={localAuthors.map(a => a.id)} strategy={verticalListSortingStrategy}>
+          <table className="min-w-full text-sm">
+            <thead className="sticky top-0 z-10 bg-white">
+              <tr className="border-b border-gray-100">
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Author</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Country</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Articles</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Order</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Modified</th>
+                <th className="px-4 py-3 w-20" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {localAuthors.map((author) => (
+                <SortableAuthorRow key={author.id} author={author} onDeleteClick={handleDeleteClick} />
+              ))}
+            </tbody>
+          </table>
+        </SortableContext>
+      </DndContext>
 
       <ConfirmDialog
         isOpen={deleteDialog.isOpen}

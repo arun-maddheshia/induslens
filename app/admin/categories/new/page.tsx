@@ -1,9 +1,7 @@
-import AuthenticatedLayout from "../../_components/AuthenticatedLayout"
 import CategoryForm from "../_components/CategoryForm"
 
 export default function NewCategoryPage() {
   return (
-    <AuthenticatedLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Add Category</h1>
@@ -12,6 +10,5 @@ export default function NewCategoryPage() {
 
         <CategoryForm />
       </div>
-    </AuthenticatedLayout>
   )
 }

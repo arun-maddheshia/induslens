@@ -159,7 +159,7 @@ export default function CategoryArticlesModal({
               {showAssign ? (
                 <button
                   onClick={() => handleAssignArticle(article.id)}
-                  className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white hover:bg-gray-800"
                 >
                   Assign
                 </button>
@@ -242,7 +242,7 @@ export default function CategoryArticlesModal({
                 placeholder="Search articles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm placeholder-gray-400 outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
               />
             </div>
 
@@ -253,7 +253,7 @@ export default function CategoryArticlesModal({
                   onClick={() => setActiveTab('assigned')}
                   className={`${
                     activeTab === 'assigned'
-                      ? 'border-indigo-500 text-indigo-600'
+                      ? 'border-gray-900 text-gray-900'
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm`}
                 >
@@ -263,7 +263,7 @@ export default function CategoryArticlesModal({
                   onClick={() => setActiveTab('available')}
                   className={`${
                     activeTab === 'available'
-                      ? 'border-indigo-500 text-indigo-600'
+                      ? 'border-gray-900 text-gray-900'
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm`}
                 >
@@ -276,7 +276,7 @@ export default function CategoryArticlesModal({
             <div className="max-h-96 overflow-y-auto">
               {loading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto mb-4"></div>
                   <p className="text-gray-500">Loading articles...</p>
                 </div>
               ) : (
@@ -297,7 +297,7 @@ export default function CategoryArticlesModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+              className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
             >
               Done
             </button>

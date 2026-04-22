@@ -1,94 +1,84 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import { Search, X } from "lucide-react"
 
-const VIDEO_STATUSES = [
-  { value: "", label: "All" },
+const statusOptions = [
+  { value: "",          label: "All" },
   { value: "Published", label: "Published" },
-  { value: "Draft", label: "Draft" },
-  { value: "Archived", label: "Archived" },
+  { value: "Draft",     label: "Draft" },
+  { value: "Archived",  label: "Archived" },
 ]
 
 export default function VideoFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const searchTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [status, setStatus] = useState(searchParams.get("status") || "")
+  const searchTimer = useRef<NodeJS.Timeout | null>(null)
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (value) {
-      params.set(key, value)
-    } else {
-      params.delete(key)
-    }
+    value ? params.set(key, value) : params.delete(key)
     params.delete("page")
     router.push(`/admin/videos?${params.toString()}`)
   }
 
   const handleSearch = (value: string) => {
-    if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
-    searchTimerRef.current = setTimeout(() => updateParam("search", value), 400)
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(() => updateParam("search", value), 400)
   }
 
-  const handleClear = () => {
-    router.push("/admin/videos")
-  }
-
-  const hasFilters =
-    searchParams.get("search") ||
-    searchParams.get("status") ||
-    searchParams.get("category")
+  const hasFilters = searchParams.get("search") || searchParams.get("status") || searchParams.get("category")
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <div className="flex flex-wrap gap-4 items-end">
-        <div className="flex-1 min-w-[200px]">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-          <input
-            type="text"
-            placeholder="Search by name, synopsis..."
-            defaultValue={searchParams.get("search") ?? ""}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
-
-        <div className="min-w-[160px]">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-          <select
-            defaultValue={searchParams.get("status") ?? ""}
-            onChange={(e) => updateParam("status", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            {VIDEO_STATUSES.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex items-center gap-2 pt-5">
-          <input
-            type="checkbox"
-            id="filterIndusTv"
-            defaultChecked={searchParams.get("category") === "industv"}
-            onChange={(e) => updateParam("category", e.target.checked ? "industv" : "")}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-          />
-          <label htmlFor="filterIndusTv" className="text-sm font-medium text-gray-700 whitespace-nowrap">
-            IndusTv only
-          </label>
-        </div>
-
-        {hasFilters && (
-          <button
-            onClick={handleClear}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-          >
-            Clear Filters
-          </button>
-        )}
+    <div className="flex items-center gap-3 flex-none flex-wrap">
+      <div className="relative flex-1 max-w-xs">
+        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search videos…"
+          defaultValue={searchParams.get("search") ?? ""}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="h-9 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-3 text-sm placeholder-gray-400 shadow-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+        />
       </div>
+
+      <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+        {statusOptions.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => { setStatus(opt.value); updateParam("status", opt.value) }}
+            className={
+              status === opt.value
+                ? "rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white"
+                : "rounded-md px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors"
+            }
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          defaultChecked={searchParams.get("category") === "industv"}
+          onChange={(e) => updateParam("category", e.target.checked ? "industv" : "")}
+          className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+        />
+        <span className="text-xs font-medium text-gray-600">IndusTv only</span>
+      </label>
+
+      {hasFilters && (
+        <button
+          onClick={() => { setStatus(""); router.push("/admin/videos") }}
+          className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-500 shadow-sm hover:text-gray-800 transition-colors"
+        >
+          <X className="h-3 w-3" />
+          Clear
+        </button>
+      )}
     </div>
   )
 }

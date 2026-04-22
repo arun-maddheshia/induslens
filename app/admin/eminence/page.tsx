@@ -1,9 +1,9 @@
 import Link from "next/link"
+import { Plus } from "lucide-react"
 import { getAllEminence } from "@/lib/db-eminence"
 import EminenceTable from "./_components/EminenceTable"
 import EminenceFilters from "./_components/EminenceFilters"
 import Pagination from "./_components/Pagination"
-import AuthenticatedLayout from "../_components/AuthenticatedLayout"
 
 interface EminencePageProps {
   searchParams: Promise<{
@@ -26,48 +26,44 @@ export default async function EminencePage({ searchParams }: EminencePageProps) 
   const result = await getAllEminence(page, 20, filters)
 
   return (
-    <AuthenticatedLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Indus Eminence</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage Eminence profiles. Drag to reorder.
-            </p>
-          </div>
-          <Link
-            href="/admin/eminence/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            New Entry
-          </Link>
+    <div className="flex flex-col flex-1 min-h-0 gap-4">
+      <div className="flex items-start justify-between flex-none">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">Indus Eminence</h1>
+          <p className="mt-0.5 text-sm text-gray-500">
+            {result.total} entr{result.total !== 1 ? "ies" : "y"} · drag rows to reorder
+          </p>
         </div>
+        <Link
+          href="/admin/eminence/new"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          New Entry
+        </Link>
+      </div>
 
-        <EminenceFilters />
+      <EminenceFilters />
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Showing {result.items.length} of {result.total} entries
-            </p>
-            <div className="text-sm text-gray-500">
-              Page {result.page} of {result.totalPages}
-            </div>
-          </div>
+      <div className="flex-1 min-h-0 flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2.5 flex-none">
+          <p className="text-xs text-gray-500">
+            Showing <span className="font-medium text-gray-700">{result.items.length}</span> of{" "}
+            <span className="font-medium text-gray-700">{result.total}</span> entries
+          </p>
+          {result.totalPages > 1 && (
+            <p className="text-xs text-gray-500">Page {result.page} of {result.totalPages}</p>
+          )}
         </div>
-
-        <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-auto">
           <EminenceTable entries={result.items} />
         </div>
-
         {result.totalPages > 1 && (
-          <Pagination
-            currentPage={result.page}
-            totalPages={result.totalPages}
-            baseUrl="/admin/eminence"
-          />
+          <div className="border-t border-gray-100 flex-none">
+            <Pagination currentPage={result.page} totalPages={result.totalPages} baseUrl="/admin/eminence" />
+          </div>
         )}
       </div>
-    </AuthenticatedLayout>
+    </div>
   )
 }

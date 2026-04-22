@@ -3,41 +3,34 @@
 import { useState } from "react"
 import PlaylistManager from "./PlaylistManager"
 
-export default function PlaylistTabs() {
-  const [activeTab, setActiveTab] = useState<'hero' | 'other-stories' | 'industales'>('hero')
+const tabs = [
+  { id: "hero" as const,          name: "Hero Playlist" },
+  { id: "other-stories" as const, name: "Other Stories" },
+  { id: "industales" as const,    name: "IndusTales" },
+]
 
-  const tabs = [
-    { id: 'hero' as const, name: 'Hero Playlist', icon: '⭐' },
-    { id: 'other-stories' as const, name: 'Other Stories', icon: '📰' },
-    { id: 'industales' as const, name: 'IndusTales', icon: '🇮🇳' },
-  ]
+export default function PlaylistTabs() {
+  const [activeTab, setActiveTab] = useState<"hero" | "other-stories" | "industales">("hero")
 
   return (
-    <>
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`${
-                activeTab === tab.id
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              } flex items-center space-x-2 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors`}
-            >
-              <span className="text-lg">{tab.icon}</span>
-              <span>{tab.name}</span>
-            </button>
-          ))}
-        </nav>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm self-start">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={
+              activeTab === tab.id
+                ? "rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white"
+                : "rounded-md px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors"
+            }
+          >
+            {tab.name}
+          </button>
+        ))}
       </div>
 
-      {/* Playlist Content */}
-      <div className="bg-white rounded-lg shadow">
-        <PlaylistManager type={activeTab} />
-      </div>
-    </>
+      <PlaylistManager type={activeTab} />
+    </div>
   )
 }

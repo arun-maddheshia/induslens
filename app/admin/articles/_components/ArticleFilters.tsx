@@ -2,12 +2,13 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
+import { Search, X } from "lucide-react"
 
 const statusOptions = [
-  { value: "", label: "All" },
-  { value: "DRAFT", label: "Draft" },
+  { value: "",          label: "All" },
+  { value: "DRAFT",     label: "Draft" },
   { value: "PUBLISHED", label: "Published" },
-  { value: "ARCHIVED", label: "Archived" },
+  { value: "ARCHIVED",  label: "Archived" },
 ]
 
 export default function ArticleFilters() {
@@ -17,101 +18,72 @@ export default function ArticleFilters() {
   const [status, setStatus] = useState(searchParams.get("status") || "")
   const [search, setSearch] = useState(searchParams.get("search") || "")
 
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const statusDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const updateFilters = (newFilters: Record<string, string>) => {
+  const push = (next: { status: string; search: string }) => {
     const params = new URLSearchParams(searchParams)
-
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value)
-      } else {
-        params.delete(key)
-      }
-    })
-
+    next.status ? params.set("status", next.status) : params.delete("status")
+    next.search ? params.set("search", next.search) : params.delete("search")
     params.delete("page")
-
     router.push(`/admin/articles?${params.toString()}`)
   }
 
-  const handleStatusChange = (value: string) => {
-    setStatus(value)
-    if (statusDebounceRef.current) clearTimeout(statusDebounceRef.current)
-    statusDebounceRef.current = setTimeout(() => {
-      updateFilters({ status: value, search })
-    }, 300)
+  const handleSearch = (val: string) => {
+    setSearch(val)
+    if (searchDebounce.current) clearTimeout(searchDebounce.current)
+    searchDebounce.current = setTimeout(() => push({ status, search: val }), 400)
   }
 
-  const handleSearchChange = (value: string) => {
-    setSearch(value)
-    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
-    searchDebounceRef.current = setTimeout(() => {
-      updateFilters({ status, search: value })
-    }, 400)
+  const handleStatus = (val: string) => {
+    setStatus(val)
+    push({ status: val, search })
   }
 
-  const clearFilters = () => {
-    setStatus("")
-    setSearch("")
-    router.push("/admin/articles")
-  }
+  const hasFilters = status || search
 
-  useEffect(() => {
-    return () => {
-      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
-      if (statusDebounceRef.current) clearTimeout(statusDebounceRef.current)
-    }
-  }, [])
+  useEffect(() => () => { if (searchDebounce.current) clearTimeout(searchDebounce.current) }, [])
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Search */}
-        <div>
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
-            Search
-          </label>
-          <input
-            type="text"
-            id="search"
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="Search articles..."
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        {/* Status Filter */}
-        <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-            Status
-          </label>
-          <select
-            id="status"
-            value={status}
-            onChange={(e) => handleStatusChange(e.target.value)}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          >
-            {statusOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Clear Filters */}
-        <div className="flex items-end">
-          <button
-            onClick={clearFilters}
-            className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Clear Filters
-          </button>
-        </div>
+    <div className="flex items-center gap-3 flex-none">
+      {/* Search */}
+      <div className="relative flex-1 max-w-xs">
+        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => handleSearch(e.target.value)}
+          placeholder="Search articles…"
+          className="h-9 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 shadow-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+        />
       </div>
+
+      {/* Status tabs */}
+      <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+        {statusOptions.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => handleStatus(opt.value)}
+            className={
+              status === opt.value
+                ? "rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white"
+                : "rounded-md px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors"
+            }
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Clear */}
+      {hasFilters && (
+        <button
+          onClick={() => { setSearch(""); setStatus(""); router.push("/admin/articles") }}
+          className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-500 shadow-sm hover:text-gray-800 transition-colors"
+        >
+          <X className="h-3 w-3" />
+          Clear
+        </button>
+      )}
     </div>
   )
 }

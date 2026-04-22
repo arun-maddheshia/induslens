@@ -1,9 +1,9 @@
 import Link from "next/link"
+import { Plus } from "lucide-react"
 import { getAllArticles } from "@/lib/db"
 import ArticlesTable from "./_components/ArticlesTable"
 import ArticleFilters from "./_components/ArticleFilters"
 import Pagination from "./_components/Pagination"
-import AuthenticatedLayout from "../_components/AuthenticatedLayout"
 
 interface ArticlesPageProps {
   searchParams: {
@@ -22,56 +22,61 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
     search: searchParams.search,
   }
 
-  const result = await getAllArticles(page, 10, filters)
+  const result = await getAllArticles(page, 20, filters)
 
   return (
-    <AuthenticatedLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Articles</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage your content articles
-            </p>
-          </div>
-          <Link
-            href="/admin/articles/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            New Article
-          </Link>
+    <div className="flex flex-col flex-1 min-h-0 gap-4">
+      {/* Header */}
+      <div className="flex items-start justify-between flex-none">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">Articles</h1>
+          <p className="mt-0.5 text-sm text-gray-500">
+            {result.total} article{result.total !== 1 ? "s" : ""}
+          </p>
         </div>
+        <Link
+          href="/admin/articles/new"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          New Article
+        </Link>
+      </div>
 
-        {/* Filters */}
-        <ArticleFilters />
+      {/* Filters */}
+      <ArticleFilters />
 
-        {/* Stats */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Showing {result.articles.length} of {result.total} articles
-            </p>
-            <div className="text-sm text-gray-500">
+      {/* Table card — fills remaining height */}
+      <div className="flex-1 min-h-0 flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
+        {/* Table meta row */}
+        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2.5 flex-none">
+          <p className="text-xs text-gray-500">
+            Showing <span className="font-medium text-gray-700">{result.articles.length}</span> of{" "}
+            <span className="font-medium text-gray-700">{result.total}</span> articles
+          </p>
+          {result.totalPages > 1 && (
+            <p className="text-xs text-gray-500">
               Page {result.page} of {result.totalPages}
-            </div>
-          </div>
+            </p>
+          )}
         </div>
 
-        {/* Articles Table */}
-        <div className="bg-white shadow rounded-lg overflow-hidden">
+        {/* Scrollable table */}
+        <div className="flex-1 min-h-0 overflow-auto">
           <ArticlesTable articles={result.articles} />
         </div>
 
-        {/* Pagination */}
+        {/* Pagination pinned to bottom */}
         {result.totalPages > 1 && (
-          <Pagination
-            currentPage={result.page}
-            totalPages={result.totalPages}
-            baseUrl="/admin/articles"
-          />
+          <div className="border-t border-gray-100 flex-none">
+            <Pagination
+              currentPage={result.page}
+              totalPages={result.totalPages}
+              baseUrl="/admin/articles"
+            />
+          </div>
         )}
       </div>
-    </AuthenticatedLayout>
+    </div>
   )
 }

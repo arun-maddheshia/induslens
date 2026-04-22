@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation"
-import AuthenticatedLayout from "../../../_components/AuthenticatedLayout"
 import EminenceForm from "../../_components/EminenceForm"
 import { getEminenceById } from "@/lib/db-eminence"
 
@@ -42,7 +41,6 @@ export default async function EditEminencePage({ params }: EditEminencePageProps
   }
 
   return (
-    <AuthenticatedLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Edit Entry</h1>
@@ -50,6 +48,5 @@ export default async function EditEminencePage({ params }: EditEminencePageProps
         </div>
         <EminenceForm entry={formData} isEdit />
       </div>
-    </AuthenticatedLayout>
   )
 }

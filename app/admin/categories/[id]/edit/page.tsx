@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation"
 import { getCategoryById } from "@/lib/db-categories"
-import AuthenticatedLayout from "../../../_components/AuthenticatedLayout"
 import CategoryForm from "../../_components/CategoryForm"
 import CategoryArticlesManager from "../../_components/CategoryArticlesManager"
 
@@ -18,7 +17,6 @@ export default async function EditCategoryPage({ params }: EditCategoryPageProps
   }
 
   return (
-    <AuthenticatedLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Edit Category</h1>
@@ -42,7 +40,6 @@ export default async function EditCategoryPage({ params }: EditCategoryPageProps
           />
         </div>
       </div>
-    </AuthenticatedLayout>
   )
 }
 

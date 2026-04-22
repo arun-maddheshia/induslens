@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { X } from "lucide-react"
 
 interface Category {
   id: string
@@ -61,76 +62,57 @@ export default function AddCategoryModal({ excludeIds, onClose, onAdded }: Props
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
+        <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
-        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Add Special</h3>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+        <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full mx-auto">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h3 className="text-sm font-semibold text-gray-900">Add Special</h3>
+            <button onClick={onClose} className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="p-6">
-            {/* Search */}
-            <div className="mb-4">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search categories…"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              />
-            </div>
+          <div className="p-5">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search categories…"
+              className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm placeholder-gray-400 outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 mb-3"
+            />
 
             {error && (
-              <div className="rounded-lg bg-red-50 border border-red-200 p-4 mb-4">
-                <p className="text-sm text-red-800">{error}</p>
-              </div>
+              <div className="rounded-lg bg-red-50 border border-red-100 px-3 py-2 mb-3 text-sm text-red-700">{error}</div>
             )}
 
-            {/* List */}
-            <div className="max-h-96 overflow-y-auto space-y-2">
+            <div className="max-h-80 overflow-y-auto space-y-1.5">
               {loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4" />
-                  <p className="text-gray-500 text-sm">Loading categories…</p>
+                <div className="flex items-center justify-center py-8 gap-2 text-sm text-gray-500">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900" />
+                  Loading…
                 </div>
               ) : filtered.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 text-sm">
+                <div className="text-center py-8 text-sm text-gray-500">
                   {search ? `No categories match "${search}"` : "All categories already added"}
                 </div>
               ) : (
                 filtered.map((category) => (
                   <div
                     key={category.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between px-3 py-2.5 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     <div>
                       <p className="text-sm font-medium text-gray-900">{category.name}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-xs text-gray-500">
                         {category.articleCount} article{category.articleCount !== 1 ? "s" : ""}
                       </p>
                     </div>
                     <button
                       onClick={() => handleAdd(category)}
                       disabled={adding === category.id}
-                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50"
                     >
-                      {adding === category.id ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Adding…
-                        </>
-                      ) : (
-                        "Add"
-                      )}
+                      {adding === category.id ? "Adding…" : "Add"}
                     </button>
                   </div>
                 ))
@@ -138,10 +120,10 @@ export default function AddCategoryModal({ excludeIds, onClose, onAdded }: Props
             </div>
           </div>
 
-          <div className="flex justify-end px-6 py-4 bg-gray-50 border-t border-gray-200">
+          <div className="flex justify-end px-5 py-3 bg-gray-50 border-t border-gray-100 rounded-b-xl">
             <button
               onClick={onClose}
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+              className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               Done
             </button>

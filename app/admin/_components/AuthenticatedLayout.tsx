@@ -14,17 +14,16 @@ export default async function AuthenticatedLayout({ children }: AuthenticatedLay
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="flex h-screen overflow-hidden bg-muted/40">
       <AdminSidebar user={session.user} />
-      <main className="flex-1 ml-64 min-h-screen flex flex-col">
-        <div className="flex-1 py-6">
-          <div className="px-4 sm:px-6 lg:px-8 pb-20">
+      {/* offset by sidebar width; full height; only this column scrolls */}
+      <div className="ml-64 flex flex-1 flex-col overflow-hidden">
+        <main className="flex-1 overflow-y-auto">
+          <div className="px-6 py-6 pb-16">
             {children}
           </div>
-        </div>
-        {/* Footer spacer to prevent content from being cut off */}
-        <div className="h-16 flex-shrink-0"></div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

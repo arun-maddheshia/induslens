@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation"
 import { getAuthorById } from "@/lib/db-authors"
 import AuthorForm from "../../_components/AuthorForm"
-import AuthenticatedLayout from "../../../_components/AuthenticatedLayout"
 
 interface EditAuthorPageProps {
   params: {
@@ -17,7 +16,6 @@ export default async function EditAuthorPage({ params }: EditAuthorPageProps) {
   }
 
   return (
-    <AuthenticatedLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Edit Author</h1>
@@ -30,6 +28,5 @@ export default async function EditAuthorPage({ params }: EditAuthorPageProps) {
           <AuthorForm author={author} isEdit={true} />
         </div>
       </div>
-    </AuthenticatedLayout>
   )
 }

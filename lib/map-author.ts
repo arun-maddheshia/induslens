@@ -39,7 +39,6 @@ export function mapAuthorToFrontend(
     aboutTheAnchor: author.aboutTheAnchor,
     anchorKey: "",
     email: author.email || "",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     contentType: author.contentType as any,
     images: hydratePostImages(
       author.images.map((img) => ({

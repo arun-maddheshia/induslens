@@ -48,7 +48,6 @@ export async function GET() {
       agency: "",
       ampValidationMessage: "",
       archivedAt: "",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       contentType: (article.contentType as any) || "articles",
       editor: "",
       expires: "",

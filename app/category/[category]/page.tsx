@@ -55,7 +55,6 @@ async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
     alternativeHeadline: article.alternativeHeadline || '',
     ampValidationMessage: '',
     archivedAt: '',
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     contentType: 'article' as any,
     editor: '',
     expires: '',

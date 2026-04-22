@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/UI/select"
 
 const statusOptions = [
   { value: "",          label: "All" },

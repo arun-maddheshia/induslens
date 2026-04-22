@@ -39,6 +39,7 @@ model Category {
   order       Int      @default(1)
 
   articles    Article[]
+  specials    Special[]
 
   @@index([slug])
 }
@@ -115,8 +116,10 @@ model Article {
 
   // ── Relations ──
   images               ArticleImage[]
-  heroPlaylists        HeroPlaylist[]        @relation("HeroPlaylistArticle")
+  heroPlaylists         HeroPlaylist[]         @relation("HeroPlaylistArticle")
   otherStoriesPlaylists OtherStoriesPlaylist[] @relation("OtherStoriesPlaylistArticle")
+  indusTalesPlaylists   IndusTalesPlaylist[]   @relation("IndusTalesPlaylistArticle")
+  specialArticles       SpecialArticle[]       @relation("SpecialArticleRef")
 
   @@index([slug])
   @@index([status, publishedAt])
@@ -225,6 +228,18 @@ model OtherStoriesPlaylist {
   order     Int
   articleId String
   article   Article @relation("OtherStoriesPlaylistArticle", fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([order])
+}
+
+model IndusTalesPlaylist {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order     Int
+  articleId String
+  article   Article @relation("IndusTalesPlaylistArticle", fields: [articleId], references: [id], onDelete: Cascade)
 
   @@index([order])
 }
@@ -346,5 +361,45 @@ model EminenceImage {
   eminence   Eminence @relation(fields: [eminenceId], references: [id], onDelete: Cascade)
 
   @@index([eminenceId])
+}
+
+// ─── Specials ─────────────────────────────────────────────────────────────────
+
+model SpecialsPage {
+  id          String   @id @default("main")
+  title       String   @default("IndusLens Specials")
+  description String   @db.Text @default("")
+  updatedAt   DateTime @updatedAt
+}
+
+model Special {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String   @db.Text @default("")
+  order       Int      @default(1)
+
+  categoryId  String?
+  categoryRef Category? @relation(fields: [categoryId], references: [id])
+
+  articles    SpecialArticle[]
+
+  @@index([order])
+}
+
+model SpecialArticle {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  order     Int      @default(1)
+
+  specialId String
+  special   Special @relation(fields: [specialId], references: [id], onDelete: Cascade)
+
+  articleId String
+  article   Article @relation("SpecialArticleRef", fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([specialId, articleId])
+  @@index([specialId, order])
 }
 

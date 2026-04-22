@@ -10,6 +10,7 @@ interface AuthorsPageProps {
     page?: string
     status?: string
     search?: string
+    siteId?: string
   }
 }
 
@@ -18,6 +19,7 @@ export default async function AuthorsPage({ searchParams }: AuthorsPageProps) {
   const filters = {
     status: searchParams.status,
     search: searchParams.search,
+    siteId: searchParams.siteId,
   }
 
   const result = await getAllAuthors(page, 10, filters)

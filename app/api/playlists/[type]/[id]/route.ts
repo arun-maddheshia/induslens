@@ -20,7 +20,7 @@ export async function DELETE(
     const type = params.type as PlaylistType
     const playlistId = params.id
 
-    if (!['hero', 'other-stories'].includes(type)) {
+    if (!['hero', 'other-stories', 'industales'].includes(type)) {
       return NextResponse.json(
         { error: "Invalid playlist type" },
         { status: 400 }

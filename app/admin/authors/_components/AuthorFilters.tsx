@@ -9,11 +9,12 @@ export default function AuthorFilters() {
 
   const [search, setSearch] = useState(searchParams.get("search") || "")
   const [status, setStatus] = useState(searchParams.get("status") || "")
+  const [siteId, setSiteId] = useState(searchParams.get("siteId") || "")
 
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const statusDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const updateFilters = (newFilters: { search?: string; status?: string }) => {
+  const updateFilters = (newFilters: { search?: string; status?: string; siteId?: string }) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (newFilters.search !== undefined) {
@@ -32,6 +33,14 @@ export default function AuthorFilters() {
       }
     }
 
+    if (newFilters.siteId !== undefined) {
+      if (newFilters.siteId) {
+        params.set("siteId", newFilters.siteId)
+      } else {
+        params.delete("siteId")
+      }
+    }
+
     params.delete("page")
     router.push(`/admin/authors?${params.toString()}`)
   }
@@ -40,7 +49,7 @@ export default function AuthorFilters() {
     setSearch(value)
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
     searchDebounceRef.current = setTimeout(() => {
-      updateFilters({ search: value, status })
+      updateFilters({ search: value, status, siteId })
     }, 400)
   }
 
@@ -48,13 +57,19 @@ export default function AuthorFilters() {
     setStatus(value)
     if (statusDebounceRef.current) clearTimeout(statusDebounceRef.current)
     statusDebounceRef.current = setTimeout(() => {
-      updateFilters({ search, status: value })
+      updateFilters({ search, status: value, siteId })
     }, 300)
+  }
+
+  const handleSiteChange = (value: string) => {
+    setSiteId(value)
+    updateFilters({ search, status, siteId: value })
   }
 
   const clearFilters = () => {
     setSearch("")
     setStatus("")
+    setSiteId("")
     router.push("/admin/authors")
   }
 
@@ -67,7 +82,7 @@ export default function AuthorFilters() {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {/* Search */}
         <div className="md:col-span-2">
           <input
@@ -86,10 +101,23 @@ export default function AuthorFilters() {
             onChange={(e) => handleStatusChange(e.target.value)}
             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">All</option>
+            <option value="">All Statuses</option>
             <option value="Published">Published</option>
             <option value="Draft">Draft</option>
             <option value="Archived">Archived</option>
+          </select>
+        </div>
+
+        {/* Site Filter */}
+        <div>
+          <select
+            value={siteId}
+            onChange={(e) => handleSiteChange(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="">All Sites</option>
+            <option value="induslens">IndusLens</option>
+            <option value="industales">IndusTales</option>
           </select>
         </div>
 

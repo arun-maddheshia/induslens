@@ -20,6 +20,7 @@ const navigation = [
   { name: "Playlists", href: "/admin/playlists", icon: "📋" },
   { name: "Videos", href: "/admin/videos", icon: "🎬" },
   { name: "Eminence", href: "/admin/eminence", icon: "🌟" },
+  { name: "Specials", href: "/admin/specials", icon: "⭐" },
 ]
 
 export default function AdminSidebar({ user }: AdminSidebarProps) {

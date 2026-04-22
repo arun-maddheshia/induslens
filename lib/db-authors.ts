@@ -7,6 +7,7 @@ export async function getAllAuthors(
   filters: {
     search?: string
     status?: string
+    siteId?: string
   } = {}
 ) {
   if (!db) {
@@ -29,6 +30,11 @@ export async function getAllAuthors(
   // Add status filter
   if (filters.status) {
     where.status = filters.status
+  }
+
+  // Add siteId filter
+  if (filters.siteId) {
+    where.siteId = filters.siteId
   }
 
   try {

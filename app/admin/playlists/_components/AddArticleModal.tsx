@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns"
 import { resolveStoredImageToUrl } from "@/lib/image-storage"
 import "../../admin.css"
 
-export type PlaylistType = 'hero' | 'other-stories'
+export type PlaylistType = 'hero' | 'other-stories' | 'industales'
 
 interface Article {
   id: string
@@ -124,7 +124,9 @@ export default function AddArticleModal({ type, onClose, onArticleAdded }: AddAr
   }
 
   const getModalTitle = () => {
-    return type === 'hero' ? 'Add to Hero Playlist' : 'Add to Other Stories'
+    if (type === 'hero') return 'Add to Hero Playlist'
+    if (type === 'industales') return 'Add to IndusTales Playlist'
+    return 'Add to Other Stories'
   }
 
   return (

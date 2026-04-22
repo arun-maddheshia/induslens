@@ -283,6 +283,20 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
                 <option value="Archived">Archived</option>
               </select>
             </div>
+
+            <div>
+              <label htmlFor="siteId" className="block text-sm font-semibold text-gray-800 mb-2">
+                Site
+              </label>
+              <select
+                {...register("siteId")}
+                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
+              >
+                <option value="">— Select Site —</option>
+                <option value="induslens">IndusLens</option>
+                <option value="industales">IndusTales</option>
+              </select>
+            </div>
           </div>
         </div>
 

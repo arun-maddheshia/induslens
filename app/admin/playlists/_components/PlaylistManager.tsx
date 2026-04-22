@@ -21,7 +21,7 @@ import PlaylistItem from "./PlaylistItem"
 import AddArticleModal from "./AddArticleModal"
 import ConfirmDialog from "../../_components/ConfirmDialog"
 
-export type PlaylistType = 'hero' | 'other-stories'
+export type PlaylistType = 'hero' | 'other-stories' | 'industales'
 
 interface PlaylistItemData {
   id: string
@@ -189,13 +189,15 @@ export default function PlaylistManager({ type }: PlaylistManagerProps) {
   }
 
   const getPlaylistTitle = () => {
-    return type === 'hero' ? 'Hero Playlist' : 'Other Stories Playlist'
+    if (type === 'hero') return 'Hero Playlist'
+    if (type === 'industales') return 'IndusTales Playlist'
+    return 'Other Stories Playlist'
   }
 
   const getEmptyMessage = () => {
-    return type === 'hero'
-      ? 'No articles in hero playlist. Add some featured articles to get started.'
-      : 'No articles in other stories playlist. Add some articles to build your collection.'
+    if (type === 'hero') return 'No articles in hero playlist. Add some featured articles to get started.'
+    if (type === 'industales') return 'No articles in IndusTales playlist. Add some stories to get started.'
+    return 'No articles in other stories playlist. Add some articles to build your collection.'
   }
 
   if (loading) {

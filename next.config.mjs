@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: '*.s3.ap-south-1.amazonaws.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'engro-xms-dev.engro.in',
+        pathname: '/**',
+      },
     ],
   },
   webpack: (config, { isServer }) => {

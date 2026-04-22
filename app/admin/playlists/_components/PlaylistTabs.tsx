@@ -4,11 +4,12 @@ import { useState } from "react"
 import PlaylistManager from "./PlaylistManager"
 
 export default function PlaylistTabs() {
-  const [activeTab, setActiveTab] = useState<'hero' | 'other-stories'>('hero')
+  const [activeTab, setActiveTab] = useState<'hero' | 'other-stories' | 'industales'>('hero')
 
   const tabs = [
     { id: 'hero' as const, name: 'Hero Playlist', icon: '⭐' },
-    { id: 'other-stories' as const, name: 'Other Stories', icon: '📰' }
+    { id: 'other-stories' as const, name: 'Other Stories', icon: '📰' },
+    { id: 'industales' as const, name: 'IndusTales', icon: '🇮🇳' },
   ]
 
   return (

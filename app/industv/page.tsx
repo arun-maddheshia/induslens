@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import ImageComponent from '@/components/ImageComponent';
 import TrendingVideo from '@/components/UI/TrendingVideo';
 import { PageTitle } from '@/app/(root)/_components/FeaturedArticles/PageTitle';

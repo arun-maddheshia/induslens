@@ -128,6 +128,7 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
       }
 
       router.push("/admin/authors")
+      router.refresh()
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {

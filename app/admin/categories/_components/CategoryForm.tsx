@@ -104,6 +104,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
       }
 
       router.push("/admin/categories")
+      router.refresh()
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {

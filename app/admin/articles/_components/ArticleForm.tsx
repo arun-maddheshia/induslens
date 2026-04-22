@@ -219,6 +219,7 @@ export default function ArticleForm({ article, isEdit = false }: ArticleFormProp
       }
 
       router.push("/admin/articles")
+      router.refresh()
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {

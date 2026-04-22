@@ -41,12 +41,12 @@ export default async function EditEminencePage({ params }: EditEminencePageProps
   }
 
   return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Entry</h1>
-          <p className="mt-1 text-sm text-gray-500">{entry.name}</p>
-        </div>
-        <EminenceForm entry={formData} isEdit />
+    <div className="flex flex-col gap-5">
+      <div>
+        <h1 className="text-xl font-semibold text-gray-900">Edit Entry</h1>
+        <p className="mt-0.5 text-sm text-gray-500">{entry.name}</p>
       </div>
+      <EminenceForm entry={formData} isEdit />
+    </div>
   )
 }

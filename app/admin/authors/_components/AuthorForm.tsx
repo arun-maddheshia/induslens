@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import RichTextEditor from "../../_components/RichTextEditor"
 import { resolveStoredImageToUrl } from "@/lib/image-storage"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/UI/select"
 
 interface Author {
   id?: string
@@ -59,6 +60,7 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
     handleSubmit,
     watch,
     setValue,
+    control,
     formState: { errors },
   } = useForm<Author>({
     defaultValues: author || {
@@ -86,7 +88,6 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
     },
   })
 
-  // Register rich text editor fields for validation
   const aboutTheAnchorRegister = register("aboutTheAnchor", { required: "About the author is required" })
 
   const onSubmit = async (data: Author) => {
@@ -97,7 +98,6 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
       const url = isEdit ? `/api/authors/${author?.id}` : "/api/authors"
       const method = isEdit ? "PUT" : "POST"
 
-      // Process shows array
       const processArrayField = (field: any): string[] => {
         if (typeof field === "string") {
           return field.split(",").map((item: string) => item.trim()).filter(Boolean)
@@ -135,7 +135,6 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
     }
   }
 
-  // Generate slug from name
   const generateSlug = (name: string) => {
     return name
       .toLowerCase()
@@ -166,7 +165,6 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
       const stored =
         (fileName as string) || (filePath ? String(filePath).split("/").filter(Boolean).pop() : "")
 
-      // Update images array
       const currentImages = watch("images") || []
       const newImages = [
         ...currentImages.filter(img => img.imageCategoryValue !== 'mobileDetailsPageBackground'),
@@ -196,150 +194,203 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
   const currentImage = getCurrentImage()
 
   return (
-    <div className="bg-white rounded-xl shadow-sm">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 p-8">
-        {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-4 mb-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700 mb-4">{error}</div>
+      )}
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5 items-start">
+        <div className="flex flex-col gap-5">
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">Basic Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Author Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  {...register("name", { required: "Author name is required" })}
+                  type="text"
+                  onChange={(e) => {
+                    register("name").onChange(e)
+                    if (!isEdit) {
+                      setValue("slug", generateSlug(e.target.value))
+                    }
+                  }}
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                <input
+                  {...register("email")}
+                  type="email"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Slug <span className="text-red-500">*</span>
+                </label>
+                <input
+                  {...register("slug", { required: "Slug is required" })}
+                  type="text"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+                {errors.slug && <p className="mt-1 text-xs text-red-500">{errors.slug.message}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Country</label>
+                <input
+                  {...register("countryName")}
+                  type="text"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
               </div>
             </div>
           </div>
-        )}
 
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">Basic Information</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-2">
-                Author Name *
-              </label>
-              <input
-                {...register("name", { required: "Author name is required" })}
-                type="text"
-                onChange={(e) => {
-                  register("name").onChange(e)
-                  if (!isEdit) {
-                    setValue("slug", generateSlug(e.target.value))
-                  }
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">About</h2>
+            <div className="flex flex-col gap-3">
+              <RichTextEditor
+                label="About the Author"
+                value={watch("aboutTheAnchor") || ""}
+                onChange={(value) => {
+                  setValue("aboutTheAnchor", value)
+                  aboutTheAnchorRegister.onChange({ target: { value } })
                 }}
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
+                placeholder="Enter detailed information about the author..."
+                error={errors.aboutTheAnchor?.message}
+                required
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-            </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">
-                Email
-              </label>
-              <input
-                {...register("email")}
-                type="email"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Short Description</label>
+                <textarea
+                  {...register("description")}
+                  rows={3}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors resize-none"
+                />
+              </div>
             </div>
+          </div>
 
-            <div>
-              <label htmlFor="slug" className="block text-sm font-semibold text-gray-800 mb-2">
-                Slug *
-              </label>
-              <input
-                {...register("slug", { required: "Slug is required" })}
-                type="text"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-              {errors.slug && <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>}
-            </div>
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">Social Media</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Facebook URL</label>
+                <input
+                  {...register("facebookUrl")}
+                  type="url"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="countryName" className="block text-sm font-semibold text-gray-800 mb-2">
-                Country
-              </label>
-              <input
-                {...register("countryName")}
-                type="text"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-            </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">LinkedIn URL</label>
+                <input
+                  {...register("linkedinUrl")}
+                  type="url"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="status" className="block text-sm font-semibold text-gray-800 mb-2">
-                Status
-              </label>
-              <select
-                {...register("status")}
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              >
-                <option value="Published">Published</option>
-                <option value="Draft">Draft</option>
-                <option value="Archived">Archived</option>
-              </select>
-            </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Twitter URL</label>
+                <input
+                  {...register("twitterUrl")}
+                  type="url"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="siteId" className="block text-sm font-semibold text-gray-800 mb-2">
-                Site
-              </label>
-              <select
-                {...register("siteId")}
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              >
-                <option value="">— Select Site —</option>
-                <option value="induslens">IndusLens</option>
-                <option value="industales">IndusTales</option>
-              </select>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Instagram URL</label>
+                <input
+                  {...register("instagramUrl")}
+                  type="url"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">YouTube URL</label>
+                <input
+                  {...register("youtubeUrl")}
+                  type="url"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Website URL</label>
+                <input
+                  {...register("websiteUrl")}
+                  type="url"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* About Section */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">About</h2>
+        <div className="flex flex-col gap-5">
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">Publishing</h2>
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                <Controller
+                  control={control}
+                  name="status"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-9 w-full rounded-lg border border-gray-200 text-sm focus:border-gray-400 focus:ring-2 focus:ring-gray-200">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Published">Published</SelectItem>
+                        <SelectItem value="Draft">Draft</SelectItem>
+                        <SelectItem value="Archived">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
 
-          <div>
-            <RichTextEditor
-              label="About the Author"
-              value={watch("aboutTheAnchor") || ""}
-              onChange={(value) => {
-                setValue("aboutTheAnchor", value)
-                aboutTheAnchorRegister.onChange({ target: { value } })
-              }}
-              placeholder="Enter detailed information about the author..."
-              error={errors.aboutTheAnchor?.message}
-              required
-            />
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Site</label>
+                <Controller
+                  control={control}
+                  name="siteId"
+                  render={({ field }) => (
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-9 w-full rounded-lg border border-gray-200 text-sm focus:border-gray-400 focus:ring-2 focus:ring-gray-200">
+                        <SelectValue placeholder="— Select Site —" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="induslens">IndusLens</SelectItem>
+                        <SelectItem value="industales">IndusTales</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="description" className="block text-sm font-semibold text-gray-800 mb-2">
-              Short Description
-            </label>
-            <textarea
-              {...register("description")}
-              rows={3}
-              className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-            />
-          </div>
-        </div>
-
-        {/* Profile Image */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">Profile Image</h2>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <label className="block text-sm font-medium text-gray-700 mb-3">Author Profile Picture</label>
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">Profile Image</h2>
 
             {currentImage ? (
-              <div className="space-y-3">
-                <div className="relative w-24 h-24 bg-gray-100 rounded-full overflow-hidden">
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-100">
                   <img
                     src={resolveStoredImageToUrl(
                       currentImage.imageUrl[0] || "",
@@ -350,27 +401,25 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) handleImageUpload(file)
-                    }}
-                    className="hidden"
-                    id="profile-image-input"
-                  />
-                  <label
-                    htmlFor="profile-image-input"
-                    className="cursor-pointer text-sm text-indigo-600 hover:text-indigo-800"
-                  >
-                    Change Image
-                  </label>
-                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleImageUpload(file)
+                  }}
+                  className="hidden"
+                  id="profile-image-input"
+                />
+                <label
+                  htmlFor="profile-image-input"
+                  className="cursor-pointer text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Change Image
+                </label>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-3">
                 <input
                   type="file"
                   accept="image/*"
@@ -383,119 +432,38 @@ export default function AuthorForm({ author, isEdit = false }: AuthorFormProps) 
                 />
 
                 {uploadingImage ? (
-                  <div className="flex flex-col items-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
-                    <p className="text-sm text-gray-500">Uploading...</p>
-                  </div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900" />
                 ) : (
-                  <>
-                    <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <div className="mt-4">
-                      <label htmlFor="profile-image-input" className="cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
-                        Upload Profile Image
-                      </label>
-                      <p className="mt-2 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                    </div>
-                  </>
+                  <label
+                    htmlFor="profile-image-input"
+                    className="cursor-pointer rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                  >
+                    Upload image
+                  </label>
                 )}
               </div>
             )}
           </div>
+
         </div>
+      </div>
 
-        {/* Social Media */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">Social Media & Links</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="facebookUrl" className="block text-sm font-semibold text-gray-800 mb-2">
-                Facebook URL
-              </label>
-              <input
-                {...register("facebookUrl")}
-                type="url"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="linkedinUrl" className="block text-sm font-semibold text-gray-800 mb-2">
-                LinkedIn URL
-              </label>
-              <input
-                {...register("linkedinUrl")}
-                type="url"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="twitterUrl" className="block text-sm font-semibold text-gray-800 mb-2">
-                Twitter URL
-              </label>
-              <input
-                {...register("twitterUrl")}
-                type="url"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="instagramUrl" className="block text-sm font-semibold text-gray-800 mb-2">
-                Instagram URL
-              </label>
-              <input
-                {...register("instagramUrl")}
-                type="url"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="youtubeUrl" className="block text-sm font-semibold text-gray-800 mb-2">
-                YouTube URL
-              </label>
-              <input
-                {...register("youtubeUrl")}
-                type="url"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="websiteUrl" className="block text-sm font-semibold text-gray-800 mb-2">
-                Website URL
-              </label>
-              <input
-                {...register("websiteUrl")}
-                type="url"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-300"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Saving..." : isEdit ? "Update Author" : "Create Author"}
-          </button>
-        </div>
-      </form>
-    </div>
+      <div className="flex items-center justify-end gap-3 pt-2">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Saving…" : isEdit ? "Update Author" : "Create Author"}
+        </button>
+      </div>
+    </form>
   )
 }

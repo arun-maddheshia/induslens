@@ -16,17 +16,12 @@ export default async function EditAuthorPage({ params }: EditAuthorPageProps) {
   }
 
   return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Author</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Update the author profile information
-          </p>
-        </div>
-
-        <div className="bg-white shadow-lg rounded-xl">
-          <AuthorForm author={author} isEdit={true} />
-        </div>
+    <div className="flex flex-col gap-5">
+      <div>
+        <h1 className="text-xl font-semibold text-gray-900">Edit Author</h1>
+        <p className="mt-0.5 text-sm text-gray-500">Update the author profile information</p>
       </div>
+      <AuthorForm author={author} isEdit={true} />
+    </div>
   )
 }

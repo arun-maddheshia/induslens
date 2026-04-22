@@ -174,12 +174,13 @@ export async function createArticle(data: any, editorId?: string) {
 }
 
 export async function updateArticle(id: string, data: any, editorId?: string) {
-  const { images, authorId, author, editor, ...articleData } = data
+  const { images, author, editor, ...articleData } = data
 
   return await db.article.update({
     where: { id },
     data: {
       ...articleData,
+      authorId: articleData.authorId !== undefined ? (articleData.authorId || null) : undefined,
       editorId,
       images: images ? {
         deleteMany: {},

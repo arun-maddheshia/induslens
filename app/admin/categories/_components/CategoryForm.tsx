@@ -71,7 +71,6 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
     },
   })
 
-  // Reset form with category data (for edit mode)
   useEffect(() => {
     if (category && isEdit) {
       reset({
@@ -95,9 +94,7 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
 
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
 
@@ -123,170 +120,164 @@ export default function CategoryForm({ category, isEdit = false }: CategoryFormP
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 p-8">
-        {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-4 mb-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700 mb-4">{error}</div>
+      )}
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5 items-start">
+        {/* Left column */}
+        <div className="flex flex-col gap-5">
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">Category Information</h2>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  {...register("name", { required: "Name is required", onChange: handleNameChange })}
+                  type="text"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                  placeholder="Enter category name"
+                />
+                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    ID <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    {...register("id", { required: "ID is required" })}
+                    type="text"
+                    disabled={isEdit}
+                    className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    placeholder="category_id"
+                  />
+                  {errors.id && <p className="mt-1 text-xs text-red-500">{errors.id.message}</p>}
+                  {!isEdit && <p className="mt-1 text-xs text-gray-400">Auto-generated from name</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Slug <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    {...register("slug", { required: "Slug is required" })}
+                    type="text"
+                    className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                    placeholder="category-slug"
+                  />
+                  {errors.slug && <p className="mt-1 text-xs text-red-500">{errors.slug.message}</p>}
+                  <p className="mt-1 text-xs text-gray-400">Used in URLs</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  {...register("description", { required: "Description is required" })}
+                  rows={4}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors resize-none"
+                  placeholder="Enter category description"
+                />
+                {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
               </div>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">Category Information</h2>
+        {/* Right column */}
+        <div className="flex flex-col gap-5">
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">Settings</h2>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Display Order</label>
+                <input
+                  {...register("order", {
+                    required: "Order is required",
+                    valueAsNumber: true,
+                    min: { value: 1, message: "Order must be at least 1" },
+                  })}
+                  type="number"
+                  min="1"
+                  className="h-9 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-colors"
+                  placeholder="1"
+                />
+                {errors.order && <p className="mt-1 text-xs text-red-500">{errors.order.message}</p>}
+                <p className="mt-1 text-xs text-gray-400">Lower numbers appear first</p>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-2">
-                Name *
-              </label>
-              <input
-                {...register("name", { required: "Name is required", onChange: handleNameChange })}
-                type="text"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
-                placeholder="Enter category name"
-              />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-            </div>
-
-            <div>
-              <label htmlFor="id" className="block text-sm font-semibold text-gray-800 mb-2">
-                ID *
-              </label>
-              <input
-                {...register("id", { required: "ID is required" })}
-                type="text"
-                disabled={isEdit}
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                placeholder="Category ID"
-              />
-              {errors.id && <p className="mt-1 text-sm text-red-600">{errors.id.message}</p>}
-              {!isEdit && (
-                <p className="mt-1 text-xs text-gray-500">Auto-generated from name. Used for database storage.</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="slug" className="block text-sm font-semibold text-gray-800 mb-2">
-                Slug *
-              </label>
-              <input
-                {...register("slug", { required: "Slug is required" })}
-                type="text"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
-                placeholder="category-slug"
-              />
-              {errors.slug && <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>}
-              <p className="mt-1 text-xs text-gray-500">Used in URLs. Auto-generated from name.</p>
-            </div>
-
-            <div className="md:col-span-2">
-              <label htmlFor="description" className="block text-sm font-semibold text-gray-800 mb-2">
-                Description *
-              </label>
-              <textarea
-                {...register("description", { required: "Description is required" })}
-                rows={4}
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
-                placeholder="Enter category description"
-              />
-              {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
-            </div>
-
-            <div>
-              <label htmlFor="order" className="block text-sm font-semibold text-gray-800 mb-2">
-                Display Order
-              </label>
-              <input
-                {...register("order", {
-                  required: "Order is required",
-                  valueAsNumber: true,
-                  min: { value: 1, message: "Order must be at least 1" }
-                })}
-                type="number"
-                min="1"
-                className="mt-1 block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-colors duration-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 focus:outline-none hover:border-gray-300"
-                placeholder="1"
-              />
-              {errors.order && <p className="mt-1 text-sm text-red-600">{errors.order.message}</p>}
-              <p className="mt-1 text-xs text-gray-500">Lower numbers appear first in lists.</p>
-            </div>
-
-            <div className="flex items-center">
-              <div className="flex items-center h-5">
+              <div className="flex items-start gap-3 pt-1">
                 <input
                   {...register("isNews")}
                   type="checkbox"
-                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                  id="isNews"
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-200"
                 />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="isNews" className="font-semibold text-gray-800">
-                  News Category
-                </label>
-                <p className="text-gray-500">Check if this is a news category. News categories will be highlighted differently.</p>
+                <div>
+                  <label htmlFor="isNews" className="block text-xs font-medium text-gray-700 cursor-pointer">
+                    News Category
+                  </label>
+                  <p className="text-xs text-gray-400 mt-0.5">Mark as a news category (highlighted differently)</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Preview */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">Preview</h2>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <div
-                className={`w-3 h-3 rounded-full mr-3 ${
-                  watch("isNews")
-                    ? 'bg-red-100 border-2 border-red-500'
-                    : 'bg-blue-100 border-2 border-blue-500'
-                }`}
-              />
-              <span className="font-medium text-gray-900">{watch("name") || "Category Name"}</span>
-              <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                watch("isNews")
-                  ? 'bg-red-100 text-red-800'
-                  : 'bg-blue-100 text-blue-800'
-              }`}>
-                {watch("isNews") ? 'News' : 'Content'}
-              </span>
-            </div>
-            <p className="text-sm text-gray-600">
-              {watch("description") || "Category description will appear here"}
-            </p>
-            <div className="mt-2 text-xs text-gray-500">
-              URL: /{watch("slug") || "category-slug"}
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-3">Preview</h2>
+            <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div
+                  className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                    watch("isNews") ? "bg-red-400" : "bg-blue-400"
+                  }`}
+                />
+                <span className="text-sm font-medium text-gray-900 truncate">
+                  {watch("name") || "Category Name"}
+                </span>
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
+                    watch("isNews")
+                      ? "bg-red-50 text-red-700 ring-red-200"
+                      : "bg-blue-50 text-blue-700 ring-blue-200"
+                  }`}
+                >
+                  {watch("isNews") ? "News" : "Content"}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 line-clamp-2">
+                {watch("description") || "Category description will appear here"}
+              </p>
+              <p className="mt-1.5 text-xs text-gray-400">/{watch("slug") || "category-slug"}</p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Actions */}
-        <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="inline-flex justify-center py-2 px-4 border border-gray-200 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Saving..." : isEdit ? "Update Category" : "Create Category"}
-          </button>
-        </div>
-      </form>
-    </div>
+      {/* Actions */}
+      <div className="flex justify-end gap-3 mt-5 pt-5 border-t border-gray-100">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="h-9 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="h-9 px-4 rounded-lg bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Saving..." : isEdit ? "Update Category" : "Create Category"}
+        </button>
+      </div>
+    </form>
   )
 }

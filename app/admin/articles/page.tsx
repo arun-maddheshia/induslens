@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Plus, GripVertical } from "lucide-react"
 import { getAllArticles } from "@/lib/db"
 import ArticlesTable from "./_components/ArticlesTable"
 import ArticleFilters from "./_components/ArticleFilters"
@@ -34,13 +34,22 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
             {result.total} article{result.total !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link
-          href="/admin/articles/new"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          New Article
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/articles/reorder"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors"
+          >
+            <GripVertical className="h-4 w-4" />
+            Reorder
+          </Link>
+          <Link
+            href="/admin/articles/new"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            New Article
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}

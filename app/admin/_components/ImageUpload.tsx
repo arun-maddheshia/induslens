@@ -2,36 +2,34 @@
 
 import { useState, useRef } from "react"
 import Image from "next/image"
+import { Upload, X } from "lucide-react"
 import { resolveStoredImageToUrl } from "@/lib/image-storage"
+
+interface ImageEntry {
+  id?: string
+  imageCategory: string
+  imageCategoryValue?: string | null
+  imageDescription?: string | null
+  imageUrl: string[]
+}
 
 interface ImageUploadProps {
   label: string
-  images: Array<{
-    id?: string
-    imageCategory: string
-    imageCategoryValue?: string | null
-    imageDescription?: string | null
-    imageUrl: string[]
-  }>
-  onChange: (images: Array<{
-    id?: string
-    imageCategory: string
-    imageCategoryValue?: string | null
-    imageDescription?: string | null
-    imageUrl: string[]
-  }>) => void
+  images: ImageEntry[]
+  onChange: (images: ImageEntry[]) => void
   error?: string
 }
 
 const imageCategories = [
-  { value: 'posterImage', label: 'Poster Image (3:2)', folder: 'poster-image' },
-  { value: 'detailsPageBackground', label: 'Details Background (1.91:1)', folder: 'details-background' },
-  { value: 'mobileDetailsPageBackground', label: 'Mobile Background (1:1)', folder: 'mobile-details-background' },
+  { value: "posterImage",                label: "Poster Image (3:2)",           folder: "poster-image" },
+  { value: "detailsPageBackground",      label: "Details Background (1.91:1)",  folder: "details-background" },
+  { value: "mobileDetailsPageBackground",label: "Mobile Background (1:1)",      folder: "mobile-details-background" },
 ]
 
 export default function ImageUpload({ label, images, onChange, error }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadingCategory, setUploadingCategory] = useState<string | null>(null)
+  const [draggingOver, setDraggingOver] = useState<string | null>(null)
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
   const handleFileUpload = async (file: File, category: typeof imageCategories[0]) => {
@@ -40,167 +38,170 @@ export default function ImageUpload({ label, images, onChange, error }: ImageUpl
 
     try {
       const formData = new FormData()
-      formData.append('file', file)
-      formData.append('category', category.folder)
-      formData.append('type', 'articles')
+      formData.append("file", file)
+      formData.append("category", category.folder)
+      formData.append("type", "articles")
 
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
+      const response = await fetch("/api/upload", { method: "POST", body: formData })
+      if (!response.ok) throw new Error("Upload failed")
 
       const { fileName, filePath } = await response.json()
       const stored = (fileName as string) || (filePath ? String(filePath).split("/").filter(Boolean).pop() : "")
 
-      // Update images array (store filename only; API resolves to S3 URL when serving)
-      const existingImageIndex = images.findIndex(img => img.imageCategoryValue === category.value)
-      const newImageData = {
+      const existingIndex = images.findIndex(img => img.imageCategoryValue === category.value)
+      const newEntry: ImageEntry = {
         imageCategory: category.label,
         imageCategoryValue: category.value,
-        imageDescription: '',
+        imageDescription: "",
         imageUrl: stored ? [stored] : [],
       }
 
-      let updatedImages
-      if (existingImageIndex >= 0) {
-        // Replace existing image
-        updatedImages = [...images]
-        updatedImages[existingImageIndex] = { ...images[existingImageIndex], ...newImageData }
+      const updated = [...images]
+      if (existingIndex >= 0) {
+        updated[existingIndex] = { ...images[existingIndex], ...newEntry }
       } else {
-        // Add new image
-        updatedImages = [...images, newImageData]
+        updated.push(newEntry)
       }
-
-      onChange(updatedImages)
-    } catch (error) {
-      console.error('Upload error:', error)
-      alert('Failed to upload image')
+      onChange(updated)
+    } catch {
+      alert("Failed to upload image")
     } finally {
       setIsUploading(false)
       setUploadingCategory(null)
     }
   }
 
-  const removeImage = (categoryValue: string) => {
-    const updatedImages = images.filter(img => img.imageCategoryValue !== categoryValue)
-    onChange(updatedImages)
+  const removeImage = (categoryValue: string) =>
+    onChange(images.filter(img => img.imageCategoryValue !== categoryValue))
+
+  const getImage = (categoryValue: string) =>
+    images.find(img => img.imageCategoryValue === categoryValue)
+
+  const handleDrop = (e: React.DragEvent, category: typeof imageCategories[0]) => {
+    e.preventDefault()
+    setDraggingOver(null)
+    const file = e.dataTransfer.files?.[0]
+    if (file && file.type.startsWith("image/")) {
+      handleFileUpload(file, category)
+    }
   }
 
-  const getImageForCategory = (categoryValue: string) => {
-    return images.find(img => img.imageCategoryValue === categoryValue)
+  const handleDragOver = (e: React.DragEvent, categoryValue: string) => {
+    e.preventDefault()
+    setDraggingOver(categoryValue)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDraggingOver(null)
+    }
   }
 
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-800 mb-4">
-        {label}
-      </label>
+      <label className="block text-xs font-medium text-gray-600 mb-3">{label}</label>
 
-      <div className="space-y-6">
+      <div className="flex flex-col gap-3">
         {imageCategories.map((category) => {
-          const existingImage = getImageForCategory(category.value)
-          const isCurrentlyUploading = uploadingCategory === category.value
+          const existing = getImage(category.value)
+          const uploading = uploadingCategory === category.value
+          const isDragTarget = draggingOver === category.value
 
           return (
-            <div key={category.value} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-gray-700">{category.label}</h4>
-                {existingImage && (
+            <div key={category.value} className="rounded-lg border border-gray-200 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-gray-600">{category.label}</span>
+                {existing && (
                   <button
                     type="button"
                     onClick={() => removeImage(category.value)}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
                   >
+                    <X className="w-3 h-3" />
                     Remove
                   </button>
                 )}
               </div>
 
-              {existingImage ? (
-                <div className="space-y-3">
-                  <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-                    <Image
-                      src={resolveStoredImageToUrl(
-                        existingImage.imageUrl[0] || "",
-                        "articles",
-                        existingImage.imageCategoryValue
-                      )}
-                      alt={existingImage.imageDescription || category.label}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="file"
-                      ref={(el) => { fileInputRefs.current[category.value] = el }}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handleFileUpload(file, category)
-                      }}
-                      accept="image/*"
-                      className="hidden"
-                    />
+              {existing ? (
+                <div
+                  className={`relative w-full h-28 rounded-lg overflow-hidden bg-gray-100 border-2 border-dashed transition-colors ${isDragTarget ? "border-gray-400 bg-gray-50" : "border-transparent"}`}
+                  onDragOver={(e) => handleDragOver(e, category.value)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, category)}
+                >
+                  <Image
+                    src={resolveStoredImageToUrl(
+                      existing.imageUrl[0] || "",
+                      "articles",
+                      existing.imageCategoryValue
+                    )}
+                    alt={existing.imageDescription || category.label}
+                    fill
+                    className="object-cover"
+                  />
+                  {isDragTarget && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <p className="text-sm font-medium text-white">Drop to replace</p>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={(el) => { fileInputRefs.current[category.value] = el }}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, category) }}
+                    className="hidden"
+                  />
+                  {!isDragTarget && (
                     <button
                       type="button"
                       onClick={() => fileInputRefs.current[category.value]?.click()}
                       disabled={isUploading}
-                      className="text-sm text-indigo-600 hover:text-indigo-800 disabled:text-gray-400"
+                      className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2.5 py-1 text-xs font-medium text-white hover:bg-black/80 disabled:opacity-50"
                     >
-                      Change Image
+                      Change
                     </button>
-                  </div>
+                  )}
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div
+                  className={`border-2 border-dashed rounded-lg p-5 flex flex-col items-center gap-2 transition-colors cursor-pointer ${
+                    isDragTarget
+                      ? "border-gray-400 bg-gray-50"
+                      : uploading
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50"
+                  }`}
+                  onDragOver={(e) => handleDragOver(e, category.value)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, category)}
+                  onClick={() => !isUploading && fileInputRefs.current[category.value]?.click()}
+                >
                   <input
                     type="file"
-                    ref={(el) => { fileInputRefs.current[category.value] = el }}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) handleFileUpload(file, category)
-                    }}
                     accept="image/*"
+                    ref={(el) => { fileInputRefs.current[category.value] = el }}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, category) }}
                     className="hidden"
                   />
 
-                  {isCurrentlyUploading ? (
-                    <div className="flex flex-col items-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
-                      <p className="text-sm text-gray-500">Uploading...</p>
-                    </div>
+                  {uploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                      <p className="text-xs text-gray-500">Uploading…</p>
+                    </>
+                  ) : isDragTarget ? (
+                    <>
+                      <Upload className="h-5 w-5 text-gray-500" />
+                      <p className="text-xs font-medium text-gray-600">Drop to upload</p>
+                    </>
                   ) : (
                     <>
-                      <svg
-                        className="mx-auto h-12 w-12 text-gray-400"
-                        stroke="currentColor"
-                        fill="none"
-                        viewBox="0 0 48 48"
-                      >
-                        <path
-                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <div className="mt-4">
-                        <button
-                          type="button"
-                          onClick={() => fileInputRefs.current[category.value]?.click()}
-                          disabled={isUploading}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Upload Image
-                        </button>
-                        <p className="mt-2 text-xs text-gray-500">
-                          PNG, JPG, GIF up to 10MB
-                        </p>
-                      </div>
+                      <Upload className="h-5 w-5 text-gray-300" />
+                      <p className="text-xs text-gray-400">
+                        Drop image here or <span className="font-medium text-gray-600">browse</span>
+                      </p>
+                      <p className="text-xs text-gray-300">PNG, JPG up to 10MB</p>
                     </>
                   )}
                 </div>
@@ -210,7 +211,7 @@ export default function ImageUpload({ label, images, onChange, error }: ImageUpl
         })}
       </div>
 
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
     </div>
   )
 }

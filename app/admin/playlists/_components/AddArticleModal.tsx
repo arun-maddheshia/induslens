@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns"
 import { X } from "lucide-react"
 import { resolveStoredImageToUrl } from "@/lib/image-storage"
 
-export type PlaylistType = "hero" | "other-stories" | "industales"
+export type PlaylistType = "hero" | "other-stories" | "industales" | "industales-other-stories"
 
 interface Article {
   id: string
@@ -79,7 +79,8 @@ export default function AddArticleModal({ type, onClose, onArticleAdded }: Props
 
   const getModalTitle = () => {
     if (type === "hero") return "Add to Hero Playlist"
-    if (type === "industales") return "Add to IndusTales Playlist"
+    if (type === "industales") return "Add to IndusTales Featured Playlist"
+    if (type === "industales-other-stories") return "Add to IndusTales Other Stories"
     return "Add to Other Stories"
   }
 

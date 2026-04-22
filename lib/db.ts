@@ -41,14 +41,28 @@ export async function getAllArticles(
     categoryId?: string
     unassignedToCategory?: string
     search?: string
+    siteId?: string
+    authorId?: string
   }
 ) {
   const skip = (page - 1) * limit
 
   const where: any = {}
 
+  if (filters?.siteId) {
+    where.siteId = filters.siteId
+  }
+
   if (filters?.status) {
     where.status = filters.status
+  }
+
+  if (filters?.authorId) {
+    where.authorId = filters.authorId
+  }
+
+  if (filters?.categoryId) {
+    where.categoryId = filters.categoryId
   }
 
   if (filters?.category) {
@@ -140,8 +154,21 @@ export async function getArticleBySlug(slug: string) {
   })
 }
 
+async function uniqueSlug(base: string): Promise<string> {
+  const exists = await db.article.findUnique({ where: { slug: base }, select: { id: true } })
+  if (!exists) return base
+  let n = 2
+  while (true) {
+    const candidate = `${base}-${n}`
+    const taken = await db.article.findUnique({ where: { slug: candidate }, select: { id: true } })
+    if (!taken) return candidate
+    n++
+  }
+}
+
 export async function createArticle(data: any, editorId?: string) {
   const { images, ...articleData } = data
+  articleData.slug = await uniqueSlug(articleData.slug)
 
   return await db.article.create({
     data: {

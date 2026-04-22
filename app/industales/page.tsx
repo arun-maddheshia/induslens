@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import FeaturedArticlesWrapper from '@/app/(root)/_components/FeaturedArticles/FeaturedArticlesWrapper'
-import { Skeleton, FeaturedArticlesSkeleton } from '@/components/UI/Skeleton'
-import { OtherArticlesSection } from '@/app/(root)/_components/OtherArticles'
-import { PageTitle } from '@/app/(root)/_components/FeaturedArticles/PageTitle'
-import Carousel from '@/components/UI/Carousel'
-import ImageComponent from '@/components/ImageComponent'
-import { getImageUrl, getFirstAuthorName } from '@/lib/utils'
-import Link from 'next/link'
+import { useEffect, useState } from 'react';
+import FeaturedArticlesWrapper from '@/app/(root)/_components/FeaturedArticles/FeaturedArticlesWrapper';
+import { Skeleton, FeaturedArticlesSkeleton } from '@/components/UI/Skeleton';
+import { OtherArticlesSection } from '@/app/(root)/_components/OtherArticles';
+import { PageTitle } from '@/app/(root)/_components/FeaturedArticles/PageTitle';
+import Carousel from '@/components/UI/Carousel';
+import ImageComponent from '@/components/ImageComponent';
+import { getImageUrl, getFirstAuthorName } from '@/lib/utils';
+import Link from 'next/link';
 
-const RACE_TO_ZERO_CATEGORY_ID = 'Race_to_Zero'
-const RACE_TO_ZERO_SLUG = 'race-to-zero'
-const RACE_TO_ZERO_TITLE = "Race to Zero: India's Journey to Sustainability"
+const RACE_TO_ZERO_CATEGORY_ID = 'Race_to_Zero';
+const RACE_TO_ZERO_SLUG = 'race-to-zero';
+const RACE_TO_ZERO_TITLE = "Race to Zero: India's Journey to Sustainability";
 
 type FeaturedData = {
-  leftPosts: Article[]
-  mainPost: Article | null
-  rightPosts: Article[]
-}
+  leftPosts: Article[];
+  mainPost: Article | null;
+  rightPosts: Article[];
+};
 
 function IndusTalesPageSkeleton() {
   return (
@@ -27,37 +27,49 @@ function IndusTalesPageSkeleton() {
       <FeaturedArticlesSkeleton />
 
       {/* Race to Zero carousel skeleton */}
-      <section className="py-0 pb-7 lg:pb-10 mt-10">
-        <Skeleton className="h-7 w-96 mb-5" />
+      <section className="mt-10 py-0 pb-7 lg:pb-10">
+        <Skeleton className="mb-5 h-7 w-96" />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i}>
-              <Skeleton className="w-full aspect-[3/2] mb-2 rounded" />
-              <Skeleton className="h-4 w-full mb-1" />
-              <Skeleton className="h-4 w-3/4 mb-1" />
+              <Skeleton className="mb-2 aspect-[3/2] w-full rounded" />
+              <Skeleton className="mb-1 h-4 w-full" />
+              <Skeleton className="mb-1 h-4 w-3/4" />
               <Skeleton className="h-3 w-1/3" />
             </div>
           ))}
         </div>
       </section>
     </>
-  )
+  );
 }
 
 export default function IndusTalesPage() {
-  const [featured, setFeatured] = useState<FeaturedData>({ leftPosts: [], mainPost: null, rightPosts: [] })
-  const [raceToZeroArticles, setRaceToZeroArticles] = useState<Article[]>([])
-  const [loading, setLoading] = useState(true)
+  const [featured, setFeatured] = useState<FeaturedData>({
+    leftPosts: [],
+    mainPost: null,
+    rightPosts: [],
+  });
+  const [raceToZeroArticles, setRaceToZeroArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/industales-featured').then((r) => r.json()).catch(() => null),
-      fetch(`/api/category-articles/${RACE_TO_ZERO_CATEGORY_ID}`).then((r) => r.json()).catch(() => null),
-    ]).then(([featuredData, raceData]) => {
-      if (featuredData) setFeatured(featuredData)
-      if (raceData?.success) setRaceToZeroArticles(raceData.data || [])
-    }).finally(() => setLoading(false))
-  }, [])
+      fetch('/api/industales-featured')
+        .then((r) => r.json())
+        .catch(() => null),
+      fetch(
+        `/api/category-articles/${RACE_TO_ZERO_CATEGORY_ID}?siteId=industales`,
+      )
+        .then((r) => r.json())
+        .catch(() => null),
+    ])
+      .then(([featuredData, raceData]) => {
+        if (featuredData) setFeatured(featuredData);
+        if (raceData?.success) setRaceToZeroArticles(raceData.data || []);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const raceToZeroItems = raceToZeroArticles
     .filter((article) => article.images.length)
@@ -73,27 +85,29 @@ export default function IndusTalesPage() {
           />
         </Link>
         <h6 className="mb-2 text-lg font-bold leading-6 text-black">
-          <Link href={`/category/${RACE_TO_ZERO_SLUG}?name=${article.slug}`} className="hover:underline">
+          <Link
+            href={`/category/${RACE_TO_ZERO_SLUG}?name=${article.slug}`}
+            className="hover:underline"
+          >
             {article.name}
           </Link>
         </h6>
-        <p className="mb-2 text-sm text-gray-500">{getFirstAuthorName(article.author)}</p>
+        <p className="mb-2 text-sm text-gray-500">
+          {getFirstAuthorName(article.author)}
+        </p>
       </div>
-    ))
+    ));
 
   return (
     <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
-      <div className="mb-10 text-center">
-        <h1 className="text-4xl font-bold mb-3">IndusTales Stories</h1>
-        <p className="text-gray-500">Stories from India&apos;s rise to global prominence</p>
-      </div>
-
       {loading ? (
         <IndusTalesPageSkeleton />
       ) : (
         <>
           {/* Hero playlist section */}
-          {(featured.mainPost || featured.leftPosts.length > 0 || featured.rightPosts.length > 0) && (
+          {(featured.mainPost ||
+            featured.leftPosts.length > 0 ||
+            featured.rightPosts.length > 0) && (
             <FeaturedArticlesWrapper
               leftPosts={featured.leftPosts}
               mainPost={featured.mainPost}
@@ -103,8 +117,11 @@ export default function IndusTalesPage() {
 
           {/* Race to Zero carousel */}
           {raceToZeroItems.length > 0 && (
-            <section className="py-0 pb-7 lg:pb-10 mt-10">
-              <PageTitle title={RACE_TO_ZERO_TITLE} href={`category/${RACE_TO_ZERO_SLUG}`} />
+            <section className="mt-10 py-0 pb-7 lg:pb-10">
+              <PageTitle
+                title={RACE_TO_ZERO_TITLE}
+                href={`category/${RACE_TO_ZERO_SLUG}`}
+              />
               <Carousel
                 slidesPerView={4}
                 mdSlidesPerView={3}
@@ -119,7 +136,7 @@ export default function IndusTalesPage() {
       )}
 
       {/* Other Stories — has its own internal skeleton */}
-      <OtherArticlesSection />
+      <OtherArticlesSection apiEndpoint="/api/industales-other-stories" />
     </div>
-  )
+  );
 }

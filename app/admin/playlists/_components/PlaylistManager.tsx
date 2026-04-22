@@ -20,7 +20,7 @@ import PlaylistItem from "./PlaylistItem"
 import AddArticleModal from "./AddArticleModal"
 import ConfirmDialog from "../../_components/ConfirmDialog"
 
-export type PlaylistType = "hero" | "other-stories" | "industales"
+export type PlaylistType = "hero" | "other-stories" | "industales" | "industales-other-stories"
 
 interface PlaylistItemData {
   id: string
@@ -127,7 +127,11 @@ export default function PlaylistManager({ type }: { type: PlaylistType }) {
     }
   }
 
-  const playlistLabel = type === "hero" ? "Hero Playlist" : type === "industales" ? "IndusTales Playlist" : "Other Stories Playlist"
+  const playlistLabel =
+    type === "hero" ? "Hero Playlist" :
+    type === "industales" ? "IndusTales Featured Playlist" :
+    type === "industales-other-stories" ? "IndusTales Other Stories Playlist" :
+    "Other Stories Playlist"
 
   if (loading) {
     return (

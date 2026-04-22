@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { signIn, getSession } from "next-auth/react"
 import Image from "next/image"
 import { Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react"
@@ -12,8 +11,6 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const router = useRouter()
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -31,7 +28,7 @@ export default function AdminLogin() {
       } else {
         const session = await getSession()
         if (session) {
-          router.push("/admin")
+          window.location.href = "/admin"
         } else {
           setError("Login failed. Please try again.")
         }

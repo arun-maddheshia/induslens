@@ -19,7 +19,7 @@ export async function PUT(
 
     const type = params.type as PlaylistType
 
-    if (!['hero', 'other-stories', 'industales'].includes(type)) {
+    if (!['hero', 'other-stories', 'industales', 'industales-other-stories'].includes(type)) {
       return NextResponse.json(
         { error: "Invalid playlist type" },
         { status: 400 }

@@ -1,5 +1,6 @@
 import './globals.css';
 
+import type { Metadata } from 'next';
 import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from '@vercel/analytics/react';
@@ -9,6 +10,26 @@ import { cn } from '@/lib/utils';
 import { Inter } from 'next/font/google';
 import PublicLayout from '@/components/PublicLayout';
 import Providers from './providers';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || 'https://induslens.com'),
+  title: {
+    default: 'IndusLens | Chronicling cutting-edge global perspectives on India\'s success stories',
+    template: '%s | IndusLens',
+  },
+  description:
+    "Explore India's vibrant journey to 2050 as a global economic powerhouse, guided by insightful global perspectives on its innovative entrepreneurship, tech revolution, pivotal policies and its dazzling soft power.",
+  openGraph: {
+    siteName: 'IndusLens',
+    images: '/social.png',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@Indus_Lens',
+    images: '/social.png',
+  },
+}
 
 const fontInter = Inter({
   subsets: ['latin'],

@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get("q") || undefined
     const exclude = searchParams.get("exclude") as PlaylistType | undefined
 
-    if (exclude && !['hero', 'other-stories', 'industales'].includes(exclude)) {
+    if (exclude && !['hero', 'other-stories', 'industales', 'industales-other-stories'].includes(exclude)) {
       return NextResponse.json(
         { error: "Invalid exclude playlist type" },
         { status: 400 }

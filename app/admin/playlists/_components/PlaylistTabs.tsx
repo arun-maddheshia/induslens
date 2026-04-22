@@ -4,13 +4,14 @@ import { useState } from "react"
 import PlaylistManager from "./PlaylistManager"
 
 const tabs = [
-  { id: "hero" as const,          name: "Hero Playlist" },
-  { id: "other-stories" as const, name: "Other Stories" },
-  { id: "industales" as const,    name: "IndusTales" },
+  { id: "hero" as const,                        name: "Hero Playlist" },
+  { id: "other-stories" as const,               name: "Other Stories" },
+  { id: "industales" as const,                  name: "IndusTales Featured" },
+  { id: "industales-other-stories" as const,    name: "IndusTales Other Stories" },
 ]
 
 export default function PlaylistTabs() {
-  const [activeTab, setActiveTab] = useState<"hero" | "other-stories" | "industales">("hero")
+  const [activeTab, setActiveTab] = useState<"hero" | "other-stories" | "industales" | "industales-other-stories">("hero")
 
   return (
     <div className="flex flex-col gap-4">

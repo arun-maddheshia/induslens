@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import {
@@ -14,6 +13,7 @@ import {
   Zap,
   LogOut,
   LayoutDashboard,
+  ExternalLink,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -65,18 +65,23 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
   return (
     <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-zinc-900">
       {/* Brand */}
-      <div className="flex h-14 items-center gap-3 border-b border-white/10 px-5">
-        <Image
-          src="/logo.svg"
-          alt="IndusLens"
-          width={116}
-          height={26}
-          className="object-contain"
-          priority
-        />
-        <span className="rounded bg-zinc-700 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-300">
-          CMS
-        </span>
+      <div className="flex h-14 items-center justify-between border-b border-white/10 px-4">
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="IndusLens" width={100} height={22} className="object-contain" />
+          <span className="rounded bg-zinc-700 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-300">
+            CMS
+          </span>
+        </div>
+        <Link
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Visit website"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-200"
+        >
+          <ExternalLink className="h-4 w-4" />
+        </Link>
       </div>
 
       {/* Nav */}

@@ -96,8 +96,14 @@ export async function POST(request: NextRequest) {
     const article = await createArticle(articleData, session.user.id)
 
     return NextResponse.json(article, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating article:", error)
+    if (error?.code === "P2002" && error?.meta?.target?.includes("slug")) {
+      return NextResponse.json(
+        { error: "This slug is already in use. Please choose a different slug." },
+        { status: 409 }
+      )
+    }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

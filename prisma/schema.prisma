@@ -116,9 +116,10 @@ model Article {
 
   // ── Relations ──
   images               ArticleImage[]
-  heroPlaylists         HeroPlaylist[]         @relation("HeroPlaylistArticle")
-  otherStoriesPlaylists OtherStoriesPlaylist[] @relation("OtherStoriesPlaylistArticle")
-  indusTalesPlaylists   IndusTalesPlaylist[]   @relation("IndusTalesPlaylistArticle")
+  heroPlaylists                    HeroPlaylist[]                    @relation("HeroPlaylistArticle")
+  otherStoriesPlaylists            OtherStoriesPlaylist[]            @relation("OtherStoriesPlaylistArticle")
+  indusTalesPlaylists              IndusTalesPlaylist[]              @relation("IndusTalesPlaylistArticle")
+  indusTalesOtherStoriesPlaylists  IndusTalesOtherStoriesPlaylist[]  @relation("IndusTalesOtherStoriesPlaylistArticle")
   specialArticles       SpecialArticle[]       @relation("SpecialArticleRef")
 
   @@index([slug])
@@ -240,6 +241,18 @@ model IndusTalesPlaylist {
   order     Int
   articleId String
   article   Article @relation("IndusTalesPlaylistArticle", fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([order])
+}
+
+model IndusTalesOtherStoriesPlaylist {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order     Int
+  articleId String
+  article   Article @relation("IndusTalesOtherStoriesPlaylistArticle", fields: [articleId], references: [id], onDelete: Cascade)
 
   @@index([order])
 }

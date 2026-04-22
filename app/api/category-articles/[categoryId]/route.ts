@@ -20,12 +20,16 @@ export async function GET(
       );
     }
 
+    const { searchParams } = new URL(request.url);
+    const siteId = searchParams.get("siteId");
+
     // Fetch articles for the specific category, ordered by categoryOrder
     const articles = await db.article.findMany({
       where: {
         categoryId: categoryId,
         status: "PUBLISHED",
-        visibility: true
+        visibility: true,
+        ...(siteId ? { siteId } : {}),
       },
       orderBy: [
         { categoryOrder: 'asc' },

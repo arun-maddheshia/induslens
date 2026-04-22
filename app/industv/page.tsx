@@ -1,10 +1,11 @@
 import ImageComponent from '@/components/ImageComponent';
+import TrendingVideo from '@/components/UI/TrendingVideo';
+import { PageTitle } from '@/app/(root)/_components/FeaturedArticles/PageTitle';
 import { db } from '@/lib/db';
 import { hydratePostImages } from '@/lib/image-storage';
 import { getImageUrl } from '@/lib/utils';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'IndusTV',
@@ -47,7 +48,7 @@ async function fetchIndusTVVideos() {
         imageUrl: img.imageUrl,
         key: img.key || '',
       })),
-      'videos'
+      'videos',
     ),
   }));
 }
@@ -55,38 +56,52 @@ async function fetchIndusTVVideos() {
 export default async function IndusTVPage() {
   const videos = await fetchIndusTVVideos();
 
-  if (!videos.length) {
-    notFound();
-  }
-
   return (
-    <section className="tv-container mx-auto my-2 px-2 py-0 pb-10 md:pb-0 lg:py-10">
-      <h1 className="mb-10 text-4xl text-center font-bold">IndusTV</h1>
-
-      
-      <div className="flex flex-col gap-8">
-        {videos.map((video) => (
-          <div key={video.id}>
-            <Link href={`/industv/${video.slug}`} className="relative block mb-3">
-              <ImageComponent
-                src={getImageUrl(video.images, 'detailsPageBackground', '', 'videos')}
-                alt={video.name}
-                width={1280}
-                height={720}
-                className="w-full aspect-video object-cover"
-              />
-              {video.duration && (
-                <span className="absolute bottom-2 right-2 rounded bg-black px-2 text-xs font-bold leading-6 text-white">
-                  {video.duration}
-                </span>
-              )}
-            </Link>
-            <h6 className="text-xl font-bold leading-snug text-black hover:underline">
-              <Link href={`/industv/${video.slug}`}>{video.name}</Link>
-            </h6>
+    <div className="mx-auto w-full px-4 py-4 lg:container lg:py-10">
+      {/* IndusTV Videos */}
+      <section className="py-0 pb-0">
+        <PageTitle title="IndusTV" />
+        {videos.length > 0 ? (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-4">
+            {videos.map((video) => (
+              <div key={video.id} className="mb-5 lg:mb-0">
+                <Link
+                  href={`/industv/${video.slug}`}
+                  className="relative block"
+                >
+                  <ImageComponent
+                    src={getImageUrl(
+                      video.images,
+                      'detailsPageBackground',
+                      '',
+                      'videos',
+                    )}
+                    alt={video.name}
+                    width={640}
+                    height={427}
+                    className="mb-2"
+                  />
+                  {video.duration && (
+                    <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-2 text-xs font-bold leading-6 text-white">
+                      {video.duration}
+                    </span>
+                  )}
+                </Link>
+                <h6 className="mb-2 text-lg font-bold leading-6 text-black hover:underline">
+                  <Link href={`/industv/${video.slug}`}>{video.name}</Link>
+                </h6>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </section>
+        ) : (
+          <p className="py-8 text-center text-sm text-gray-500">
+            No videos available.
+          </p>
+        )}
+      </section>
+
+      {/* Trending Videos */}
+      <TrendingVideo />
+    </div>
   );
 }

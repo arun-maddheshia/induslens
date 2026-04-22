@@ -10,7 +10,10 @@ interface ArticlesPageProps {
     page?: string
     status?: string
     category?: string
+    categoryId?: string
+    authorId?: string
     search?: string
+    siteId?: string
   }
 }
 
@@ -19,7 +22,10 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const filters = {
     status: searchParams.status,
     category: searchParams.category,
+    categoryId: searchParams.categoryId,
+    authorId: searchParams.authorId,
     search: searchParams.search,
+    siteId: searchParams.siteId,
   }
 
   const result = await getAllArticles(page, 20, filters)

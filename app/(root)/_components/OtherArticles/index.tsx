@@ -7,11 +7,15 @@ import ImageComponent from '@/components/ImageComponent';
 import { OtherArticlesSkeleton } from '@/components/UI/Skeleton';
 
 type OtherArticlesSectionProps = {
-  articles?: Article[]; // Make it optional for backward compatibility
+  articles?: Article[];
+  siteId?: string;
+  apiEndpoint?: string;
 };
 
 export const OtherArticlesSection = ({
   articles: propArticles = [],
+  siteId,
+  apiEndpoint,
 }: OtherArticlesSectionProps) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +34,8 @@ export const OtherArticlesSection = ({
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-        const response = await fetch('/api/other-stories', {
+        const url = apiEndpoint ?? (siteId ? `/api/other-stories?siteId=${siteId}` : '/api/other-stories');
+        const response = await fetch(url, {
           signal: controller.signal
         });
         clearTimeout(timeoutId);

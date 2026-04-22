@@ -1,6 +1,13 @@
 import { db } from "./db"
 
-export type PlaylistType = 'hero' | 'other-stories' | 'industales'
+export type PlaylistType = 'hero' | 'other-stories' | 'industales' | 'industales-other-stories'
+
+function getModel(type: PlaylistType) {
+  if (type === 'hero') return db.heroPlaylist
+  if (type === 'other-stories') return db.otherStoriesPlaylist
+  if (type === 'industales-other-stories') return db.indusTalesOtherStoriesPlaylist
+  return db.indusTalesPlaylist
+}
 
 // Get all playlists with their articles
 export async function getPlaylist(type: PlaylistType) {
@@ -22,13 +29,7 @@ export async function getPlaylist(type: PlaylistType) {
     },
   }
   try {
-    if (type === 'hero') {
-      return await db.heroPlaylist.findMany({ include: { article: { select: articleSelect } }, orderBy: { order: 'asc' } })
-    } else if (type === 'other-stories') {
-      return await db.otherStoriesPlaylist.findMany({ include: { article: { select: articleSelect } }, orderBy: { order: 'asc' } })
-    } else {
-      return await db.indusTalesPlaylist.findMany({ include: { article: { select: articleSelect } }, orderBy: { order: 'asc' } })
-    }
+    return await (getModel(type) as any).findMany({ include: { article: { select: articleSelect } }, orderBy: { order: 'asc' } })
   } catch (error) {
     console.error(`Error fetching ${type} playlist:`, error)
     return []
@@ -45,7 +46,7 @@ export async function addArticleToPlaylist(type: PlaylistType, articleId: string
     // Get the next order number
     let maxOrder = 0
 
-    const model = type === 'hero' ? db.heroPlaylist : type === 'other-stories' ? db.otherStoriesPlaylist : db.indusTalesPlaylist
+    const model = getModel(type)
     const agg = await (model as any).aggregate({ _max: { order: true } })
     maxOrder = agg._max.order ?? 0
     const nextOrder = maxOrder + 1
@@ -68,7 +69,7 @@ export async function removeArticleFromPlaylist(type: PlaylistType, playlistId: 
   }
 
   try {
-    const model = type === 'hero' ? db.heroPlaylist : type === 'other-stories' ? db.otherStoriesPlaylist : db.indusTalesPlaylist
+    const model = getModel(type)
     const deleted = await (model as any).delete({ where: { id: playlistId } })
     await reorderPlaylistItems(type)
     return deleted
@@ -85,7 +86,7 @@ export async function updatePlaylistOrder(type: PlaylistType, items: Array<{ id:
   }
 
   try {
-    const model = type === 'hero' ? db.heroPlaylist : type === 'other-stories' ? db.otherStoriesPlaylist : db.indusTalesPlaylist
+    const model = getModel(type)
     await Promise.all(
       items.map((item, index) =>
         (model as any).update({ where: { id: item.id }, data: { order: index + 1 } })
@@ -104,7 +105,7 @@ async function reorderPlaylistItems(type: PlaylistType) {
   if (!db) return
 
   try {
-    const model = type === 'hero' ? db.heroPlaylist : type === 'other-stories' ? db.otherStoriesPlaylist : db.indusTalesPlaylist
+    const model = getModel(type)
     const items = await (model as any).findMany({ orderBy: { order: 'asc' } })
     await Promise.all(
       items.map((item: any, index: number) =>
@@ -122,8 +123,11 @@ export async function searchArticlesForPlaylist(query?: string, excludeFromPlayl
     return []
   }
 
+  const isIndusTales = excludeFromPlaylist === 'industales' || excludeFromPlaylist === 'industales-other-stories'
+
   const where: any = {
-    status: 'PUBLISHED'
+    status: 'PUBLISHED',
+    ...(isIndusTales ? { siteId: 'industales' } : {}),
   }
 
   if (query) {
@@ -137,11 +141,7 @@ export async function searchArticlesForPlaylist(query?: string, excludeFromPlayl
   // doesn't prevent article results from being returned.
   if (excludeFromPlaylist) {
     try {
-      const model = excludeFromPlaylist === 'hero'
-        ? db.heroPlaylist
-        : excludeFromPlaylist === 'other-stories'
-        ? db.otherStoriesPlaylist
-        : db.indusTalesPlaylist
+      const model = getModel(excludeFromPlaylist)
       const existingIds = await (model as any).findMany({ select: { articleId: true } })
       const excludeIds = existingIds.map((item: any) => item.articleId)
       if (excludeIds.length > 0) where.id = { notIn: excludeIds }

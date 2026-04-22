@@ -57,7 +57,7 @@ export default async function IntelligenceArticleList({
       {articles.length === 0 ? (
         <p className="py-12 text-center text-gray-500">No articles found.</p>
       ) : (
-        <div className="mx-auto grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="mx-auto grid grid-cols-1 gap-6">
           {articles.map((article) => {
             const images = hydratePostImages(
               (article.images || []).map((img) => ({

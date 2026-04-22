@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { hydratePostImages } from "@/lib/image-storage";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     if (!db) {
       throw new Error("Database connection not available");
     }
+
+    const { searchParams } = new URL(request.url);
+    const siteId = searchParams.get("siteId");
 
     // Fetch from other stories playlist with full article data
     const otherStoriesPlaylist = await db.otherStoriesPlaylist.findMany({
@@ -51,9 +54,13 @@ export async function GET() {
       orderBy: { order: 'asc' }
     });
 
-    // Filter for published articles only and transform data
+    // Filter for published articles only (and optionally by siteId) then transform data
     const publishedArticles = otherStoriesPlaylist
-      .filter(item => item.article !== null && item.article.status === 'PUBLISHED')
+      .filter(item =>
+        item.article !== null &&
+        item.article.status === 'PUBLISHED' &&
+        (!siteId || item.article.siteId === siteId)
+      )
       .map(item => {
         const article = item.article!;
 

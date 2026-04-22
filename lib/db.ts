@@ -5,16 +5,9 @@ declare global {
   var prisma: PrismaClient | undefined
 }
 
-let prismaInstance: PrismaClient
-
-try {
-  prismaInstance = global.prisma ?? new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  })
-} catch (error) {
-  console.error("Failed to initialize Prisma client:", error)
-  throw error
-}
+const prismaInstance: PrismaClient = global.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+})
 
 export const db = prismaInstance
 

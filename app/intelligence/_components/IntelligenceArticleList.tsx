@@ -35,7 +35,10 @@ interface Props {
   categorySlug: string;
 }
 
-export default async function IntelligenceArticleList({ categoryId, categorySlug }: Props) {
+export default async function IntelligenceArticleList({
+  categoryId,
+  categorySlug,
+}: Props) {
   const { category, articles } = await fetchCategoryData(categoryId);
 
   return (
@@ -43,7 +46,7 @@ export default async function IntelligenceArticleList({ categoryId, categorySlug
       {/* Category heading */}
       {category && (
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-3">{category.name}</h1>
+          <h1 className="mb-3 text-4xl font-bold">{category.name}</h1>
           {category.description && (
             <p className="text-gray-500">{category.description}</p>
           )}
@@ -52,9 +55,9 @@ export default async function IntelligenceArticleList({ categoryId, categorySlug
 
       {/* Articles */}
       {articles.length === 0 ? (
-        <p className="text-center text-gray-500 py-12">No articles found.</p>
+        <p className="py-12 text-center text-gray-500">No articles found.</p>
       ) : (
-        <div className="flex flex-col gap-6 lg:max-w-[80%] mx-auto">
+        <div className="mx-auto grid grid-cols-1 gap-6 md:grid-cols-2">
           {articles.map((article) => {
             const images = hydratePostImages(
               (article.images || []).map((img) => ({
@@ -64,7 +67,7 @@ export default async function IntelligenceArticleList({ categoryId, categorySlug
                 imageUrl: img.imageUrl || [],
                 key: article.id,
               })),
-              'articles'
+              'articles',
             );
             const articleUrl = `/category/${categorySlug}/${article.slug}`;
 
@@ -90,7 +93,9 @@ export default async function IntelligenceArticleList({ categoryId, categorySlug
                   </Link>
                   <div className="pr-[40px]">
                     <ReadMore
-                      text={article.alternativeHeadline || article.excerpt || ''}
+                      text={
+                        article.alternativeHeadline || article.excerpt || ''
+                      }
                       maxLength={300}
                       className="mb-4"
                       href={articleUrl}

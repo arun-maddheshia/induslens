@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const TABS = [
-  { label: 'OSINT',     href: '/intelligence'           },
+  { label: 'OSINT', href: '/intelligence' },
   { label: 'Worldview', href: '/intelligence/worldview' },
 ];
 
@@ -12,7 +12,7 @@ export default function IntelligenceTabs() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-8 border-b border-gray-200 mb-10">
+    <nav className="mb-10 flex items-center justify-center gap-8">
       {TABS.map((tab) => {
         const isActive = pathname === tab.href;
         return (

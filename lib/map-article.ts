@@ -28,7 +28,7 @@ export function mapArticleToFrontend(article: DbArticle, urlPrefix = "/articles"
     agency: "",
     ampValidationMessage: "",
     archivedAt: "",
-    contentType: (article.contentType as any) || "articles",
+    contentType: (article.contentType as unknown as ContentType) || "articles",
     editor: "",
     expires: "",
     genre: article.genre || [],

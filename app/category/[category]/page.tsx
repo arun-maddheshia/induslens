@@ -55,7 +55,7 @@ async function fetchCategoryArticles(categoryId: string): Promise<Article[]> {
     alternativeHeadline: article.alternativeHeadline || '',
     ampValidationMessage: '',
     archivedAt: '',
-    contentType: 'article' as any,
+    contentType: 'articles' as ContentType,
     editor: '',
     expires: '',
     genre: [],

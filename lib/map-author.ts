@@ -39,7 +39,7 @@ export function mapAuthorToFrontend(
     aboutTheAnchor: author.aboutTheAnchor,
     anchorKey: "",
     email: author.email || "",
-    contentType: author.contentType as any,
+    contentType: author.contentType as ContentType,
     images: hydratePostImages(
       author.images.map((img) => ({
         imageCategory: img.imageCategory,

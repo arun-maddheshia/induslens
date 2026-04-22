@@ -33,18 +33,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const player = useRef<Player>(null);
   const initialized = useRef<boolean>(false);
 
-  const videoJsOptions = {
-    sources: [
-      {
-        type: 'video/youtube',
-        src: `https://www.youtube.com/watch?v=${videoId}`,
-      },
-    ],
-  };
-
   useEffect(() => {
     if (videoNode.current && !initialized.current) {
       initialized.current = true;
+      const videoJsOptions = {
+        sources: [
+          {
+            type: 'video/youtube',
+            src: `https://www.youtube.com/watch?v=${videoId}`,
+          },
+        ],
+      };
       //@ts-ignore
       player.current = videojs(videoNode.current, {
         ...initialOptions,

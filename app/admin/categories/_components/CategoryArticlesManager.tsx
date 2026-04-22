@@ -286,7 +286,7 @@ export default function CategoryArticlesManager({ categoryId, categoryName }: Ca
           </div>
           <h3 className="text-sm font-medium text-gray-900 mb-1">No articles found</h3>
           <p className="text-sm text-gray-500 mb-4">
-            This category doesn't have any articles yet.
+            This category doesn&apos;t have any articles yet.
           </p>
         </div>
       </div>
@@ -299,7 +299,7 @@ export default function CategoryArticlesManager({ categoryId, categoryName }: Ca
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-medium text-gray-900">
-              Articles in "{categoryName}" ({articles.length})
+              Articles in &quot;{categoryName}&quot; ({articles.length})
             </h3>
             <p className="text-sm text-gray-500 mt-1">
               Drag and drop to reorder articles within this category

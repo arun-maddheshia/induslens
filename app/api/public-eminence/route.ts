@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from "next/server"
 import { getPublishedEminence } from "@/lib/db-eminence"
 

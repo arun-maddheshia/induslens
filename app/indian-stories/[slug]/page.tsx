@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: article?.metaTitle,
     description: article?.metaDescription,
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_API_URL}/industales/${params.slug}`,
+      canonical: `${process.env.NEXT_PUBLIC_API_URL}/indian-stories/${params.slug}`,
     },
     openGraph: {
       title: article?.metaTitle ?? undefined,
@@ -73,7 +73,7 @@ export default async function IndusTalesArticlePage({ params }: Props) {
   return (
     <ArticleView
       article={mapArticleToFrontend(article, '/industales')}
-      pageUrl={`${process.env.NEXT_PUBLIC_API_URL}/industales/${slug}`}
+      pageUrl={`${process.env.NEXT_PUBLIC_API_URL}/indian-stories/${slug}`}
       articleAuthors={articleAuthors}
     />
   );

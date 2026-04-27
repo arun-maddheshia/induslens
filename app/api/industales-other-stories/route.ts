@@ -87,7 +87,7 @@ export async function GET() {
           sourceType: "original",
           subCategories: [],
           tags: [],
-          url: `/industales/${article.slug || article.id}`,
+          url: `/indian-stories/${article.slug || article.id}`,
           key: parseInt(article.id.slice(-6), 16),
           isContent: true,
           description: article.alternativeHeadline || "",

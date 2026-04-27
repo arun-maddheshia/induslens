@@ -7,7 +7,7 @@ const navLinks = [
   { name: 'Eminence', href: '/indus-eminence' },
   { name: 'Specials', href: '/specials' },
   { name: 'Our Contributors', href: '/our-contributors' },
-  { name: 'Indian Stories', href: '/industales' },
+  { name: 'Indian Stories', href: '/indian-stories' },
 ];
 
 export const Navbar = () => {

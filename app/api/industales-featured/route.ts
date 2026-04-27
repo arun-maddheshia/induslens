@@ -69,7 +69,7 @@ function toArticle(article: any): Article {
     sourceType: '',
     subCategories: [],
     tags: [],
-    url: `/industales/${article.slug}`,
+    url: `/indian-stories/${article.slug}`,
     key: parseInt(article.id.slice(-6), 16),
     isContent: true,
     description: article.alternativeHeadline || '',

@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import FeaturedArticlesWrapper from '@/app/(root)/_components/FeaturedArticles/FeaturedArticlesWrapper';
-import { FeaturedArticlesSkeleton, CategorySectionSkeleton } from '@/components/UI/Skeleton';
+import {
+  FeaturedArticlesSkeleton,
+  CategorySectionSkeleton,
+} from '@/components/UI/Skeleton';
 import { OtherArticlesSection } from '@/app/(root)/_components/OtherArticles';
 import { PageTitle } from '@/app/(root)/_components/FeaturedArticles/PageTitle';
 import Carousel from '@/components/UI/Carousel';
@@ -35,33 +38,48 @@ export default function IndusTalesPage() {
     mainPost: null,
     rightPosts: [],
   });
-  const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>([]);
-  const [categoryArticles, setCategoryArticles] = useState<Record<string, Article[]>>({});
+  const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>(
+    [],
+  );
+  const [categoryArticles, setCategoryArticles] = useState<
+    Record<string, Article[]>
+  >({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAll = async () => {
       const [featuredData, categoriesResult] = await Promise.all([
-        fetch('/api/industales-featured').then((r) => r.json()).catch(() => null),
-        fetch('/api/public-categories?siteId=industales').then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+        fetch('/api/industales-featured')
+          .then((r) => r.json())
+          .catch(() => null),
+        fetch('/api/public-categories?siteId=industales')
+          .then((r) => r.json())
+          .catch(() => ({ success: false, data: [] })),
       ]);
 
       if (featuredData) setFeatured(featuredData);
 
-      const categories: ArticleCategory[] = categoriesResult.success ? categoriesResult.data : [];
+      const categories: ArticleCategory[] = categoriesResult.success
+        ? categoriesResult.data
+        : [];
       setArticleCategories(categories);
 
       const articlesResults = await Promise.all(
         categories.map((cat) =>
           fetch(`/api/category-articles/${cat.id}?siteId=industales`)
             .then((r) => r.json())
-            .then((res) => ({ categoryId: cat.id, articles: res.success ? res.data : [] }))
-            .catch(() => ({ categoryId: cat.id, articles: [] }))
-        )
+            .then((res) => ({
+              categoryId: cat.id,
+              articles: res.success ? res.data : [],
+            }))
+            .catch(() => ({ categoryId: cat.id, articles: [] })),
+        ),
       );
 
       const map: Record<string, Article[]> = {};
-      articlesResults.forEach(({ categoryId, articles }) => { map[categoryId] = articles; });
+      articlesResults.forEach(({ categoryId, articles }) => {
+        map[categoryId] = articles;
+      });
       setCategoryArticles(map);
       setLoading(false);
     };
@@ -76,7 +94,9 @@ export default function IndusTalesPage() {
       ) : (
         <>
           {/* Hero playlist section */}
-          {(featured.mainPost || featured.leftPosts.length > 0 || featured.rightPosts.length > 0) && (
+          {(featured.mainPost ||
+            featured.leftPosts.length > 0 ||
+            featured.rightPosts.length > 0) && (
             <FeaturedArticlesWrapper
               leftPosts={featured.leftPosts}
               mainPost={featured.mainPost}
@@ -88,16 +108,25 @@ export default function IndusTalesPage() {
           {articleCategories.map((category) => (
             <section
               key={category.id}
-              className={cn('py-0 pb-7 lg:pb-10', styles.categoryListing)}
+              className={cn(
+                'py-0 pb-7 lg:pb-10',
+                styles.categoryListing,
+                styles.indianStoriesCategoryListing,
+              )}
             >
-              <PageTitle title={category.name} href={`category/${category.slug}`} />
+              <PageTitle
+                title={category.name}
+                href={`category/${category.slug}`}
+              />
               <ReadMore
                 className="mb-5 text-lg"
                 text={category.description}
                 maxLength={300}
                 href={`category/${category.slug}`}
               />
-              {(categoryArticles[category.id] || []).filter((a) => a.images.length).length > 0 ? (
+              {(categoryArticles[category.id] || []).filter(
+                (a) => a.images.length,
+              ).length > 0 ? (
                 <Carousel
                   slidesPerView={4}
                   mdSlidesPerView={3}
@@ -108,7 +137,9 @@ export default function IndusTalesPage() {
                     .filter((a) => a.images.length)
                     .map((article) => (
                       <div key={article._id} className="py-0 lg:py-4">
-                        <Link href={`category/${category.slug}?name=${article.slug}`}>
+                        <Link
+                          href={`category/${category.slug}?name=${article.slug}`}
+                        >
                           <ImageComponent
                             src={getImageUrl(article.images, 'posterImage')}
                             alt={article.name}
